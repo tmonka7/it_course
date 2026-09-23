@@ -1,3 +1,48 @@
+/* ==========================================================================
+   SIST Admin — design tokens
+   Every colour, radius, shadow and easing used below resolves to one of these.
+   Change a token here and it propagates to every screen.
+   ========================================================================== */
+:root {
+  /* Brand ramp */
+  --brand-50: #eef4ff;
+  --brand-100: #dbe7ff;
+  --brand-400: #4f8bff;
+  --brand-500: #1664ff;
+  --brand-600: #0b4fd6;
+  --brand-700: #0b3fb3;
+
+  /* Neutral ramp — "ink" for text, "line" for borders */
+  --ink-900: #101a37;
+  --ink-800: #1d2b53;
+  --ink-700: #344054;
+  --ink-500: #667085;
+  --ink-400: #98a2b3;
+  --line: #e9edf5;
+  --line-soft: #f1f4f9;
+
+  --surface: #ffffff;
+  --surface-sunken: #f7f9fc;
+  --canvas: #f4f7fd;
+
+  /* Radii */
+  --r-xs: 6px;
+  --r-sm: 8px;
+  --r-md: 12px;
+  --r-lg: 16px;
+
+  /* Elevation — layered rather than a single flat drop */
+  --shadow-xs: 0 1px 2px rgba(16, 24, 40, 0.05);
+  --shadow-sm: 0 1px 3px rgba(16, 24, 40, 0.06), 0 1px 2px rgba(16, 24, 40, 0.04);
+  --shadow-md: 0 4px 12px rgba(16, 24, 40, 0.07), 0 2px 4px rgba(16, 24, 40, 0.04);
+  --shadow-lg: 0 12px 32px rgba(16, 24, 40, 0.1), 0 4px 8px rgba(16, 24, 40, 0.04);
+  --shadow-brand: 0 8px 24px rgba(22, 100, 255, 0.22);
+
+  --ease: cubic-bezier(0.4, 0, 0.2, 1);
+  --t-fast: 0.15s var(--ease);
+  --t-med: 0.25s var(--ease);
+}
+
 * {
   box-sizing: border-box;
 }
@@ -7,31 +52,113 @@ body,
 #root {
   margin: 0;
   min-height: 100%;
-  background: #f4f7fd;
+  background: var(--canvas);
 }
 
-/* ---------- Layout ---------- */
+body {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+/* Keyboard focus is visible everywhere; mouse focus stays quiet. */
+:where(a, button, input, select, textarea, [tabindex]):focus-visible {
+  outline: 2px solid var(--brand-500);
+  outline-offset: 2px;
+  border-radius: var(--r-xs);
+}
+
+/* Slim scrollbars so the sider and table scroll areas don't punch a grey bar in */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #d5dbe7 transparent;
+}
+*::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+*::-webkit-scrollbar-thumb {
+  background: #d5dbe7;
+  border-radius: 99px;
+}
+*::-webkit-scrollbar-thumb:hover {
+  background: #bcc5d6;
+}
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* ==========================================================================
+   Shell — sider, header, content
+   ========================================================================== */
 .app-sider {
-  border-right: 1px solid #eef1f6;
+  border-right: 1px solid var(--line);
+  box-shadow: var(--shadow-xs);
 }
 
 .sider-logo {
-  padding: 20px 16px 16px;
-  border-bottom: 1px solid #f0f2f5;
-  margin-bottom: 12px;
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  padding: 18px 16px 16px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--line-soft);
+  margin-bottom: 10px;
 }
 
 .logo {
   display: flex;
   align-items: center;
   gap: 10px;
+  min-width: 0;
+}
+
+.logo svg,
+.logo img {
+  flex: none;
+  filter: drop-shadow(0 2px 4px rgba(22, 100, 255, 0.25));
 }
 
 .logo-text {
-  font-weight: 600;
+  font-weight: 650;
   font-size: 13px;
   line-height: 1.3;
-  color: #1d2b53;
+  letter-spacing: -0.01em;
+  color: var(--ink-800);
+}
+
+.logo-light .logo-text {
+  color: #fff;
+}
+
+/* Sider menu: roomier hit targets, quiet hover, brand-tinted selection */
+.app-sider .ant-menu-item,
+.ant-drawer .ant-menu-item {
+  height: 42px;
+  line-height: 42px;
+  margin-inline: 0;
+  margin-block: 4px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--ink-700);
+  transition: background var(--t-fast), color var(--t-fast), box-shadow var(--t-fast);
+}
+
+.app-sider .ant-menu-item .anticon,
+.ant-drawer .ant-menu-item .anticon {
+  font-size: 17px;
+}
+
+.app-sider .ant-menu-item:not(.ant-menu-item-selected):hover,
+.ant-drawer .ant-menu-item:not(.ant-menu-item-selected):hover {
+  background: var(--brand-50);
+  color: var(--brand-600);
+}
+
+.app-sider .ant-menu-item-selected,
+.ant-drawer .ant-menu-item-selected {
+  font-weight: 600;
+  box-shadow: var(--shadow-brand);
 }
 
 .app-header {
@@ -43,58 +170,170 @@ body,
   justify-content: space-between;
   gap: 16px;
   padding: 0 24px;
-  border-bottom: 1px solid #eef1f6;
+  border-bottom: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.82);
+  backdrop-filter: saturate(180%) blur(12px);
+  -webkit-backdrop-filter: saturate(180%) blur(12px);
 }
 
 .header-user {
   display: flex;
   flex-direction: column;
   line-height: 1.25;
+  min-width: 0;
+}
+
+/* Avatar + name behave as one clickable chip */
+.header-user-trigger {
+  padding: 4px 8px 4px 4px;
+  border-radius: 99px;
+  transition: background var(--t-fast);
+}
+
+.header-user-trigger:hover {
+  background: var(--brand-50);
 }
 
 .app-content {
   padding: 24px;
 }
 
+/* ==========================================================================
+   Cards & page chrome
+   ========================================================================== */
 .page-card {
-  border-radius: 12px;
-  box-shadow: 0 1px 3px rgba(16, 24, 40, 0.05);
+  border-radius: var(--r-md);
+  box-shadow: var(--shadow-sm);
+  transition: box-shadow var(--t-med);
 }
 
-@media (max-width: 575px) {
-  .app-header {
-    padding: 0 12px;
-  }
-  .app-content {
-    padding: 16px 12px;
-  }
+.page-card:hover {
+  box-shadow: var(--shadow-md);
 }
 
-/* ---------- Dashboard ---------- */
+.page-card .ant-card-head {
+  border-bottom: 1px solid var(--line-soft);
+  min-height: 52px;
+  padding-inline: 20px;
+}
+
+.page-card .ant-card-head-title {
+  font-weight: 650;
+  letter-spacing: -0.01em;
+  color: var(--ink-800);
+}
+
+.page-title {
+  margin: 0 0 16px;
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--ink-900);
+}
+
+/* ==========================================================================
+   Tables — denser rows, calm header, readable hover
+   ========================================================================== */
+.ant-table-wrapper .ant-table-thead > tr > th {
+  font-size: 12px;
+  font-weight: 650;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--ink-500);
+  border-bottom: 1px solid var(--line);
+}
+
+/* antd draws column dividers in the header; they fight the uppercase labels */
+.ant-table-wrapper .ant-table-thead > tr > th::before {
+  display: none !important;
+}
+
+.ant-table-wrapper .ant-table-tbody > tr > td {
+  border-bottom: 1px solid var(--line-soft);
+}
+
+.ant-table-wrapper .ant-table-tbody > tr:last-child > td {
+  border-bottom: none;
+}
+
+.ant-table-wrapper .ant-table-tbody > tr.ant-table-row:hover > td {
+  background: var(--brand-50);
+}
+
+/* Row action buttons stay muted until the row is hovered or focused */
+.ant-table-row .row-actions .ant-btn {
+  opacity: 0.55;
+  transition: opacity var(--t-fast), background var(--t-fast);
+}
+
+.ant-table-row:hover .row-actions .ant-btn,
+.row-actions .ant-btn:focus-visible {
+  opacity: 1;
+}
+
+.ant-pagination .ant-pagination-total-text {
+  margin-inline-end: auto;
+  color: var(--ink-500);
+  font-size: 13px;
+}
+
+.ant-table-wrapper .ant-pagination {
+  align-items: center;
+  margin-bottom: 0 !important;
+}
+
+/* ==========================================================================
+   Dashboard
+   ========================================================================== */
 .stat-card {
   position: relative;
   overflow: hidden;
   padding: 18px 20px;
-  border-radius: 14px;
+  border-radius: var(--r-lg);
   color: #fff;
   cursor: pointer;
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  isolation: isolate;
+  box-shadow: var(--shadow-sm);
+  transition: transform var(--t-med), box-shadow var(--t-med);
 }
 
 .stat-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(22, 100, 255, 0.18);
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-lg);
+}
+
+.stat-card:active {
+  transform: translateY(-1px);
+}
+
+.stat-card:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: -4px;
+}
+
+/* Decorative gloss orbs */
+.stat-card::after,
+.stat-card::before {
+  content: '';
+  position: absolute;
+  border-radius: 50%;
+  z-index: -1;
+  background: rgba(255, 255, 255, 0.13);
 }
 
 .stat-card::after {
-  content: '';
-  position: absolute;
   right: -30px;
-  top: -30px;
-  width: 120px;
-  height: 120px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.12);
+  top: -34px;
+  width: 128px;
+  height: 128px;
+}
+
+.stat-card::before {
+  right: 24px;
+  bottom: -52px;
+  width: 78px;
+  height: 78px;
+  background: rgba(255, 255, 255, 0.09);
 }
 
 .stat-blue { background: linear-gradient(135deg, #1664ff, #4f8bff); }
@@ -108,27 +347,41 @@ body,
   justify-content: center;
   width: 38px;
   height: 38px;
-  border-radius: 10px;
+  border-radius: var(--r-sm);
   background: rgba(255, 255, 255, 0.22);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.25);
   font-size: 20px;
   margin-bottom: 12px;
 }
 
 .stat-label {
   font-size: 13px;
-  opacity: 0.9;
+  font-weight: 500;
+  opacity: 0.92;
 }
 
 .stat-value {
   font-size: 30px;
   font-weight: 700;
   line-height: 1.2;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
 }
 
+/* "↑ 12%" pill, as in the reference design */
 .stat-delta {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 8px;
+  margin-bottom: 5px;
+  border-radius: 99px;
+  background: rgba(255, 255, 255, 0.2);
   font-size: 12px;
-  opacity: 0.9;
-  padding-bottom: 6px;
+  font-weight: 600;
+  line-height: 1.4;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
 }
 
 .donut-center {
@@ -144,18 +397,30 @@ body,
 .donut-value {
   font-size: 22px;
   font-weight: 700;
-  color: #1d2b53;
+  letter-spacing: -0.02em;
+  color: var(--ink-800);
+  font-variant-numeric: tabular-nums;
 }
 
 .donut-label {
   font-size: 12px;
-  color: #98a2b3;
+  color: var(--ink-400);
 }
 
 .legend-row {
-  padding: 6px 0;
+  padding: 7px 0;
   font-size: 13px;
-  border-bottom: 1px dashed #f0f2f5;
+  color: var(--ink-700);
+  border-bottom: 1px dashed var(--line-soft);
+}
+
+.legend-row:last-child {
+  border-bottom: none;
+}
+
+.legend-row strong {
+  font-variant-numeric: tabular-nums;
+  color: var(--ink-900);
 }
 
 .legend-dot {
@@ -166,49 +431,61 @@ body,
   margin-right: 8px;
 }
 
-/* ---------- Schedule ---------- */
+/* ==========================================================================
+   Schedule grid
+   ========================================================================== */
 .schedule-scroll {
   overflow-x: auto;
 }
 
 .schedule-grid {
   display: grid;
-  border-top: 1px solid #eef1f6;
-  border-left: 1px solid #eef1f6;
+  border-top: 1px solid var(--line);
+  border-left: 1px solid var(--line);
+  border-radius: var(--r-sm);
+  overflow: hidden;
   min-width: 480px;
 }
 
 .sg-head,
 .sg-time,
 .sg-cell {
-  border-right: 1px solid #eef1f6;
-  border-bottom: 1px solid #eef1f6;
+  border-right: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
 }
 
 .sg-head {
   padding: 10px;
   text-align: center;
   font-weight: 600;
-  background: #f7f9fc;
+  font-size: 13px;
+  color: var(--ink-700);
+  background: var(--surface-sunken);
 }
 
 .sg-today {
-  color: #1664ff;
-  background: #eaf1ff;
+  color: var(--brand-500);
+  background: var(--brand-50);
 }
 
 .sg-date {
   font-size: 12px;
   font-weight: 400;
-  color: #98a2b3;
+  color: var(--ink-400);
+}
+
+.sg-today .sg-date {
+  color: var(--brand-400);
 }
 
 .sg-time {
   padding: 10px;
   font-size: 12px;
-  color: #667085;
+  color: var(--ink-500);
+  font-variant-numeric: tabular-nums;
   display: flex;
   align-items: center;
+  background: var(--surface-sunken);
 }
 
 .sg-cell {
@@ -218,10 +495,12 @@ body,
   flex-direction: column;
   gap: 4px;
   cursor: copy;
+  transition: background var(--t-fast);
 }
 
 .sg-cell:hover {
-  background: #fafcff;
+  background: var(--brand-50);
+  box-shadow: inset 0 0 0 1px var(--brand-100);
 }
 
 .slot-card {
@@ -230,20 +509,31 @@ body,
   flex-direction: column;
   padding: 6px 8px;
   border-left: 3px solid;
-  border-radius: 6px;
+  border-radius: var(--r-xs);
   font-size: 12px;
+  font-weight: 500;
   line-height: 1.4;
-  color: #344054;
+  color: var(--ink-700);
   cursor: pointer;
+  box-shadow: var(--shadow-xs);
+  transition: transform var(--t-fast), box-shadow var(--t-fast), filter var(--t-fast);
 }
 
 .slot-card:hover {
-  filter: brightness(0.96);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+  filter: brightness(0.97);
+}
+
+.slot-card:focus-visible {
+  outline: 2px solid var(--brand-500);
+  outline-offset: 1px;
 }
 
 .slot-sub {
-  color: #98a2b3;
+  color: var(--ink-400);
   font-size: 11px;
+  font-weight: 400;
 }
 
 .month-events {
@@ -257,7 +547,9 @@ body,
   font-size: 11px;
 }
 
-/* ---------- Login ---------- */
+/* ==========================================================================
+   Login
+   ========================================================================== */
 .login-page {
   min-height: 100vh;
   display: flex;
@@ -271,8 +563,24 @@ body,
   padding: 64px;
   color: #fff;
   background:
-    radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.18), transparent 40%),
+    radial-gradient(circle at 78% 14%, rgba(255, 255, 255, 0.28), transparent 42%),
     linear-gradient(160deg, #0b3fb3 0%, #1664ff 55%, #5aa2ff 100%);
+}
+
+/* Vignette so the flat gradient reads as depth rather than plastic */
+.login-hero::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(ellipse at 50% 40%, transparent 45%, rgba(4, 22, 66, 0.35) 100%);
+}
+
+.login-brand,
+.login-tagline,
+.login-card {
+  position: relative;
+  z-index: 2;
 }
 
 .login-brand {
@@ -286,35 +594,40 @@ body,
   font-size: 30px;
   line-height: 1.25;
   font-weight: 700;
+  letter-spacing: -0.02em;
+  text-shadow: 0 2px 12px rgba(4, 22, 66, 0.3);
 }
 
 .login-brand h2 {
   margin: 6px 0 0;
   font-size: 18px;
   font-weight: 400;
-  opacity: 0.9;
+  opacity: 0.92;
 }
 
 .login-tagline {
   margin-top: 40px;
   font-size: 16px;
   line-height: 1.8;
-  opacity: 0.9;
+  opacity: 0.92;
+  text-shadow: 0 1px 8px rgba(4, 22, 66, 0.25);
 }
 
-/* Stylised campus skyline */
+/* Stylised campus skyline. To use a real photo instead, set a background-image
+   on .login-hero and give .login-campus `display: none`. */
 .login-campus {
   position: absolute;
   left: 0;
   right: 0;
   bottom: 0;
   height: 42%;
+  z-index: 1;
 }
 
 .bldg {
   position: absolute;
   bottom: 0;
-  border-radius: 6px 6px 0 0;
+  border-radius: var(--r-xs) var(--r-xs) 0 0;
   background:
     repeating-linear-gradient(90deg, transparent 0 18px, rgba(255, 255, 255, 0.35) 18px 30px),
     repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.1) 0 16px, transparent 16px 34px),
@@ -337,11 +650,20 @@ body,
   width: 100%;
   max-width: 400px;
   padding: 36px 32px;
-  border-radius: 16px;
-  background: #fff;
-  box-shadow: 0 12px 40px rgba(22, 100, 255, 0.12);
+  border-radius: var(--r-lg);
+  background: var(--surface);
+  box-shadow: 0 20px 60px rgba(11, 63, 179, 0.18), 0 2px 8px rgba(16, 24, 40, 0.04);
 }
 
+.login-card .ant-btn-primary {
+  height: 44px;
+  font-weight: 600;
+  box-shadow: var(--shadow-brand);
+}
+
+/* ==========================================================================
+   Responsive
+   ========================================================================== */
 @media (max-width: 991px) {
   .login-page {
     flex-direction: column;
@@ -366,5 +688,46 @@ body,
   .login-panel {
     margin-top: -60px;
     align-items: flex-start;
+  }
+}
+
+@media (max-width: 575px) {
+  .app-header {
+    padding: 0 12px;
+  }
+  .app-content {
+    padding: 16px 12px;
+  }
+  .page-title {
+    font-size: 18px;
+  }
+  .stat-card {
+    padding: 16px;
+  }
+  .stat-value {
+    font-size: 26px;
+  }
+  .login-card {
+    padding: 28px 20px;
+  }
+  /* Keep the row total readable when pagination wraps on a narrow screen */
+  .ant-pagination .ant-pagination-total-text {
+    width: 100%;
+    margin-bottom: 8px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  .stat-card:hover,
+  .slot-card:hover {
+    transform: none;
   }
 }

@@ -175,9 +175,9 @@ export default function Schedule() {
   return (
     <Card className="page-card" bordered={false}>
       <Flex justify="space-between" align="center" wrap="wrap" gap={12} style={{ marginBottom: 16 }}>
-        <Typography.Title level={4} style={{ margin: 0 }}>
+        <h1 className="page-title" style={{ margin: 0 }}>
           Class Schedule
-        </Typography.Title>
+        </h1>
         <Button type="primary" icon={<PlusOutlined />} onClick={() => openModal(null, { day: Math.min(isoDay(date), 5), period: 0 })}>
           Add Class
         </Button>

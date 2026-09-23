@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { App, Button, Card, Col, Flex, Row, Skeleton, Table, Typography } from 'antd';
-import { BookOutlined, FileAddOutlined, SolutionOutlined, TeamOutlined } from '@ant-design/icons';
+import { App, Button, Card, Col, Flex, Row, Skeleton, Table } from 'antd';
+import { ArrowUpOutlined, BookOutlined, FileAddOutlined, SolutionOutlined, TeamOutlined } from '@ant-design/icons';
 import { Area, AreaChart, CartesianGrid, Cell, Pie, PieChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import dayjs from 'dayjs';
 import api, { errMsg } from '../api';
@@ -40,21 +40,35 @@ export default function Dashboard() {
 
   return (
     <>
-      <Typography.Title level={4} style={{ marginTop: 0 }}>
-        Dashboard
-      </Typography.Title>
+      <h1 className="page-title">Dashboard</h1>
 
       <Row gutter={[16, 16]}>
         {STAT_CARDS.map((c) => {
           const stat = data.stats[c.key];
+          // Share of the current total that arrived this month.
+          const growth = stat.total ? Math.round((stat.thisMonth / stat.total) * 100) : 0;
           return (
             <Col xs={24} sm={12} xl={6} key={c.key}>
-              <div className={`stat-card ${c.className}`} onClick={() => navigate(c.to)} role="button" tabIndex={0}>
+              <div
+                className={`stat-card ${c.className}`}
+                onClick={() => navigate(c.to)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    navigate(c.to);
+                  }
+                }}
+                role="button"
+                tabIndex={0}
+                aria-label={`${c.label}: ${stat.total.toLocaleString()}, ${stat.thisMonth} added this month`}
+              >
                 <div className="stat-icon">{c.icon}</div>
                 <div className="stat-label">{c.label}</div>
-                <Flex justify="space-between" align="flex-end">
+                <Flex justify="space-between" align="flex-end" gap={8}>
                   <div className="stat-value">{stat.total.toLocaleString()}</div>
-                  <div className="stat-delta">+{stat.thisMonth} this month</div>
+                  <div className="stat-delta" title={`+${stat.thisMonth} this month`}>
+                    <ArrowUpOutlined /> {growth}%
+                  </div>
                 </Flex>
               </div>
             </Col>
@@ -134,7 +148,17 @@ export default function Dashboard() {
         </Col>
       </Row>
 
-      <Card title="Recent Activities" bordered={false} className="page-card" style={{ marginTop: 16 }}>
+      <Card
+        title="Recent Activities"
+        bordered={false}
+        className="page-card"
+        style={{ marginTop: 16 }}
+        extra={
+          <Button type="link" size="small" onClick={() => navigate('/announcements')}>
+            View All
+          </Button>
+        }
+      >
         <Table
           rowKey="_id"
           size="small"
