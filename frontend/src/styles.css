@@ -1262,16 +1262,30 @@ body {
 .meet-grid.count-8,
 .meet-grid.count-9 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 
+/* Spotlight: the pinned/presenting tile (or the whiteboard) fills the left, everyone else is a
+   scrollable column of thumbnails on the right. */
+.meet-content.has-stage {
+  flex-direction: row;
+}
+
 .meet-grid.strip {
   flex: none;
   display: flex;
-  height: 132px;
-  overflow-x: auto;
+  flex-direction: column;
+  width: 232px;
+  overflow-y: auto;
+  padding-right: 2px;
 }
 
 .meet-grid.strip .meet-tile {
   flex: none;
-  width: 210px;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  cursor: pointer;
+}
+
+.meet-grid:not(.strip) .meet-tile {
+  cursor: zoom-in;
 }
 
 .meet-tile {
@@ -1616,11 +1630,21 @@ body {
     z-index: 5;
     box-shadow: var(--shadow-lg);
   }
+  /* Phones: stage on top, thumbnails in a row underneath */
+  .meet-content.has-stage {
+    flex-direction: column;
+  }
   .meet-grid.strip {
+    flex-direction: row;
+    width: auto;
     height: 96px;
+    overflow-x: auto;
+    overflow-y: hidden;
   }
   .meet-grid.strip .meet-tile {
     width: 150px;
+    height: 100%;
+    aspect-ratio: auto;
   }
   .cam-grid {
     height: 60vh;

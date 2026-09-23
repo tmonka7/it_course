@@ -118,4 +118,5 @@ export default {
   'This meeting has ended': 'この会議は終了しました',
   'Meeting not found': '会議が見つかりません',
   'Could not join the meeting': '会議に参加できませんでした',
+  'Double-click to return to the grid': 'ダブルクリックでグリッド表示に戻る',
 };

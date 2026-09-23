@@ -4,6 +4,7 @@ import { BrowserRouter } from 'react-router-dom';
 import { App as AntApp, ConfigProvider } from 'antd';
 import enUS from 'antd/locale/en_US';
 import jaJP from 'antd/locale/ja_JP';
+import zhCN from 'antd/locale/zh_CN';
 import App from './App';
 import { LanguageProvider, useLanguage } from './i18n';
 import { AuthProvider } from './context/AuthContext';
@@ -60,11 +61,13 @@ const theme = {
   },
 };
 
+const ANTD_LOCALES = { en: enUS, ja: jaJP, zh: zhCN };
+
 // antd's built-in texts (pagination, pickers, empty states) follow the chosen language.
 function Root() {
   const { lang } = useLanguage();
   return (
-    <ConfigProvider theme={theme} locale={lang === 'ja' ? jaJP : enUS}>
+    <ConfigProvider theme={theme} locale={ANTD_LOCALES[lang] || enUS}>
       <AntApp>
         <BrowserRouter>
           <SettingsProvider>

@@ -1,23 +1,29 @@
 import { createContext, useCallback, useContext, useMemo, useState } from 'react';
 import dayjs from 'dayjs';
 import 'dayjs/locale/ja';
+import 'dayjs/locale/zh-cn';
 import ja from './ja';
+import zh from './zh';
 
 /**
- * Minimal i18n: English text is the key, `ja` maps it to Japanese. Missing entries fall back to English,
+ * Minimal i18n: English text is the key; `ja` / `zh` map it to Japanese / Simplified Chinese. Missing entries fall back to English,
  * so an untranslated string shows in English instead of breaking the page.
  *
- *   t('Save')                          -> "保存"
+ *   t('Save')                          -> "保存" (ja / zh)
  *   t('Reports for {date}', { date })  -> "{date} の日報"
  *   <T>Name</T>                        -> for labels built outside render (e.g. table column titles)
  */
 export const LANGUAGES = [
   { value: 'en', label: 'English' },
+  { value: 'zh', label: '中文' },
   { value: 'ja', label: '日本語' },
 ];
+const CODES = LANGUAGES.map((l) => l.value);
+// dayjs names Simplified Chinese "zh-cn".
+const DAYJS_LOCALE = { en: 'en', ja: 'ja', zh: 'zh-cn' };
 
 const STORAGE_KEY = 'sist_lang';
-const DICTIONARIES = { ja };
+const DICTIONARIES = { ja, zh };
 let current = 'en';
 
 export function t(key, vars) {
@@ -37,11 +43,14 @@ export const currentLanguage = () => current;
 function initialLanguage() {
   try {
     const saved = localStorage.getItem(STORAGE_KEY);
-    if (saved === 'en' || saved === 'ja') return saved;
+    if (CODES.includes(saved)) return saved;
   } catch {
     /* storage unavailable */
   }
-  return navigator.language?.toLowerCase().startsWith('ja') ? 'ja' : 'en';
+  const browser = navigator.language?.toLowerCase() || '';
+  if (browser.startsWith('ja')) return 'ja';
+  if (browser.startsWith('zh')) return 'zh';
+  return 'en';
 }
 
 /** Whether this browser already has an explicit language choice. */
@@ -59,10 +68,10 @@ export function LanguageProvider({ children }) {
   const [lang, setLangState] = useState(initialLanguage);
   // Applied during render so every child rendered below uses the new language immediately.
   current = lang;
-  dayjs.locale(lang);
+  dayjs.locale(DAYJS_LOCALE[lang]);
 
   const setLang = useCallback((next) => {
-    if (next !== 'en' && next !== 'ja') return;
+    if (!CODES.includes(next)) return;
     try {
       localStorage.setItem(STORAGE_KEY, next);
     } catch {

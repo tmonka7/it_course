@@ -55,7 +55,7 @@ router.put(
   auth,
   asyncHandler(async (req, res) => {
     const { language } = req.body || {};
-    if (!['en', 'ja'].includes(language)) return res.status(400).json({ message: 'Unsupported language' });
+    if (!['en', 'zh', 'ja'].includes(language)) return res.status(400).json({ message: 'Unsupported language' });
     req.user.language = language;
     await req.user.save();
     return res.json(req.user);

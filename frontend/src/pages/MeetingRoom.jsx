@@ -34,7 +34,11 @@ function StreamVideo({ stream, muted, mirrored, contain }) {
 function VideoTile({ name, stream, media, isSelf, pinned, onPin, large }) {
   const showVideo = stream && (media?.video || media?.screen);
   return (
-    <div className={`meet-tile ${large ? 'large' : ''} ${media?.screen ? 'sharing' : ''}`} onDoubleClick={onPin}>
+    <div
+      className={`meet-tile ${large ? 'large' : ''} ${media?.screen ? 'sharing' : ''}`}
+      onDoubleClick={onPin}
+      title={onPin ? t(pinned ? 'Double-click to return to the grid' : 'Double-click to enlarge') : undefined}
+    >
       {/* Always render the element so remote audio keeps playing even when the camera is off. */}
       <StreamVideo stream={stream} muted={isSelf} mirrored={isSelf && !media?.screen} contain={media?.screen} />
       {!showVideo && (

@@ -173,7 +173,7 @@ function Clock() {
       <span>
         {now.format('YYYY-MM-DD')}&nbsp;&nbsp;{now.format('dddd')}
       </span>
-      <strong>{now.format(currentLanguage() === 'ja' ? 'HH:mm' : 'hh:mm A')}</strong>
+      <strong>{now.format(currentLanguage() === 'en' ? 'hh:mm A' : 'HH:mm')}</strong>
     </div>
   );
 }

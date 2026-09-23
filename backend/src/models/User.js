@@ -12,7 +12,7 @@ const userSchema = new mongoose.Schema(
     status: { type: String, enum: ['Active', 'Inactive'], default: 'Active' },
     // Page permissions for staff (see utils/permissions.js). Ignored for admins.
     permissions: { type: mongoose.Schema.Types.Mixed },
-    language: { type: String, enum: ['en', 'ja'], default: 'en' },
+    language: { type: String, enum: ['en', 'zh', 'ja'], default: 'en' },
   },
   { timestamps: true }
 );
