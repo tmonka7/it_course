@@ -18,6 +18,7 @@ const PAGES = {
   workSchedule: CRUD,
   cameras: CRUD,
   cameraView: ['view'],
+  detection: ['view'],
   meetings: CRUD,
   emails: CRUD,
 };

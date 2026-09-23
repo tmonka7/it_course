@@ -17,6 +17,7 @@ export const PERMISSION_PAGES = [
   { key: 'workSchedule', label: 'Work Schedule', group: 'Operations', actions: CRUD },
   { key: 'cameras', label: 'Camera Management', group: 'Security', actions: CRUD },
   { key: 'cameraView', label: 'Camera View', group: 'Security', actions: ['view'] },
+  { key: 'detection', label: 'AI Detection', group: 'Security', actions: ['view'] },
   { key: 'meetings', label: 'Video Meetings', group: 'Communication', actions: CRUD },
   { key: 'emails', label: 'Email', group: 'Communication', actions: CRUD },
 ];

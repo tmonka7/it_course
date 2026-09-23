@@ -338,9 +338,9 @@ async function run() {
   );
 
   await Email.insertMany([
-    { audience: 'All Students', recipientCount: students.length, subject: 'Midterm Examination Schedule', body: 'Dear students,\n\nThe midterm examination schedule is now available in the portal.', status: 'Sent', sentBy: 'Administrator', sentAt: daysAgo(1) },
-    { audience: 'All Faculty', recipientCount: faculty.length, subject: 'Faculty Meeting Reminder', body: 'The monthly faculty meeting will be held in the Conference Room.', status: 'Sent', sentBy: 'Administrator', sentAt: daysAgo(2) },
-    { audience: 'Custom', recipients: ['it-support@school.edu'], recipientCount: 1, subject: 'Camera maintenance request', body: 'CAM-005 and CAM-006 are offline. Please check.', status: 'Draft' },
+    { audience: 'All Students', recipientCount: students.length, subject: 'Midterm Examination Schedule', body: 'Dear students,\n\nThe midterm examination schedule is now available in the portal.', status: 'Sent', sender: adminUser._id, sentBy: adminUser.name, sentAt: daysAgo(1) },
+    { audience: 'All Faculty', recipientCount: faculty.length, subject: 'Faculty Meeting Reminder', body: 'The monthly faculty meeting will be held in the Conference Room.', status: 'Sent', sender: adminUser._id, sentBy: adminUser.name, sentAt: daysAgo(2) },
+    { audience: 'Custom', recipients: ['it-support@school.edu'], recipientCount: 1, subject: 'Camera maintenance request', body: 'CAM-005 and CAM-006 are offline. Please check.', status: 'Draft', sender: staffUser._id },
   ]);
 
   await Notification.insertMany([

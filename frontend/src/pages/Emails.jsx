@@ -19,7 +19,13 @@ const columns = [
     width: 240,
   },
   { title: 'Recipients', dataIndex: 'recipientCount', align: 'center', responsive: ['md'] },
-  { title: 'Sent By', dataIndex: 'sentBy', responsive: ['lg'], render: (v) => v || '-' },
+  {
+    title: 'Sender',
+    dataIndex: 'sender',
+    responsive: ['lg'],
+    // Older records only have the name stamped when they were sent.
+    render: (v, r) => (v ? `${v.name} (${v.username})` : r.sentBy || '-'),
+  },
   { title: 'Sent At', dataIndex: 'sentAt', render: (v) => (v ? dayjs(v).format('YYYY-MM-DD HH:mm') : '-') },
   { title: 'Status', dataIndex: 'status', render: (v) => <StatusTag value={v} /> },
 ];
@@ -93,11 +99,12 @@ export default function Emails() {
       resource="emails"
       addText="Compose"
       modalTitle={(r) => (r ? (r.status === 'Sent' ? 'Sent Email' : 'Edit Draft') : 'Compose Email')}
-      searchPlaceholder="Search subject, message or address..."
+      searchPlaceholder="Search subject, message, address or sender..."
       columns={columns}
       filters={[
         { name: 'status', placeholder: 'All Status', options: toOptions(STATUSES), width: 130 },
         { name: 'audience', placeholder: 'All Audiences', options: toOptions(AUDIENCES), width: 150 },
+        { name: 'sender', placeholder: 'All Senders', resource: 'users', labelOf: (u) => `${u.name} (${u.username})`, width: 190 },
       ]}
       renderForm={renderForm}
       fromForm={(v) => ({ ...v, recipients: v.audience === 'Custom' ? v.recipients : [] })}

@@ -1,4 +1,4 @@
-import { memo, useEffect, useRef, useState } from 'react';
+import { memo, useCallback, useEffect, useRef, useState } from 'react';
 import { LoadingOutlined, VideoCameraOutlined, DisconnectOutlined, ToolOutlined } from '@ant-design/icons';
 import { TOKEN_KEY } from '../api';
 import { t } from '../i18n';
@@ -28,8 +28,16 @@ function Placeholder({ icon, text }) {
   );
 }
 
-function LivePlayer({ camera, gatewayEnabled, fit = 'cover' }) {
+/** `onMedia(element)` receives the <video>/<img> showing the stream (null when it goes away), e.g. for AI detection. */
+function LivePlayer({ camera, gatewayEnabled, fit = 'cover', onMedia }) {
   const videoRef = useRef(null);
+  const onMediaRef = useRef(onMedia);
+  onMediaRef.current = onMedia;
+  const setVideo = useCallback((el) => {
+    videoRef.current = el;
+    onMediaRef.current?.(el);
+  }, []);
+  const setImage = useCallback((el) => onMediaRef.current?.(el), []);
   const [state, setState] = useState('loading'); // loading | playing | error
   const [attempt, setAttempt] = useState(0);
   const src = liveSource(camera, gatewayEnabled);
@@ -111,6 +119,7 @@ function LivePlayer({ camera, gatewayEnabled, fit = 'cover' }) {
       {kind === 'image' ? (
         <img
           key={attempt}
+          ref={setImage}
           src={src}
           alt={camera.name}
           style={{ objectFit: fit }}
@@ -118,7 +127,7 @@ function LivePlayer({ camera, gatewayEnabled, fit = 'cover' }) {
           onError={() => setState('error')}
         />
       ) : (
-        <video ref={videoRef} muted autoPlay playsInline style={{ objectFit: fit }} />
+        <video ref={setVideo} muted autoPlay playsInline style={{ objectFit: fit }} />
       )}
       {state === 'loading' && <Placeholder icon={<LoadingOutlined />} text={t('Connecting...')} />}
       {state === 'error' && <Placeholder icon={<DisconnectOutlined />} text={t('No signal - retrying')} />}

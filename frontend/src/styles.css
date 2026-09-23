@@ -1974,3 +1974,122 @@ body {
   top: 12px;
   right: 12px;
 }
+
+/* ---------- My Profile ---------- */
+.profile-head {
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+  margin-bottom: 20px;
+}
+
+.face-cam {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  margin-bottom: 12px;
+  overflow: hidden;
+  background: #000;
+  border-radius: 10px;
+}
+
+.face-cam video,
+.face-cam canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.face-cam video {
+  object-fit: contain;
+  transform: scaleX(-1); /* selfie view; the overlay is mirrored when drawn */
+}
+
+.face-cam canvas {
+  pointer-events: none;
+}
+
+.face-cam-hint {
+  position: absolute;
+  left: 50%;
+  bottom: 12px;
+  transform: translateX(-50%);
+  padding: 4px 12px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.6);
+  color: #fff;
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+.face-cam-hint.ok {
+  background: rgba(18, 183, 106, 0.85);
+}
+
+.face-samples {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.face-sample {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.face-sample img {
+  border-radius: 8px;
+  object-fit: cover;
+}
+
+/* ---------- AI Detection ---------- */
+.detect-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px 20px;
+}
+
+.detect-stage {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  background: #000;
+  border-radius: 12px;
+}
+
+.detect-stage > video {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: #000;
+}
+
+.detect-overlay {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.detect-status {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  padding: 4px 12px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.6);
+  color: #fff;
+  font-size: 13px;
+}
+
+@media (max-width: 575px) {
+  .profile-head {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+}

@@ -14,6 +14,8 @@ const { onCommandSaved } = require('../services/commandEvents');
 const { auth, requireRole } = require('../middleware/auth');
 const { permit, permitAny, normalizePermissions } = require('../utils/permissions');
 const lookupRoutes = require('./lookup');
+const profileRoutes = require('./profile');
+const faceRoutes = require('./faces');
 
 const Student = require('../models/Student');
 const Faculty = require('../models/Faculty');
@@ -54,6 +56,10 @@ router.use(auth);
 
 // Minimal id + name lists for dropdowns, available to every signed-in user (see routes/lookup.js).
 router.use('/lookup', lookupRoutes);
+
+// Everyone manages their own profile and face samples; the face registry is for the AI Detection page.
+router.use('/profile', profileRoutes);
+router.use('/faces', permit('detection', { DELETE: 'view' }), faceRoutes);
 
 // "Fill from activity log" in daily reports reads the activity list too.
 router.use('/dashboard/activities', permitAny(['dashboard', 'dailyReports']));
@@ -246,11 +252,14 @@ router.use(
   })
 );
 
-router.use('/live', permitAny(['cameraView', 'cameras']), liveRoutes);
+router.use('/live', permitAny(['cameraView', 'cameras', 'detection']), liveRoutes);
 router.use('/camera-discovery', requireRole('admin'), cameraDiscoveryRoutes);
+// Camera View and AI Detection only read the camera list; changes need Camera Management permission.
+const cameraAccess = (req, res, next) =>
+  (req.method === 'GET' ? permitAny(['cameras', 'cameraView', 'detection']) : permit('cameras'))(req, res, next);
 router.use(
   '/cameras',
-  permit('cameras'),
+  cameraAccess,
   crud(Camera, {
     searchFields: ['cameraId', 'name', 'location', 'ipAddress'],
     filterFields: ['status', 'type'],
@@ -282,11 +291,20 @@ router.use(
   '/emails',
   permit('emails'),
   crud(Email, {
-    searchFields: ['subject', 'body', 'recipients'],
-    filterFields: ['status', 'audience'],
+    searchFields: ['subject', 'body', 'recipients', 'sentBy'],
+    // Sender name or username: match users, then emails they composed (or older records stamped with their name).
+    buildSearch: async (re) => {
+      const users = await User.find({ $or: [{ name: re }, { username: re }] }).select('name').lean();
+      if (!users.length) return [];
+      return [{ sender: { $in: users.map((u) => u._id) } }, { sentBy: { $in: users.map((u) => u.name) } }];
+    },
+    filterFields: ['status', 'audience', 'sender'],
+    populate: { path: 'sender', select: 'name username' },
     sort: { createdAt: -1 },
     label: 'email',
     describe: (d) => d.subject,
+    // Sender, count and sent stamp are managed by the server.
+    sanitize: ({ sender, sentBy, sentAt, recipientCount, ...body }, req) => (req.params.id ? body : { ...body, sender: req.user._id }),
     afterSave: async (doc, req) => {
       const count = AUDIENCE_COUNT[doc.audience] ? await AUDIENCE_COUNT[doc.audience]() : doc.recipients.length;
       doc.recipientCount = count;
@@ -358,6 +376,7 @@ router.use(
     sanitize: (body, req) => {
       const data = { ...body };
       if (!data.password) delete data.password; // keep existing password when left blank
+      delete data.faces; // face samples are managed on the user's own profile
       if (data.permissions !== undefined) data.permissions = normalizePermissions(data.permissions);
       // Stop admins from locking themselves out.
       if (req.params.id && req.user._id.equals(req.params.id)) {

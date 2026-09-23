@@ -22,6 +22,8 @@ import CameraView from './pages/CameraView';
 import WorkSchedule from './pages/WorkSchedule';
 import Meetings from './pages/Meetings';
 import MeetingRoom from './pages/MeetingRoom';
+import Profile from './pages/Profile';
+import Detection from './pages/Detection';
 
 // First page (in sidebar order) the user may open; everyone can open Notifications.
 const LANDING = [
@@ -38,6 +40,7 @@ const LANDING = [
   ['/work-schedule', 'workSchedule'],
   ['/cameras', 'cameras'],
   ['/camera-view', 'cameraView'],
+  ['/detection', 'detection'],
   ['/meetings', 'meetings'],
   ['/emails', 'emails'],
 ];
@@ -90,10 +93,12 @@ export default function App() {
         <Route path="work-schedule" element={<PageGuard page="workSchedule"><WorkSchedule /></PageGuard>} />
         <Route path="cameras" element={<PageGuard page="cameras"><Cameras /></PageGuard>} />
         <Route path="camera-view" element={<PageGuard page="cameraView"><CameraView /></PageGuard>} />
+        <Route path="detection" element={<PageGuard page="detection"><Detection /></PageGuard>} />
         <Route path="meetings" element={<PageGuard page="meetings"><Meetings /></PageGuard>} />
         <Route path="emails" element={<PageGuard page="emails"><Emails /></PageGuard>} />
         <Route path="notifications" element={<Notifications />} />
         <Route path="settings" element={<Settings />} />
+        <Route path="profile" element={<Profile />} />
       </Route>
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>

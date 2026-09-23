@@ -13,6 +13,24 @@ const userSchema = new mongoose.Schema(
     // Page permissions for staff (see utils/permissions.js). Ignored for admins.
     permissions: { type: mongoose.Schema.Types.Mixed },
     language: { type: String, enum: ['en', 'zh', 'ja'], default: 'en' },
+    // Profile details the user maintains on the My Profile page.
+    phone: { type: String, trim: true },
+    title: { type: String, trim: true }, // job title
+    department: { type: String, trim: true },
+    bio: { type: String, trim: true },
+    avatar: String, // small image as a data URL
+    // Registered face samples: a 128-number SFace embedding (computed in the browser) plus a thumbnail.
+    // Not selected by default, so user lists and /auth/me never carry biometric data.
+    faces: {
+      type: [
+        {
+          descriptor: { type: [Number], required: true },
+          image: String,
+          createdAt: { type: Date, default: Date.now },
+        },
+      ],
+      select: false,
+    },
   },
   { timestamps: true }
 );
@@ -34,6 +52,7 @@ userSchema.methods.comparePassword = function comparePassword(candidate) {
 userSchema.set('toJSON', {
   transform: (_doc, ret) => {
     delete ret.password;
+    delete ret.faces;
     return ret;
   },
 });

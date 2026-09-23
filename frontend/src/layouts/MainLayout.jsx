@@ -12,6 +12,7 @@ import {
   FileTextOutlined,
   FlagOutlined,
   HomeOutlined,
+  IdcardOutlined,
   LockOutlined,
   LogoutOutlined,
   MailOutlined,
@@ -19,6 +20,7 @@ import {
   MessageOutlined,
   NotificationOutlined,
   ScheduleOutlined,
+  ScanOutlined,
   SearchOutlined,
   SettingOutlined,
   SolutionOutlined,
@@ -65,6 +67,7 @@ const MENU = [
     children: [
       { key: '/cameras', page: 'cameras', icon: <VideoCameraOutlined />, label: 'Camera Management' },
       { key: '/camera-view', page: 'cameraView', icon: <AppstoreOutlined />, label: 'Camera View' },
+      { key: '/detection', page: 'detection', icon: <ScanOutlined />, label: 'AI Detection' },
     ],
   },
   {
@@ -276,11 +279,13 @@ export default function MainLayout() {
 
   const userMenu = {
     items: [
+      { key: 'profile', icon: <IdcardOutlined />, label: t('My Profile') },
       { key: 'password', icon: <LockOutlined />, label: t('Change password') },
       { type: 'divider' },
       { key: 'logout', icon: <LogoutOutlined />, label: t('Log out'), danger: true },
     ],
     onClick: ({ key }) => {
+      if (key === 'profile') navigate('/profile');
       if (key === 'password') setPwdOpen(true);
       if (key === 'logout') {
         logout();
@@ -340,7 +345,7 @@ export default function MainLayout() {
             <NotificationBell />
             <Dropdown menu={userMenu} trigger={['click']}>
               <Space className="header-user-trigger" style={{ cursor: 'pointer' }}>
-                <Avatar size={38} style={{ background: 'linear-gradient(135deg, #1664ff, #4f8bff)' }} icon={<UserOutlined />} />
+                <Avatar size={38} src={user?.avatar || undefined} style={{ background: 'linear-gradient(135deg, #1664ff, #4f8bff)' }} icon={<UserOutlined />} />
                 {screens.md && (
                   <div className="header-user">
                     <Typography.Text strong>{user?.username}</Typography.Text>

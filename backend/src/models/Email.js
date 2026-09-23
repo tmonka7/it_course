@@ -9,7 +9,8 @@ const emailSchema = new mongoose.Schema(
     subject: { type: String, required: true, trim: true },
     body: String,
     status: { type: String, enum: ['Draft', 'Sent'], default: 'Draft' },
-    sentBy: String,
+    sender: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }, // who composed it; set by the server
+    sentBy: String, // sender's display name at the time it was sent
     sentAt: Date,
   },
   { timestamps: true }

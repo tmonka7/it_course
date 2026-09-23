@@ -6,6 +6,7 @@ import dayjs from 'dayjs';
 import api, { errMsg } from '../api';
 import { useAuth } from '../context/AuthContext';
 import { RESOURCE_PAGE } from '../permissions';
+import RemoteSelect from './RemoteSelect';
 import { t } from '../i18n';
 
 const compact = (obj) => Object.fromEntries(Object.entries(obj).filter(([, v]) => v !== undefined && v !== null && v !== ''));
@@ -16,7 +17,8 @@ const compact = (obj) => Object.fromEntries(Object.entries(obj).filter(([, v]) =
  * Props:
  *   title, resource            - page title and API resource (e.g. "students")
  *   columns                    - antd table columns (an Actions column is appended)
- *   filters                    - [{ name, placeholder, options }] rendered as selects
+ *   filters                    - [{ name, placeholder, options }] rendered as selects; give { resource, labelOf } instead
+ *                                of options for a searchable picker (RemoteSelect), e.g. filtering by user
  *   renderForm(record)         - form items for the add/edit modal
  *   toForm(record)/fromForm(v) - convert between API records and form values
  *   initialValues              - defaults for new records
@@ -263,7 +265,20 @@ export default function CrudPage({
             </Button>
           </Space.Compact>
         )}
-        {filters.map((f) => (
+        {filters.map((f) =>
+          f.resource ? (
+            <RemoteSelect
+              key={f.name}
+              resource={f.resource}
+              labelOf={f.labelOf}
+              allowClear
+              placeholder={t(f.placeholder)}
+              value={filterValues[f.name]}
+              onChange={(v) => setFilter(f.name, v)}
+              style={{ minWidth: f.width || 160 }}
+              popupMatchSelectWidth={false}
+            />
+          ) : (
           <Select
             key={f.name}
             allowClear
@@ -274,7 +289,8 @@ export default function CrudPage({
             style={{ minWidth: f.width || 160 }}
             popupMatchSelectWidth={false}
           />
-        ))}
+          )
+        )}
       </Flex>
 
       <Table

@@ -57,7 +57,8 @@ export function AuthProvider({ children }) {
   const can = useCallback((page, action = 'view') => hasPermission(user, page, action), [user]);
 
   const value = useMemo(
-    () => ({ user, loading, login, logout, can, isAdmin: user?.role === 'admin' }),
+    // updateUser: replace the signed-in user after they edit their own profile.
+    () => ({ user, loading, login, logout, can, updateUser: setUser, isAdmin: user?.role === 'admin' }),
     [user, loading, login, logout, can]
   );
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

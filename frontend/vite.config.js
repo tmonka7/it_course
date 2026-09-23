@@ -12,6 +12,10 @@ const https = fs.existsSync(key) && fs.existsSync(cert) ? { key: fs.readFileSync
 
 export default defineConfig({
   plugins: [react()],
+  // The AI detection worker (src/vision/worker.js) is an ES module; onnxruntime-web ships its own
+  // WebAssembly loader, so Vite should serve it as-is instead of pre-bundling it.
+  worker: { format: 'es' },
+  optimizeDeps: { exclude: ['onnxruntime-web'] },
   server: {
     host: true,
     port: 7173,
