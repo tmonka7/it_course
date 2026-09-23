@@ -5,9 +5,10 @@ import {
   BellOutlined,
   BookOutlined,
   CalendarOutlined,
-  DashboardOutlined,
+  DownOutlined,
   FileAddOutlined,
   FileTextOutlined,
+  HomeOutlined,
   LockOutlined,
   LogoutOutlined,
   MenuOutlined,
@@ -20,13 +21,14 @@ import {
 } from '@ant-design/icons';
 import dayjs from 'dayjs';
 import Logo from '../components/Logo';
+import CampusArt from '../components/CampusArt';
 import { useAuth } from '../context/AuthContext';
 import api, { errMsg } from '../api';
 
 const { Header, Sider, Content } = Layout;
 
 const MENU = [
-  { key: '/dashboard', icon: <DashboardOutlined />, label: 'Dashboard' },
+  { key: '/dashboard', icon: <HomeOutlined />, label: 'Home' },
   { key: '/students', icon: <TeamOutlined />, label: 'Student Management' },
   { key: '/faculty', icon: <SolutionOutlined />, label: 'Faculty Management' },
   { key: '/courses', icon: <BookOutlined />, label: 'Course Management' },
@@ -73,6 +75,22 @@ function Notifications() {
         <Button type="text" shape="circle" icon={<BellOutlined style={{ fontSize: 18 }} />} />
       </Badge>
     </Popover>
+  );
+}
+
+function Clock() {
+  const [now, setNow] = useState(dayjs());
+  useEffect(() => {
+    const id = setInterval(() => setNow(dayjs()), 15000);
+    return () => clearInterval(id);
+  }, []);
+  return (
+    <div className="header-clock">
+      <span>
+        {now.format('YYYY-MM-DD')}&nbsp;&nbsp;{now.format('dddd')}
+      </span>
+      <strong>{now.format('hh:mm A')}</strong>
+    </div>
   );
 }
 
@@ -172,11 +190,17 @@ export default function MainLayout() {
   return (
     <Layout style={{ minHeight: '100vh' }}>
       {!isMobile && (
-        <Sider width={240} className="app-sider" style={{ position: 'sticky', top: 0, height: '100vh', overflow: 'auto' }}>
-          <div className="sider-logo">
-            <Logo size={34} />
+        <Sider width={256} className="app-sider" style={{ position: 'sticky', top: 0, height: '100vh', overflow: 'auto' }}>
+          <div className="sider-inner">
+            <div className="sider-logo">
+              <Logo size={46} subtitle="Administrative Management System" />
+            </div>
+            {menu}
+            <div className="sider-footer">
+              <CampusArt className="sider-campus" />
+              <div className="sider-tagline">Knowledge &middot; Innovation &middot; Future</div>
+            </div>
           </div>
-          {menu}
         </Sider>
       )}
       <Drawer
@@ -198,8 +222,8 @@ export default function MainLayout() {
               <Input
                 allowClear
                 prefix={<SearchOutlined style={{ color: '#98a2b3' }} />}
-                placeholder="Search students..."
-                style={{ maxWidth: 320 }}
+                placeholder="Search..."
+                className="header-search"
                 onPressEnter={(e) => {
                   const q = e.currentTarget.value.trim();
                   navigate(q ? `/students?q=${encodeURIComponent(q)}` : '/students');
@@ -207,11 +231,11 @@ export default function MainLayout() {
               />
             )}
           </Space>
-          <Space size={16}>
+          <Space size={24}>
             <Notifications />
             <Dropdown menu={userMenu} trigger={['click']}>
               <Space style={{ cursor: 'pointer' }}>
-                <Avatar style={{ background: '#1664ff' }} icon={<UserOutlined />} />
+                <Avatar size={38} style={{ background: '#1664ff' }} icon={<UserOutlined />} />
                 {screens.md && (
                   <div className="header-user">
                     <Typography.Text strong>{user?.username}</Typography.Text>
@@ -220,8 +244,10 @@ export default function MainLayout() {
                     </Typography.Text>
                   </div>
                 )}
+                <DownOutlined style={{ fontSize: 10, color: '#98a2b3' }} />
               </Space>
             </Dropdown>
+            {screens.lg && <Clock />}
           </Space>
         </Header>
         <Content className="app-content">

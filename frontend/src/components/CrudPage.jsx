@@ -38,7 +38,7 @@ export default function CrudPage({
   pageSize: defaultPageSize = 8,
 }) {
   const { message } = App.useApp();
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const urlQuery = searchParams.get('q') || '';
 
   const [searchText, setSearchText] = useState(urlQuery);
@@ -62,6 +62,20 @@ export default function CrudPage({
     setSearch(urlQuery);
     setPagination((p) => ({ ...p, current: 1 }));
   }, [urlQuery]);
+
+  // Dashboard quick actions link here with ?new=1 to open the add dialog.
+  useEffect(() => {
+    if (searchParams.get('new') !== '1') return;
+    if (canWrite) setModal({ open: true, record: null });
+    setSearchParams(
+      (p) => {
+        p.delete('new');
+        return p;
+      },
+      { replace: true }
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams]);
 
   const query = useMemo(() => compact({ q: search, ...filterValues }), [search, filterValues]);
 

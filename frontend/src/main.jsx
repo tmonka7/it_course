@@ -14,8 +14,17 @@ const theme = {
     fontFamily: "Inter, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif",
   },
   components: {
-    Layout: { headerBg: '#ffffff', siderBg: '#ffffff', bodyBg: '#f4f7fd' },
-    Menu: { itemSelectedBg: '#1664ff', itemSelectedColor: '#ffffff', itemBorderRadius: 8 },
+    Layout: { headerBg: '#ffffff', siderBg: '#f7faff', bodyBg: '#f4f7fd' },
+    Menu: {
+      itemBg: 'transparent',
+      itemSelectedBg: '#dbe8ff',
+      itemSelectedColor: '#1664ff',
+      itemColor: '#344054',
+      itemBorderRadius: 10,
+      itemHeight: 46,
+      itemMarginBlock: 4,
+      iconSize: 18,
+    },
     Table: { headerBg: '#f7f9fc' },
   },
 };

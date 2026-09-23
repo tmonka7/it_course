@@ -178,6 +178,27 @@ async function run() {
     }))
   );
 
+  const inDays = (n) => new Date(now.getFullYear(), now.getMonth(), now.getDate() + n);
+  const events = [
+    ['Midterm Examination', 'Midterm exams for all undergraduate courses.', 2, '09:00 - 12:00', 'Building A, Room 101'],
+    ['Faculty Meeting', 'Monthly faculty meeting.', 4, '14:00 - 16:00', 'Conference Room'],
+    ['New Student Orientation', 'Welcome session for incoming students.', 6, '10:00 - 12:00', 'Main Auditorium'],
+    ['Course Registration Deadline', 'Last day to register for next semester courses.', 10, 'All Day', 'Online'],
+  ];
+  await Announcement.insertMany(
+    events.map(([title, content, days, eventTime, location]) => ({
+      title,
+      type: 'Event',
+      content,
+      publishDate: now,
+      eventDate: inDays(days),
+      eventTime,
+      location,
+      status: 'Published',
+      author: 'Administrator',
+    }))
+  );
+
   await Activity.insertMany([
     { user: 'admin', action: 'Added new student', details: `${students[0].name} (${students[0].studentId})` },
     { user: 'staff', action: 'Updated course', details: 'SE301 Database Systems' },

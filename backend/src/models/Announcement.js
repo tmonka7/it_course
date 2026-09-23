@@ -8,6 +8,10 @@ const announcementSchema = new mongoose.Schema(
     publishDate: { type: Date, default: Date.now },
     status: { type: String, enum: ['Published', 'Draft'], default: 'Published' },
     author: String,
+    // Only used for type "Event": shown under Upcoming Events on the dashboard.
+    eventDate: Date,
+    eventTime: { type: String, trim: true },
+    location: { type: String, trim: true },
   },
   { timestamps: true }
 );

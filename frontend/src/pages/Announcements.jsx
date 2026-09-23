@@ -37,6 +37,29 @@ const renderForm = () => (
         <Select options={toOptions(STATUSES)} />
       </Form.Item>
     </Col>
+    <Form.Item noStyle shouldUpdate={(a, b) => a.type !== b.type}>
+      {({ getFieldValue }) =>
+        getFieldValue('type') === 'Event' && (
+          <>
+            <Col xs={24} md={8}>
+              <Form.Item name="eventDate" label="Event Date" rules={[{ required: true }]}>
+                <DatePicker style={{ width: '100%' }} />
+              </Form.Item>
+            </Col>
+            <Col xs={24} md={8}>
+              <Form.Item name="eventTime" label="Event Time">
+                <Input placeholder="e.g. 09:00 - 12:00" />
+              </Form.Item>
+            </Col>
+            <Col xs={24} md={8}>
+              <Form.Item name="location" label="Location">
+                <Input placeholder="e.g. Main Auditorium" />
+              </Form.Item>
+            </Col>
+          </>
+        )
+      }
+    </Form.Item>
     <Col xs={24}>
       <Form.Item name="content" label="Content">
         <Input.TextArea rows={6} />
@@ -59,8 +82,16 @@ export default function Announcements() {
         { name: 'status', placeholder: 'All Status', options: toOptions(STATUSES), width: 130 },
       ]}
       renderForm={renderForm}
-      toForm={(r) => ({ ...r, publishDate: r.publishDate ? dayjs(r.publishDate) : null })}
-      fromForm={(v) => ({ ...v, publishDate: v.publishDate ? v.publishDate.toISOString() : undefined })}
+      toForm={(r) => ({
+        ...r,
+        publishDate: r.publishDate ? dayjs(r.publishDate) : null,
+        eventDate: r.eventDate ? dayjs(r.eventDate) : null,
+      })}
+      fromForm={(v) => ({
+        ...v,
+        publishDate: v.publishDate ? v.publishDate.toISOString() : undefined,
+        eventDate: v.eventDate ? v.eventDate.startOf('day').toISOString() : undefined,
+      })}
       initialValues={{ type: 'General', status: 'Published', publishDate: dayjs() }}
       modalWidth={720}
     />

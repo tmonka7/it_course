@@ -14,7 +14,7 @@ export function ShieldIcon({ size = 36 }) {
   );
 }
 
-export default function Logo({ size = 36, showText = true, light = false }) {
+export default function Logo({ size = 36, showText = true, light = false, subtitle }) {
   const { settings } = useSettings();
   return (
     <div className={`logo ${light ? 'logo-light' : ''}`}>
@@ -23,7 +23,12 @@ export default function Logo({ size = 36, showText = true, light = false }) {
       ) : (
         <ShieldIcon size={size} />
       )}
-      {showText && <span className="logo-text">{settings.schoolName}</span>}
+      {showText && (
+        <span className="logo-text">
+          {settings.schoolName}
+          {subtitle && <span className="logo-subtitle">{subtitle}</span>}
+        </span>
+      )}
     </div>
   );
 }
