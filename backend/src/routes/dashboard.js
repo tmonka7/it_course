@@ -92,7 +92,14 @@ router.get(
 router.get(
   '/activities',
   asyncHandler(async (req, res) => {
-    res.json(await Activity.find().sort({ createdAt: -1 }).limit(100));
+    // Optional ?date=YYYY-MM-DD limits the list to that (server-local) day.
+    const filter = {};
+    const m = typeof req.query.date === 'string' && req.query.date.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+    if (m) {
+      const start = new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3]));
+      filter.createdAt = { $gte: start, $lt: new Date(start.getTime() + 86400000) };
+    }
+    res.json(await Activity.find(filter).sort({ createdAt: -1 }).limit(100));
   })
 );
 

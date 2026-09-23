@@ -12,6 +12,11 @@ import Admissions from './pages/Admissions';
 import Grades from './pages/Grades';
 import Announcements from './pages/Announcements';
 import Settings from './pages/Settings';
+import DailyReports from './pages/DailyReports';
+import Commands from './pages/Commands';
+import Cameras from './pages/Cameras';
+import Emails from './pages/Emails';
+import Notifications from './pages/Notifications';
 
 function RequireAuth({ children }) {
   const { user, loading } = useAuth();
@@ -39,6 +44,11 @@ export default function App() {
         <Route path="admissions" element={<Admissions />} />
         <Route path="grades" element={<Grades />} />
         <Route path="announcements" element={<Announcements />} />
+        <Route path="daily-reports" element={<DailyReports />} />
+        <Route path="commands" element={<Commands />} />
+        <Route path="cameras" element={<Cameras />} />
+        <Route path="emails" element={<Emails />} />
+        <Route path="notifications" element={<Notifications />} />
         <Route path="settings" element={<Settings />} />
       </Route>
       <Route path="*" element={<Navigate to="/dashboard" replace />} />

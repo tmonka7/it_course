@@ -7,10 +7,13 @@ import {
   CalendarOutlined,
   DownOutlined,
   FileAddOutlined,
+  FileDoneOutlined,
   FileTextOutlined,
+  FlagOutlined,
   HomeOutlined,
   LockOutlined,
   LogoutOutlined,
+  MailOutlined,
   MenuOutlined,
   NotificationOutlined,
   SearchOutlined,
@@ -18,12 +21,15 @@ import {
   SolutionOutlined,
   TeamOutlined,
   UserOutlined,
+  VideoCameraOutlined,
 } from '@ant-design/icons';
 import dayjs from 'dayjs';
 import Logo from '../components/Logo';
 import CampusArt from '../components/CampusArt';
 import { useAuth } from '../context/AuthContext';
 import api, { errMsg } from '../api';
+import NotificationItem from '../components/NotificationItem';
+import { fetchMyNotifications, markAllRead, markRead, onNotificationsChanged } from '../notifications';
 
 const { Header, Sider, Content } = Layout;
 
@@ -36,43 +42,78 @@ const MENU = [
   { key: '/admissions', icon: <FileAddOutlined />, label: 'Admissions' },
   { key: '/grades', icon: <FileTextOutlined />, label: 'Grades & Records' },
   { key: '/announcements', icon: <NotificationOutlined />, label: 'Announcements' },
+  { key: '/daily-reports', icon: <FileDoneOutlined />, label: 'Daily Reports' },
+  { key: '/commands', icon: <FlagOutlined />, label: 'Commands' },
+  { key: '/cameras', icon: <VideoCameraOutlined />, label: 'Camera Management' },
+  { key: '/emails', icon: <MailOutlined />, label: 'Email' },
+  { key: '/notifications', icon: <BellOutlined />, label: 'Notifications' },
   { key: '/settings', icon: <SettingOutlined />, label: 'System Settings' },
 ];
 
-function Notifications() {
-  const [items, setItems] = useState([]);
+function NotificationBell() {
+  const [data, setData] = useState({ unread: 0, items: [] });
+  const [open, setOpen] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
-    api
-      .get('/announcements', { params: { status: 'Published', pageSize: 5 } })
-      .then(({ data }) => setItems(data.items))
-      .catch(() => {});
+    const load = () =>
+      fetchMyNotifications(6)
+        .then(setData)
+        .catch(() => {});
+    load();
+    const id = setInterval(load, 60000);
+    const off = onNotificationsChanged(load);
+    return () => {
+      clearInterval(id);
+      off();
+    };
   }, []);
 
-  const recent = items.filter((a) => dayjs().diff(a.publishDate, 'day') <= 14).length;
+  const openItem = (n) => {
+    setOpen(false);
+    if (!n.read) markRead(n._id).catch(() => {});
+    navigate(n.link || '/notifications');
+  };
 
   return (
     <Popover
       placement="bottomRight"
       trigger="click"
-      title="Latest announcements"
-      content={
-        <List
-          style={{ width: 300 }}
-          size="small"
-          dataSource={items}
-          locale={{ emptyText: 'No announcements' }}
-          renderItem={(a) => (
-            <List.Item style={{ cursor: 'pointer' }} onClick={() => navigate('/announcements')}>
-              <List.Item.Meta title={a.title} description={dayjs(a.publishDate).format('YYYY-MM-DD')} />
-            </List.Item>
+      open={open}
+      onOpenChange={setOpen}
+      title={
+        <div className="notif-pop-head">
+          <span>Notifications</span>
+          {data.unread > 0 && (
+            <Button type="link" size="small" onClick={() => markAllRead().catch(() => {})}>
+              Mark all read
+            </Button>
           )}
-        />
+        </div>
+      }
+      content={
+        <div style={{ width: 340 }}>
+          <List
+            size="small"
+            dataSource={data.items}
+            locale={{ emptyText: 'No notifications' }}
+            renderItem={(n) => <NotificationItem item={n} onOpen={openItem} />}
+          />
+          <Button
+            type="link"
+            block
+            onClick={() => {
+              setOpen(false);
+              navigate('/notifications');
+            }}
+          >
+            View all notifications
+          </Button>
+        </div>
       }
     >
-      <Badge count={recent} size="small">
-        <Button type="text" shape="circle" icon={<BellOutlined style={{ fontSize: 18 }} />} />
+      <Badge count={data.unread} size="small">
+        <Button type="text" shape="circle" aria-label="Notifications" icon={<BellOutlined style={{ fontSize: 18 }} />} />
       </Badge>
     </Popover>
   );
@@ -232,7 +273,7 @@ export default function MainLayout() {
             )}
           </Space>
           <Space size={24}>
-            <Notifications />
+            <NotificationBell />
             <Dropdown menu={userMenu} trigger={['click']}>
               <Space className="header-user-trigger" style={{ cursor: 'pointer' }}>
                 <Avatar size={38} style={{ background: 'linear-gradient(135deg, #1664ff, #4f8bff)' }} icon={<UserOutlined />} />

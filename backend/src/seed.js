@@ -13,6 +13,11 @@ const Grade = require('./models/Grade');
 const Announcement = require('./models/Announcement');
 const Setting = require('./models/Setting');
 const Activity = require('./models/Activity');
+const DailyReport = require('./models/DailyReport');
+const Command = require('./models/Command');
+const Camera = require('./models/Camera');
+const Email = require('./models/Email');
+const Notification = require('./models/Notification');
 
 const SURNAMES = ['Zhang', 'Li', 'Wang', 'Chen', 'Liu', 'Zhao', 'Sun', 'Huang', 'Zhou', 'Wu', 'Xu', 'Ma', 'Hu', 'Guo', 'Lin', 'He'];
 const GIVEN_M = ['Wei', 'Lei', 'Tao', 'Hao', 'Yang', 'Jie', 'Ming', 'Qiang', 'Jun', 'Bo', 'Peng', 'Rui', 'Kai', 'Chao'];
@@ -53,7 +58,7 @@ async function run() {
   await Promise.all(mongoose.modelNames().map((n) => mongoose.model(n).deleteMany({})));
   await Promise.all(mongoose.modelNames().map((n) => mongoose.model(n).syncIndexes()));
 
-  await User.create([
+  const [adminUser, staffUser] = await User.create([
     { username: 'admin', password: 'admin123', name: 'Administrator', email: 'admin@school.edu', role: 'admin' },
     { username: 'staff', password: 'staff123', name: 'Office Staff', email: 'staff@school.edu', role: 'staff' },
   ]);
@@ -198,6 +203,83 @@ async function run() {
       author: 'Administrator',
     }))
   );
+
+  const daysAgo = (n) => new Date(now.getFullYear(), now.getMonth(), now.getDate() - n);
+  await DailyReport.insertMany([
+    {
+      date: daysAgo(0),
+      reporter: 'Office Staff',
+      department: 'Administration',
+      workDone: 'Processed 6 admission applications.
+Updated the class schedule for SE302.',
+      issues: 'Projector in Room 204 is not working.',
+      planTomorrow: 'Prepare midterm examination room assignments.',
+      status: 'Draft',
+    },
+    {
+      date: daysAgo(1),
+      reporter: 'Office Staff',
+      department: 'Administration',
+      workDone: 'Registered 12 new students.
+Sent orientation reminders.',
+      planTomorrow: 'Process remaining admission applications.',
+      status: 'Submitted',
+    },
+    {
+      date: daysAgo(2),
+      reporter: 'Administrator',
+      department: 'Computer Science',
+      workDone: 'Reviewed CS course syllabi for the fall semester.',
+      issues: 'Two courses still lack an assigned instructor.',
+      status: 'Reviewed',
+    },
+  ]);
+
+  await Command.insertMany([
+    { title: 'Prepare midterm exam rooms', content: 'Assign rooms and invigilators for all midterm exams.', priority: 'High', assignee: staffUser._id, issuedBy: 'Administrator', dueDate: daysAgo(-2), status: 'In Progress' },
+    { title: 'Update faculty contact list', content: 'Verify phone numbers and emails for all faculty.', priority: 'Normal', assignee: staffUser._id, issuedBy: 'Administrator', dueDate: daysAgo(-7), status: 'Issued' },
+    { title: 'Check camera coverage in Building B', content: 'Two cameras reported offline; arrange maintenance.', priority: 'Urgent', assignee: staffUser._id, issuedBy: 'Administrator', dueDate: daysAgo(-1), status: 'Issued' },
+    { title: 'Archive last semester grade sheets', priority: 'Low', assignee: adminUser._id, issuedBy: 'Administrator', dueDate: daysAgo(3), status: 'Completed' },
+  ]);
+
+  const CAMERAS = [
+    ['CAM-001', 'Main Gate', 'Main Entrance', 'Outdoor', '4K', 'Online'],
+    ['CAM-002', 'Lobby', 'Building A, Lobby', 'Indoor', '1080p', 'Online'],
+    ['CAM-003', 'Parking Lot', 'North Parking', 'PTZ', '2K', 'Online'],
+    ['CAM-004', 'Library Hall', 'Library, 1F', 'Indoor', '1080p', 'Online'],
+    ['CAM-005', 'Lab Corridor', 'Building B, 2F', 'Indoor', '1080p', 'Offline'],
+    ['CAM-006', 'Server Room', 'Building B, B1', 'Indoor', '2K', 'Offline'],
+    ['CAM-007', 'Sports Field', 'East Field', 'PTZ', '4K', 'Maintenance'],
+    ['CAM-008', 'Auditorium', 'Main Auditorium', 'Indoor', '1080p', 'Online'],
+  ];
+  await Camera.insertMany(
+    CAMERAS.map(([cameraId, name, location, type, resolution, status], i) => ({
+      cameraId,
+      name,
+      location,
+      type,
+      resolution,
+      status,
+      ipAddress: `192.168.10.${101 + i}`,
+      streamUrl: `rtsp://192.168.10.${101 + i}:554/stream1`,
+      installedDate: new Date(now.getFullYear() - 1, i, 10),
+    }))
+  );
+
+  await Email.insertMany([
+    { audience: 'All Students', recipientCount: students.length, subject: 'Midterm Examination Schedule', body: 'Dear students,
+
+The midterm examination schedule is now available in the portal.', status: 'Sent', sentBy: 'Administrator', sentAt: daysAgo(1) },
+    { audience: 'All Faculty', recipientCount: faculty.length, subject: 'Faculty Meeting Reminder', body: 'The monthly faculty meeting will be held in the Conference Room.', status: 'Sent', sentBy: 'Administrator', sentAt: daysAgo(2) },
+    { audience: 'Custom', recipients: ['it-support@school.edu'], recipientCount: 1, subject: 'Camera maintenance request', body: 'CAM-005 and CAM-006 are offline. Please check.', status: 'Draft' },
+  ]);
+
+  await Notification.insertMany([
+    { title: 'Welcome to the new notification center', message: 'System notifications now appear here.', type: 'Info', createdBy: 'admin' },
+    { title: 'New command: Check camera coverage in Building B', message: 'Urgent priority.', type: 'Warning', recipient: staffUser._id, link: '/commands', createdBy: 'admin' },
+    { title: 'Daily report submitted', message: 'Office Staff submitted yesterday's report.', type: 'Info', role: 'admin', link: '/daily-reports', createdBy: 'staff' },
+    { title: '2 cameras offline', message: 'CAM-005 and CAM-006 are not responding.', type: 'Alert', role: 'admin', link: '/cameras', createdBy: 'system' },
+  ]);
 
   await Activity.insertMany([
     { user: 'admin', action: 'Added new student', details: `${students[0].name} (${students[0].studentId})` },

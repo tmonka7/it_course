@@ -25,6 +25,7 @@ function notFound() {
  *   describe      - (doc) => short text describing a record for the activity log
  *   sanitize      - (body, req) => body, applied before create/update
  *   beforeDelete  - async (doc, req) => void; throw to prevent deletion
+ *   afterSave     - (doc, req, before) => void, after create (before = null) or update (before = old values)
  */
 module.exports = function crudRouter(Model, options = {}) {
   const {
@@ -37,6 +38,7 @@ module.exports = function crudRouter(Model, options = {}) {
     describe = (doc) => doc.name || doc.title || String(doc._id),
     sanitize = (body) => body,
     beforeDelete,
+    afterSave,
   } = options;
 
   const router = express.Router();
@@ -92,6 +94,7 @@ module.exports = function crudRouter(Model, options = {}) {
     asyncHandler(async (req, res) => {
       const doc = await Model.create(clean(req.body, req));
       Activity.log(req.user.username, `Added new ${label}`, describe(doc));
+      if (afterSave) await afterSave(doc, req, null);
       res.status(201).json(populate ? await doc.populate(populate) : doc);
     })
   );
@@ -101,9 +104,11 @@ module.exports = function crudRouter(Model, options = {}) {
     asyncHandler(async (req, res) => {
       const doc = await Model.findById(req.params.id);
       if (!doc) throw notFound();
+      const before = doc.toObject();
       doc.set(clean(req.body, req));
       await doc.save(); // save() (not findByIdAndUpdate) so hooks and validators run
       Activity.log(req.user.username, `Updated ${label}`, describe(doc));
+      if (afterSave) await afterSave(doc, req, before);
       res.json(populate ? await doc.populate(populate) : doc);
     })
   );
