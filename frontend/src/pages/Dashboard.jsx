@@ -19,7 +19,7 @@ import { Area, CartesianGrid, Cell, ComposedChart, Line, Pie, PieChart, Responsi
 import dayjs from 'dayjs';
 import api, { errMsg } from '../api';
 import { useSettings } from '../context/SettingsContext';
-import { BannerBuilding } from '../components/CampusArt';
+import bannerImage from '../assets/welcome-banner.png';
 
 const STAT_CARDS = [
   { key: 'students', label: 'Total Students', icon: <TeamOutlined />, tone: 'blue', to: '/students', period: 'vs. last semester' },
@@ -192,7 +192,7 @@ export default function Dashboard() {
   return (
     <div className="dash">
       <section className="welcome">
-        <BannerBuilding className="welcome-art" />
+        <div className="welcome-art" style={{ backgroundImage: `url(${bannerImage})` }} aria-hidden="true" />
         <div className="welcome-text">
           <div className="welcome-kicker">Welcome to the</div>
           <h1>{settings.schoolName}</h1>

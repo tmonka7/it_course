@@ -405,12 +405,20 @@ body {
   background: #eef5ff;
 }
 
+/* Campus photo: only the building half of the banner image is shown (its left half has text baked in).
+   Scaled slightly past the banner height to crop the screenshot's border; the left edge fades out. */
 .welcome-art {
   position: absolute;
   top: 0;
   right: 0;
-  width: 62%;
   height: 100%;
+  aspect-ratio: 385 / 100;
+  max-width: 70%;
+  background-repeat: no-repeat;
+  background-size: auto 112%;
+  background-position: right -14px center;
+  -webkit-mask-image: linear-gradient(to right, transparent 0, #000 32%);
+  mask-image: linear-gradient(to right, transparent 0, #000 32%);
 }
 
 .welcome-text {
@@ -749,9 +757,10 @@ body {
   .kpi-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
+  /* Narrow screens: the photo sits behind the text, so soften it */
   .welcome-art {
-    width: 75%;
-    opacity: 0.55;
+    max-width: 85%;
+    opacity: 0.45;
   }
 }
 
