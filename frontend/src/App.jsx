@@ -1,0 +1,47 @@
+import { Navigate, Route, Routes } from 'react-router-dom';
+import { Spin } from 'antd';
+import { useAuth } from './context/AuthContext';
+import MainLayout from './layouts/MainLayout';
+import Login from './pages/Login';
+import Dashboard from './pages/Dashboard';
+import Students from './pages/Students';
+import Faculty from './pages/Faculty';
+import Courses from './pages/Courses';
+import Schedule from './pages/Schedule';
+import Admissions from './pages/Admissions';
+import Grades from './pages/Grades';
+import Announcements from './pages/Announcements';
+import Settings from './pages/Settings';
+
+function RequireAuth({ children }) {
+  const { user, loading } = useAuth();
+  if (loading) return <Spin fullscreen />;
+  return user ? children : <Navigate to="/login" replace />;
+}
+
+export default function App() {
+  return (
+    <Routes>
+      <Route path="/login" element={<Login />} />
+      <Route
+        element={
+          <RequireAuth>
+            <MainLayout />
+          </RequireAuth>
+        }
+      >
+        <Route index element={<Navigate to="/dashboard" replace />} />
+        <Route path="dashboard" element={<Dashboard />} />
+        <Route path="students" element={<Students />} />
+        <Route path="faculty" element={<Faculty />} />
+        <Route path="courses" element={<Courses />} />
+        <Route path="schedule" element={<Schedule />} />
+        <Route path="admissions" element={<Admissions />} />
+        <Route path="grades" element={<Grades />} />
+        <Route path="announcements" element={<Announcements />} />
+        <Route path="settings" element={<Settings />} />
+      </Route>
+      <Route path="*" element={<Navigate to="/dashboard" replace />} />
+    </Routes>
+  );
+}

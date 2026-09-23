@@ -1,0 +1,25 @@
+{
+  "name": "sist-backend",
+  "version": "1.0.0",
+  "private": true,
+  "description": "School of Information Science and Technology - Administrative Management System API",
+  "main": "src/server.js",
+  "engines": {
+    "node": ">=18.19.0"
+  },
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js",
+    "seed": "node src/seed.js"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.21.1",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.8.0",
+    "morgan": "^1.10.0",
+    "sist-platform": "file:.."
+  }
+}
