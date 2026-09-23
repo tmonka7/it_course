@@ -870,6 +870,154 @@ body {
   background: var(--surface-sunken);
 }
 
+.drawer-section {
+  margin-bottom: 16px;
+}
+
+.drawer-section-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+
+.attachment-list .ant-list-item {
+  padding: 6px 0;
+}
+
+/* ==========================================================================
+   Month calendar (daily reports, work schedule)
+   ========================================================================== */
+.calendar-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.calendar-month {
+  display: inline-block;
+  min-width: 128px;
+  text-align: center;
+}
+
+.cal-legend .ant-badge-status-text {
+  font-size: 12px;
+  color: var(--ink-500);
+}
+
+.calendar-board .ant-picker-calendar .ant-picker-panel {
+  border-top: none;
+}
+
+.calendar-board .ant-picker-cell {
+  padding: 2px;
+}
+
+.cal-cell {
+  height: 104px;
+  margin: 0 2px;
+  padding: 4px 6px;
+  border-top: 2px solid var(--line-soft);
+  border-radius: var(--r-xs);
+  text-align: left;
+  overflow: hidden;
+  transition: background var(--t-fast);
+}
+
+.cal-cell:hover {
+  background: var(--surface-sunken);
+}
+
+.cal-cell.is-other-month {
+  opacity: 0.45;
+}
+
+.cal-cell.is-selected {
+  background: var(--brand-50);
+  border-top-color: var(--brand-400);
+}
+
+/* Today stands out even when another day is selected */
+.cal-cell.is-today {
+  border-top-color: var(--brand-500);
+  background: #e3edff;
+  box-shadow: inset 0 0 0 1px var(--brand-400);
+}
+
+.cal-date {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink-700);
+}
+
+.cal-cell.is-today .cal-date span:first-child {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--brand-500);
+  color: #fff;
+}
+
+.cal-today-tag {
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--brand-500);
+}
+
+.cal-items {
+  display: flex;
+  flex-direction: column;
+  margin-top: 2px;
+}
+
+.cal-item {
+  display: block;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  line-height: 1.5;
+}
+
+.cal-item .ant-badge-status-text {
+  font-size: 11.5px;
+  color: var(--ink-700);
+}
+
+.cal-more {
+  font-size: 11px;
+  color: var(--ink-400);
+}
+
+@media (max-width: 767px) {
+  .cal-cell {
+    height: 64px;
+    padding: 2px 3px;
+  }
+  .cal-items,
+  .cal-today-tag {
+    display: none;
+  }
+  /* On phones a dot under the date shows the day has entries */
+  .cal-cell:has(.cal-item) .cal-date::after {
+    content: '';
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--brand-500);
+  }
+}
+
 /* ==========================================================================
    Camera view (NVR-style wall)
    ========================================================================== */

@@ -6,6 +6,7 @@ const dashboardRoutes = require('./dashboard');
 const settings = require('./settings');
 const notificationRoutes = require('./notifications');
 const commandLogRoutes = require('./commandLogs');
+const attachments = require('./attachments');
 const liveRoutes = require('./live');
 const cameraDiscoveryRoutes = require('./cameraDiscovery');
 const mediamtx = require('../services/mediamtx');
@@ -24,6 +25,7 @@ const DailyReport = require('../models/DailyReport');
 const Command = require('../models/Command');
 const CommandLog = require('../models/CommandLog');
 const Camera = require('../models/Camera');
+const WorkSchedule = require('../models/WorkSchedule');
 const Email = require('../models/Email');
 const Notification = require('../models/Notification');
 const Meeting = require('../models/Meeting');
@@ -148,6 +150,7 @@ router.use(
     searchFields: ['reporter', 'workDone', 'issues'],
     filterFields: ['status', 'department'],
     sort: { date: -1, createdAt: -1 },
+    dateField: 'date',
     label: 'daily report',
     describe: (d) => `${d.reporter || 'Report'} - ${d.date.toISOString().slice(0, 10)}`,
     sanitize: (body, req) => ({ ...body, reporter: body.reporter || req.user.name }),
@@ -165,7 +168,35 @@ router.use(
   })
 );
 
+router.use(
+  '/work-schedules',
+  crud(WorkSchedule, {
+    searchFields: ['title', 'location', 'plan', 'record'],
+    filterFields: ['status', 'category', 'assignee'],
+    populate: { path: 'assignee', select: 'name username' },
+    sort: { date: 1, startTime: 1 },
+    dateField: 'date',
+    label: 'work schedule',
+    describe: (d) => `${d.title} (${d.date.toISOString().slice(0, 10)})`,
+    sanitize: ({ createdBy, ...body }, req) => (req.params.id ? body : { ...body, createdBy: req.user.name }),
+    // Tell people when someone else puts work on their schedule.
+    afterSave: (doc, req, before) => {
+      const assignee = String(doc.assignee?._id || doc.assignee);
+      if (assignee === String(req.user._id) || assignee === String(before?.assignee)) return;
+      const when = `${doc.date.toISOString().slice(0, 10)}${doc.startTime ? ` ${doc.startTime}` : ''}`;
+      Notification.notify({
+        title: `Scheduled: ${doc.title}`,
+        message: `${req.user.name} scheduled you for ${when}${doc.location ? ` at ${doc.location}` : ''}.`,
+        recipient: assignee,
+        link: '/work-schedule',
+        createdBy: req.user.username,
+      });
+    },
+  })
+);
+
 router.use(commandLogRoutes);
+router.use(attachments.router);
 router.use(
   '/commands',
   crud(Command, {
@@ -175,12 +206,21 @@ router.use(
     sort: { createdAt: -1 },
     label: 'command',
     describe: (d) => `${d.title} (${d.status})`,
+    // A work order belongs to a day when it was issued, is due, or had log activity that day
+    // (automatic reminders don't count).
+    dateFilter: async (from, to) => {
+      const range = { $gte: from, $lt: to };
+      const logged = await CommandLog.distinct('command', { createdAt: range, type: { $ne: 'Reminder' } });
+      return { $or: [{ createdAt: range }, { dueDate: range }, { _id: { $in: logged } }] };
+    },
     // The issuer is whoever creates the command; it never changes afterwards.
-    sanitize: ({ issuer, issuedBy, ...body }, req) =>
+    // Attachments are managed only through /commands/:id/attachments.
+    sanitize: ({ issuer, issuedBy, attachments: _attachments, ...body }, req) =>
       req.params.id ? body : { ...body, issuer: req.user._id, issuedBy: req.user.name },
     afterSave: onCommandSaved,
     beforeDelete: async (doc) => {
       await CommandLog.deleteMany({ command: doc._id });
+      attachments.removeFiles(doc.attachments.map((a) => a.file));
     },
   })
 );

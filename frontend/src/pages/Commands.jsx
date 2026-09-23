@@ -1,7 +1,7 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { App, Button, Col, DatePicker, Form, Input, Row, Select, Tag, Tooltip, Typography } from 'antd';
-import { CalendarOutlined, CheckCircleOutlined, PlayCircleOutlined, ProfileOutlined } from '@ant-design/icons';
+import { App, Button, Col, DatePicker, Divider, Form, Input, Row, Select, Tag, Tooltip, Typography, Upload } from 'antd';
+import { CalendarOutlined, CheckCircleOutlined, PaperClipOutlined, PlayCircleOutlined, ProfileOutlined, UploadOutlined } from '@ant-design/icons';
 import dayjs from 'dayjs';
 import CrudPage from '../components/CrudPage';
 import StatusTag from '../components/StatusTag';
@@ -10,6 +10,7 @@ import { useAuth } from '../context/AuthContext';
 import api, { errMsg } from '../api';
 import { toOptions } from '../constants';
 import { COMMAND_STATUSES, CommandLogDrawer, DailyCommandLogModal } from '../components/CommandLog';
+import { AttachmentList, uploadAttachments } from '../components/Attachments';
 
 const PRIORITIES = ['Low', 'Normal', 'High', 'Urgent'];
 const STATUSES = COMMAND_STATUSES;
@@ -30,6 +31,13 @@ const columns = [
     },
   },
   { title: 'Status', dataIndex: 'status', render: (v) => <StatusTag value={v} /> },
+  {
+    title: <PaperClipOutlined aria-label="Attachments" />,
+    dataIndex: 'attachments',
+    align: 'center',
+    width: 56,
+    render: (v) => (v?.length ? v.length : ''),
+  },
 ];
 
 const userLabel = (u) => `${u.name} (${u.username})`;
@@ -41,8 +49,7 @@ export default function Commands() {
   const [logFor, setLogFor] = useState(null); // command id shown in the log drawer
   const [dailyOpen, setDailyOpen] = useState(false);
   const [loggedToday, setLoggedToday] = useState(new Set());
-  const [version, setVersion] = useState(0); // bumps to refresh the "Today's Log" column
-  const reloadTable = useRef(() => {}); // CrudPage's reload, captured from rowActions
+  const [version, setVersion] = useState(0); // reloads the table and the "Today's Log" column
 
   // Notification links open a command's log with /commands?open=<id>.
   useEffect(() => {
@@ -61,7 +68,9 @@ export default function Commands() {
 
   useEffect(() => {
     api
-      .get('/command-logs', { params: { date: dayjs().format('YYYY-MM-DD'), type: 'Progress' } })
+      .get('/command-logs', {
+        params: { dateFrom: dayjs().startOf('day').toISOString(), dateTo: dayjs().add(1, 'day').startOf('day').toISOString(), type: 'Progress' },
+      })
       .then(({ data }) => setLoggedToday(new Set(data.loggedCommandIds.map(String))))
       .catch(() => {});
   }, [version]);
@@ -135,6 +144,22 @@ export default function Commands() {
           <Input.TextArea rows={5} />
         </Form.Item>
       </Col>
+      <Col xs={24}>
+        <Divider orientation="left" plain style={{ margin: '0 0 12px' }}>
+          Attachments
+        </Divider>
+        {record && (
+          <div style={{ marginBottom: 12 }}>
+            <AttachmentList commandId={record._id} attachments={record.attachments} onChange={() => setVersion((v) => v + 1)} />
+          </div>
+        )}
+        {/* New files are kept in the form and uploaded after the work order is saved. */}
+        <Form.Item name="newFiles" valuePropName="fileList" getValueFromEvent={(e) => e?.fileList} extra="Up to 10 files per save, 20 MB each.">
+          <Upload multiple beforeUpload={() => false}>
+            <Button icon={<UploadOutlined />}>Add files</Button>
+          </Upload>
+        </Form.Item>
+      </Col>
     </Row>
   );
 
@@ -147,6 +172,19 @@ export default function Commands() {
         modalTitle={(r) => (r ? 'Edit Command' : 'Issue Command')}
         searchPlaceholder="Search commands..."
         columns={allColumns}
+        refreshKey={version}
+        dateFilter={{ label: 'Work order date' }}
+        onSaved={async (saved, values) => {
+          const files = (values.newFiles || []).map((f) => f.originFileObj).filter(Boolean);
+          if (!files.length) return;
+          try {
+            await uploadAttachments(saved._id, files);
+          } catch (err) {
+            // The work order itself is saved; only the upload failed.
+            message.warning(`Saved, but the attachments could not be uploaded: ${errMsg(err)}`);
+          }
+        }}
+        onMutate={() => setVersion((v) => v + 1)}
         toolbarExtra={() => (
           <Button icon={<CalendarOutlined />} onClick={() => setDailyOpen(true)}>
             Daily Log
@@ -159,37 +197,31 @@ export default function Commands() {
         ]}
         renderForm={renderForm}
         toForm={(r) => ({ ...r, assignee: r.assignee?._id, dueDate: r.dueDate ? dayjs(r.dueDate) : null })}
-        fromForm={(v) => ({ ...v, dueDate: v.dueDate ? v.dueDate.endOf('day').toISOString() : null })}
+        fromForm={({ newFiles, ...v }) => ({ ...v, dueDate: v.dueDate ? v.dueDate.endOf('day').toISOString() : null })}
         initialValues={{ priority: 'Normal', status: 'Issued', assignee: isAdmin ? undefined : user._id }}
         modalWidth={720}
-        rowActions={(record, reload) => {
-          reloadTable.current = reload;
-          return (
-            <>
-              <Tooltip title="Log / history">
-                <Button type="text" icon={<ProfileOutlined />} style={{ color: '#1664ff' }} onClick={() => setLogFor(record._id)} />
+        rowActions={(record, reload) => (
+          <>
+            <Tooltip title="Log / history">
+              <Button type="text" icon={<ProfileOutlined />} style={{ color: '#1664ff' }} onClick={() => setLogFor(record._id)} />
+            </Tooltip>
+            {record.status === 'Issued' && (
+              <Tooltip title="Start">
+                <Button type="text" icon={<PlayCircleOutlined />} style={{ color: '#d97706' }} onClick={() => setStatus(record, 'In Progress', reload)} />
               </Tooltip>
-              {record.status === 'Issued' && (
-                <Tooltip title="Start">
-                  <Button type="text" icon={<PlayCircleOutlined />} style={{ color: '#d97706' }} onClick={() => setStatus(record, 'In Progress', reload)} />
-                </Tooltip>
-              )}
-              {isOpen(record.status) && (
-                <Tooltip title="Mark completed">
-                  <Button type="text" icon={<CheckCircleOutlined />} style={{ color: '#16a34a' }} onClick={() => setStatus(record, 'Completed', reload)} />
-                </Tooltip>
-              )}
-            </>
-          );
-        }}
+            )}
+            {isOpen(record.status) && (
+              <Tooltip title="Mark completed">
+                <Button type="text" icon={<CheckCircleOutlined />} style={{ color: '#16a34a' }} onClick={() => setStatus(record, 'Completed', reload)} />
+              </Tooltip>
+            )}
+          </>
+        )}
       />
       <CommandLogDrawer
         commandId={logFor}
         onClose={() => setLogFor(null)}
-        onChanged={() => {
-          setVersion((v) => v + 1);
-          reloadTable.current();
-        }}
+        onChanged={() => setVersion((v) => v + 1)}
       />
       <DailyCommandLogModal
         open={dailyOpen}

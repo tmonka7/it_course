@@ -8,8 +8,11 @@ const { notifyParticipants } = require('../services/commandEvents');
 const router = express.Router();
 const OPEN = ['Issued', 'In Progress'];
 
-// Parses YYYY-MM-DD (server-local day); defaults to today.
-function dayRange(value) {
+// Day bounds from ?dateFrom=&dateTo= (the client's local day, preferred), else ?date=YYYY-MM-DD (server-local day).
+function dayRange(value, query = {}) {
+  const from = new Date(typeof query.dateFrom === 'string' ? query.dateFrom : NaN);
+  const to = new Date(typeof query.dateTo === 'string' ? query.dateTo : NaN);
+  if (!Number.isNaN(from.getTime()) && !Number.isNaN(to.getTime()) && from < to) return { start: from, end: to };
   const m = typeof value === 'string' && value.match(/^(\d{4})-(\d{2})-(\d{2})$/);
   const now = new Date();
   const start = m ? new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3])) : new Date(now.getFullYear(), now.getMonth(), now.getDate());
@@ -23,7 +26,7 @@ function dayRange(value) {
 router.get(
   '/command-logs',
   asyncHandler(async (req, res) => {
-    const { start, end } = dayRange(req.query.date);
+    const { start, end } = dayRange(req.query.date, req.query);
     const filter = { createdAt: { $gte: start, $lt: end } };
     if (typeof req.query.type === 'string' && req.query.type) filter.type = req.query.type;
     const items = await CommandLog.find(filter)

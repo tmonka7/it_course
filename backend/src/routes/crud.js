@@ -26,6 +26,8 @@ function notFound() {
  *   sanitize      - (body, req) => body, applied before create/update
  *   beforeDelete  - async (doc, req) => void; throw to prevent deletion
  *   afterSave     - (doc, req, before) => void, after create (before = null) or update (before = old values)
+ *   dateField     - field matched by ?dateFrom=&dateTo= (ISO timestamps; the client sends its local day bounds)
+ *   dateFilter    - async (from, to, req) => filter, a custom rule for ?dateFrom=&dateTo= (overrides dateField)
  */
 module.exports = function crudRouter(Model, options = {}) {
   const {
@@ -39,6 +41,8 @@ module.exports = function crudRouter(Model, options = {}) {
     sanitize = (body) => body,
     beforeDelete,
     afterSave,
+    dateField,
+    dateFilter,
   } = options;
 
   const router = express.Router();
@@ -64,13 +68,21 @@ module.exports = function crudRouter(Model, options = {}) {
         if (typeof v === 'string' && v !== '') filter[f] = v;
       });
 
+      const and = [];
+      const from = new Date(typeof req.query.dateFrom === 'string' ? req.query.dateFrom : NaN);
+      const to = new Date(typeof req.query.dateTo === 'string' ? req.query.dateTo : NaN);
+      if ((dateField || dateFilter) && !Number.isNaN(from.getTime()) && !Number.isNaN(to.getTime()) && from < to) {
+        and.push(dateFilter ? await dateFilter(from, to, req) : { [dateField]: { $gte: from, $lt: to } });
+      }
+
       const q = typeof req.query.q === 'string' ? req.query.q.trim() : '';
       if (q) {
         const re = new RegExp(escapeRegex(q), 'i');
         const or = searchFields.map((f) => ({ [f]: re }));
         if (buildSearch) or.push(...(await buildSearch(re)));
-        if (or.length) filter.$or = or;
+        if (or.length) and.push({ $or: or });
       }
+      if (and.length) filter.$and = and;
 
       const [items, total] = await Promise.all([
         withPopulate(Model.find(filter).sort(sort).skip((page - 1) * pageSize).limit(pageSize)),

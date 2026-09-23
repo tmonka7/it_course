@@ -18,6 +18,7 @@ import Cameras from './pages/Cameras';
 import Emails from './pages/Emails';
 import Notifications from './pages/Notifications';
 import CameraView from './pages/CameraView';
+import WorkSchedule from './pages/WorkSchedule';
 import Meetings from './pages/Meetings';
 import MeetingRoom from './pages/MeetingRoom';
 
@@ -58,6 +59,7 @@ export default function App() {
         <Route path="announcements" element={<Announcements />} />
         <Route path="daily-reports" element={<DailyReports />} />
         <Route path="commands" element={<Commands />} />
+        <Route path="work-schedule" element={<WorkSchedule />} />
         <Route path="cameras" element={<Cameras />} />
         <Route path="camera-view" element={<CameraView />} />
         <Route path="meetings" element={<Meetings />} />

@@ -18,6 +18,7 @@ import {
   MenuOutlined,
   MessageOutlined,
   NotificationOutlined,
+  ScheduleOutlined,
   SearchOutlined,
   SettingOutlined,
   SolutionOutlined,
@@ -52,6 +53,7 @@ const MENU = [
     children: [
       { key: '/daily-reports', icon: <FileDoneOutlined />, label: 'Daily Reports' },
       { key: '/commands', icon: <FlagOutlined />, label: 'Commands' },
+      { key: '/work-schedule', icon: <ScheduleOutlined />, label: 'Work Schedule' },
     ],
   },
   {

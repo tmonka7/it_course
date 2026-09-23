@@ -21,6 +21,7 @@ const Notification = require('./models/Notification');
 const CommandLog = require('./models/CommandLog');
 const Meeting = require('./models/Meeting');
 const MeetingMessage = require('./models/MeetingMessage');
+const WorkSchedule = require('./models/WorkSchedule');
 
 const SURNAMES = ['Zhang', 'Li', 'Wang', 'Chen', 'Liu', 'Zhao', 'Sun', 'Huang', 'Zhou', 'Wu', 'Xu', 'Ma', 'Hu', 'Guo', 'Lin', 'He'];
 const GIVEN_M = ['Wei', 'Lei', 'Tao', 'Hao', 'Yang', 'Jie', 'Ming', 'Qiang', 'Jun', 'Bo', 'Peng', 'Rui', 'Kai', 'Chao'];
@@ -267,6 +268,34 @@ Sent orientation reminders.',
   });
   // insertMany keeps the explicit createdAt values (timestamps only fill missing ones).
   await CommandLog.insertMany(logs);
+
+  // Work schedules: yesterday (with records), today and the next few days.
+  const SHIFTS = [
+    ['Front desk duty', 'Duty', '08:30', '12:00', 'Admin Office', staffUser],
+    ['Lab equipment inspection', 'Inspection', '13:30', '15:00', 'Building B, Labs', staffUser],
+    ['Camera maintenance check', 'Maintenance', '15:30', '17:00', 'Building B', adminUser],
+    ['Exam room preparation', 'Teaching Support', '09:00', '11:30', 'Building A', staffUser],
+  ];
+  const schedules = [];
+  [-1, 0, 1, 2, 5].forEach((offset) => {
+    SHIFTS.forEach(([title, category, startTime, endTime, location, user], i) => {
+      if ((offset + i) % 3 === 2) return; // leave some gaps so days differ
+      schedules.push({
+        title,
+        category,
+        startTime,
+        endTime,
+        location,
+        assignee: user._id,
+        date: daysAgo(-offset),
+        status: offset < 0 ? 'Done' : 'Planned',
+        plan: `${title} as scheduled.`,
+        record: offset < 0 ? 'Completed without issues.' : undefined,
+        createdBy: 'Administrator',
+      });
+    });
+  });
+  await WorkSchedule.insertMany(schedules);
 
   const meetings = await Meeting.create([
     { title: 'Weekly Staff Meeting', description: 'Weekly sync for administrative staff.', scheduledAt: at(-1, 10), host: adminUser._id, hostName: 'Administrator' },

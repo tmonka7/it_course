@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { App, Button, Card, Flex, Form, Input, Modal, Popconfirm, Select, Space, Table, Tooltip } from 'antd';
+import { App, Button, Card, DatePicker, Flex, Form, Input, Modal, Popconfirm, Select, Space, Table, Tooltip } from 'antd';
 import { DeleteOutlined, EditOutlined, PlusOutlined, SearchOutlined } from '@ant-design/icons';
+import dayjs from 'dayjs';
 import api, { errMsg } from '../api';
 
 const compact = (obj) => Object.fromEntries(Object.entries(obj).filter(([, v]) => v !== undefined && v !== null && v !== ''));
@@ -18,6 +19,11 @@ const compact = (obj) => Object.fromEntries(Object.entries(obj).filter(([, v]) =
  *   initialValues              - defaults for new records
  *   rowActions(record, reload) - extra action buttons per row
  *   toolbarExtra({ query })    - extra toolbar content (receives the current query)
+ *   dateFilter                 - { label, value, onChange }: a day picker sending dateFrom/dateTo (local day bounds).
+ *                                Defaults to today; clearing it shows all dates. Pass value/onChange to control it.
+ *   onSaved(saved, values, isEdit) - async hook after a successful create/update (e.g. upload attachments)
+ *   onMutate()                 - called after any create, update or delete
+ *   refreshKey                 - change it to reload the table from outside
  */
 export default function CrudPage({
   title,
@@ -36,6 +42,10 @@ export default function CrudPage({
   toolbarExtra,
   canWrite = true,
   pageSize: defaultPageSize = 8,
+  dateFilter,
+  onSaved,
+  onMutate,
+  refreshKey,
 }) {
   const { message } = App.useApp();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -44,6 +54,13 @@ export default function CrudPage({
   const [searchText, setSearchText] = useState(urlQuery);
   const [search, setSearch] = useState(urlQuery);
   const [filterValues, setFilterValues] = useState({});
+  const [ownDate, setOwnDate] = useState(() => dayjs());
+  const date = dateFilter && dateFilter.value !== undefined ? dateFilter.value : ownDate;
+  const setDate = (d) => {
+    if (dateFilter?.onChange) dateFilter.onChange(d);
+    else setOwnDate(d);
+    setPagination((p) => ({ ...p, current: 1 }));
+  };
   const [pagination, setPagination] = useState({ current: 1, pageSize: defaultPageSize });
   const [data, setData] = useState({ items: [], total: 0 });
   const [loading, setLoading] = useState(false);
@@ -77,7 +94,13 @@ export default function CrudPage({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams]);
 
-  const query = useMemo(() => compact({ q: search, ...filterValues }), [search, filterValues]);
+  const dateKey = dateFilter && date ? date.format('YYYY-MM-DD') : '';
+  const query = useMemo(() => {
+    const range = dateKey
+      ? { dateFrom: dayjs(dateKey).startOf('day').toISOString(), dateTo: dayjs(dateKey).add(1, 'day').startOf('day').toISOString() }
+      : {};
+    return compact({ q: search, ...filterValues, ...range });
+  }, [search, filterValues, dateKey]);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -96,7 +119,7 @@ export default function CrudPage({
 
   useEffect(() => {
     load();
-  }, [load]);
+  }, [load, refreshKey]);
 
   const setFilter = (name, value) => {
     setFilterValues((f) => ({ ...f, [name]: value }));
@@ -116,15 +139,13 @@ export default function CrudPage({
     setSaving(true);
     try {
       const payload = fromForm(values, modal.record);
-      if (modal.record) {
-        await api.put(`/${resource}/${modal.record._id}`, payload);
-        message.success('Saved');
-      } else {
-        await api.post(`/${resource}`, payload);
-        message.success('Created');
-      }
+      const isEdit = !!modal.record;
+      const { data: saved } = isEdit ? await api.put(`/${resource}/${modal.record._id}`, payload) : await api.post(`/${resource}`, payload);
+      if (onSaved) await onSaved(saved, values, isEdit);
+      message.success(isEdit ? 'Saved' : 'Created');
       closeModal();
       load();
+      onMutate?.();
     } catch (err) {
       message.error(errMsg(err));
     } finally {
@@ -142,6 +163,7 @@ export default function CrudPage({
       } else {
         load();
       }
+      onMutate?.();
     } catch (err) {
       message.error(errMsg(err));
     }
@@ -209,6 +231,21 @@ export default function CrudPage({
           }}
           style={{ flex: '1 1 260px', maxWidth: 420 }}
         />
+        {dateFilter && (
+          <Space.Compact>
+            <DatePicker
+              value={date}
+              onChange={setDate}
+              placeholder="All dates"
+              allowClear
+              style={{ width: 150 }}
+              aria-label={dateFilter.label || 'Date'}
+            />
+            <Button onClick={() => setDate(dayjs())} disabled={!!date && date.isSame(dayjs(), 'day')}>
+              Today
+            </Button>
+          </Space.Compact>
+        )}
         {filters.map((f) => (
           <Select
             key={f.name}

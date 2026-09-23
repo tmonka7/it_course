@@ -1,4 +1,5 @@
 require('dotenv').config();
+const path = require('path');
 
 function parseIceServers(raw) {
   if (!raw) return [{ urls: 'stun:stun.l.google.com:19302' }];
@@ -17,6 +18,9 @@ const config = {
   mongoUri: process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/sist',
   jwtSecret: process.env.JWT_SECRET || 'dev-only-secret',
   corsOrigin: process.env.CORS_ORIGIN || '*',
+  // Where uploaded attachments are stored (created on first upload).
+  uploadDir: path.resolve(__dirname, '../..', process.env.UPLOAD_DIR || 'uploads'),
+  maxUploadMb: parseInt(process.env.MAX_UPLOAD_MB, 10) || 20,
   // Optional HTTPS for the API server itself (camera/microphone access in browsers needs HTTPS off localhost).
   ssl: { key: process.env.SSL_KEY_FILE, cert: process.env.SSL_CERT_FILE },
   // Optional MediaMTX gateway that turns camera RTSP streams into browser-playable HLS.

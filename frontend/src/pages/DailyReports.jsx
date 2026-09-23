@@ -1,14 +1,16 @@
 import { useState } from 'react';
-import { App, Button, Col, DatePicker, Form, Input, Row, Select, Tooltip } from 'antd';
+import { App, Badge, Button, Col, DatePicker, Form, Input, Row, Select, Space, Tooltip } from 'antd';
 import { CheckOutlined, HistoryOutlined } from '@ant-design/icons';
 import dayjs from 'dayjs';
 import CrudPage from '../components/CrudPage';
+import CalendarBoard from '../components/CalendarBoard';
 import StatusTag from '../components/StatusTag';
 import { useAuth } from '../context/AuthContext';
 import api, { errMsg } from '../api';
 import { DEPARTMENTS, toOptions } from '../constants';
 
 const STATUSES = ['Draft', 'Submitted', 'Reviewed'];
+const STATUS_BADGE = { Draft: 'default', Submitted: 'processing', Reviewed: 'success' };
 const REPORT_DEPARTMENTS = ['Administration', ...DEPARTMENTS];
 
 const columns = [
@@ -107,45 +109,74 @@ const renderForm = () => (
   </Row>
 );
 
+// Calendar cell: one line per report (reporter, coloured by status).
+function renderDay(reports) {
+  const shown = reports.slice(0, 3);
+  return (
+    <>
+      {shown.map((r) => (
+        <Badge key={r._id} status={STATUS_BADGE[r.status]} text={r.reporter || 'Report'} className="cal-item" />
+      ))}
+      {reports.length > shown.length && <div className="cal-more">+{reports.length - shown.length} more</div>}
+    </>
+  );
+}
+
+const legend = (
+  <Space size={12} className="cal-legend">
+    {STATUSES.map((s) => (
+      <Badge key={s} status={STATUS_BADGE[s]} text={s} />
+    ))}
+  </Space>
+);
+
 export default function DailyReports() {
   const { message } = App.useApp();
   const { isAdmin } = useAuth();
+  const [day, setDay] = useState(() => dayjs()); // selected day (null = all dates)
+  const [version, setVersion] = useState(0); // refreshes the calendar after changes
 
   const markReviewed = async (record, reload) => {
     try {
       await api.put(`/daily-reports/${record._id}`, { status: 'Reviewed' });
       message.success('Report marked as reviewed');
       reload();
+      setVersion((v) => v + 1);
     } catch (err) {
       message.error(errMsg(err));
     }
   };
 
   return (
-    <CrudPage
-      title="Daily Reports"
-      resource="daily-reports"
-      addText="New Report"
-      modalTitle={(r) => (r ? 'Edit Daily Report' : 'New Daily Report')}
-      searchPlaceholder="Search reporter or content..."
-      columns={columns}
-      filters={[
-        { name: 'status', placeholder: 'All Status', options: toOptions(STATUSES), width: 130 },
-        { name: 'department', placeholder: 'All Departments', options: toOptions(REPORT_DEPARTMENTS) },
-      ]}
-      renderForm={renderForm}
-      toForm={(r) => ({ ...r, date: r.date ? dayjs(r.date) : null })}
-      fromForm={(v) => ({ ...v, date: v.date.startOf('day').toISOString() })}
-      initialValues={{ date: dayjs(), status: 'Draft', department: 'Administration' }}
-      modalWidth={760}
-      rowActions={(record, reload) =>
-        isAdmin &&
-        record.status === 'Submitted' && (
-          <Tooltip title="Mark as reviewed">
-            <Button type="text" icon={<CheckOutlined />} style={{ color: '#16a34a' }} onClick={() => markReviewed(record, reload)} />
-          </Tooltip>
-        )
-      }
-    />
+    <Space direction="vertical" size={16} style={{ width: '100%' }}>
+      <CalendarBoard title="Daily Reports" resource="daily-reports" value={day} onSelect={setDay} renderDay={renderDay} refreshKey={version} legend={legend} />
+      <CrudPage
+        title={day ? `Reports for ${day.format('YYYY-MM-DD (dddd)')}` : 'All Reports'}
+        resource="daily-reports"
+        addText="New Report"
+        modalTitle={(r) => (r ? 'Edit Daily Report' : 'New Daily Report')}
+        searchPlaceholder="Search reporter or content..."
+        columns={columns}
+        dateFilter={{ label: 'Report date', value: day, onChange: setDay }}
+        filters={[
+          { name: 'status', placeholder: 'All Status', options: toOptions(STATUSES), width: 130 },
+          { name: 'department', placeholder: 'All Departments', options: toOptions(REPORT_DEPARTMENTS) },
+        ]}
+        renderForm={renderForm}
+        toForm={(r) => ({ ...r, date: r.date ? dayjs(r.date) : null })}
+        fromForm={(v) => ({ ...v, date: v.date.startOf('day').toISOString() })}
+        initialValues={{ date: day || dayjs(), status: 'Draft', department: 'Administration' }}
+        modalWidth={760}
+        onMutate={() => setVersion((v) => v + 1)}
+        rowActions={(record, reload) =>
+          isAdmin &&
+          record.status === 'Submitted' && (
+            <Tooltip title="Mark as reviewed">
+              <Button type="text" icon={<CheckOutlined />} style={{ color: '#16a34a' }} onClick={() => markReviewed(record, reload)} />
+            </Tooltip>
+          )
+        }
+      />
+    </Space>
   );
 }

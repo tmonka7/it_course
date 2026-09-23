@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { Alert, App, Button, DatePicker, Descriptions, Drawer, Empty, Form, Input, List, Modal, Select, Skeleton, Space, Table, Tag, Timeline, Typography } from 'antd';
 import dayjs from 'dayjs';
 import StatusTag from './StatusTag';
+import { AttachmentList, AttachmentUploadButton } from './Attachments';
 import api, { errMsg } from '../api';
 
 export const COMMAND_STATUSES = ['Issued', 'In Progress', 'Completed', 'Cancelled'];
@@ -103,6 +104,27 @@ export function CommandLogDrawer({ commandId, onClose, onChanged }) {
             )}
           </Descriptions>
 
+          <div className="drawer-section">
+            <div className="drawer-section-head">
+              <Typography.Text strong>Attachments</Typography.Text>
+              <AttachmentUploadButton
+                commandId={commandId}
+                onUploaded={() => {
+                  load();
+                  onChanged?.();
+                }}
+              />
+            </div>
+            <AttachmentList
+              commandId={commandId}
+              attachments={command.attachments}
+              onChange={() => {
+                load();
+                onChanged?.();
+              }}
+            />
+          </div>
+
           {open && !loggedToday && <Alert type="warning" showIcon style={{ marginBottom: 12 }} message="No progress has been logged for this command today." />}
 
           <Form form={form} layout="vertical" onFinish={submit} className="log-form">
@@ -144,7 +166,9 @@ export function DailyCommandLogModal({ open, onClose, onOpenCommand }) {
     if (!open) return;
     setData(null);
     api
-      .get('/command-logs', { params: { date: date.format('YYYY-MM-DD') } })
+      .get('/command-logs', {
+        params: { dateFrom: date.startOf('day').toISOString(), dateTo: date.add(1, 'day').startOf('day').toISOString() },
+      })
       .then(({ data: res }) => setData(res))
       .catch((err) => message.error(errMsg(err)));
     // eslint-disable-next-line react-hooks/exhaustive-deps

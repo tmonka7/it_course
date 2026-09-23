@@ -17,8 +17,9 @@ Admin platform for the School of Information Science and Technology.
 | Admissions | Applications with one-click Accept / Reject |
 | Grades & Records | Score entry with automatic letter grade and pass/fail, filters, CSV export |
 | Announcements | General / Event / Notice posts with draft or published status. Events with a date appear under Upcoming Events on the home screen. |
-| Daily Reports | Work done / issues / plan per day, Draft → Submitted → Reviewed. "Fill from activity log" pre-fills the day's recorded actions. Admins are notified on submit. |
-| Commands | Directives assigned to a user with priority, due date and status. Every change is written to the command's log automatically, assignees add a daily progress entry, and the **Daily Log** view shows each day's entries plus open commands still missing one. Assignee and issuer are notified of every update; open commands without a log are reminded daily (`COMMAND_REMINDER_HOUR`). |
+| Daily Reports | Month calendar (today highlighted) showing each day's reports; the list below shows the selected day (today by default). Work done / issues / plan per day, Draft → Submitted → Reviewed. "Fill from activity log" pre-fills the day's recorded actions. Admins are notified on submit. |
+| Commands (work orders) | Opens on today's work orders (issued, due or logged that day); pick any date or clear it for all. File attachments in the edit form and the log drawer (stored in `backend/uploads`, 20 MB per file). Directives assigned to a user with priority, due date and status. Every change is written to the command's log automatically, assignees add a daily progress entry, and the **Daily Log** view shows each day's entries plus open commands still missing one. Assignee and issuer are notified of every update; open commands without a log are reminded daily (`COMMAND_REMINDER_HOUR`). |
+| Work Schedule | Create staff work schedules and records: date, time range, staff, category, location, plan and what was actually done. Month calendar plus a list for the selected day; people are notified when someone else schedules them. |
 | Camera Management | Camera inventory (RTSP URL, credentials, live URL, status). **Discover Cameras** (admin) finds IP cameras on the LAN via ONVIF WS-Discovery and an RTSP port scan and adds them in bulk. |
 | Camera View | NVR-style live wall with 1 / 4 / 8 (1+7) / 9 / 16-channel layouts, paging, auto tour, per-channel camera selection, double-click to enlarge, full screen. |
 | Video Meetings | WebRTC video calls with screen sharing, a shared whiteboard, chat (saved) and a participant list. Join by code or invite link; the host can end the meeting for everyone. |
@@ -98,7 +99,9 @@ frontend/src
 
 All endpoints are under `/api` and need `Authorization: Bearer <token>`, except `POST /auth/login` and `GET /settings/public`.
 
-Every resource (`students`, `faculty`, `courses`, `schedules`, `admissions`, `grades`, `announcements`, `daily-reports`, `commands`, `cameras`, `emails`, `meetings`, `notifications` (admin), `users` (admin)) supports:
+List endpoints of dated resources (`daily-reports`, `work-schedules`, `commands`) also accept `dateFrom` / `dateTo` (ISO timestamps).
+
+Every resource (`students`, `faculty`, `courses`, `schedules`, `admissions`, `grades`, `announcements`, `daily-reports`, `work-schedules`, `commands`, `cameras`, `emails`, `meetings`, `notifications` (admin), `users` (admin)) supports:
 
 - `GET /<resource>?q=&page=&pageSize=&<filter>=`
 - `GET /<resource>/:id`
@@ -107,6 +110,6 @@ Every resource (`students`, `faculty`, `courses`, `schedules`, `admissions`, `gr
 - `DELETE /<resource>/:id`
 
 Other endpoints: `GET /dashboard`, `GET /dashboard/activities?date=`, `GET|PUT /settings`, `GET /settings/backup`, `GET /auth/me`, `PUT /auth/password`,
-`GET|POST /commands/:id/logs`, `GET /command-logs?date=`, `GET /notifications/mine`, `POST /notifications/:id/read`, `POST /notifications/read-all`,
+`GET|POST /commands/:id/logs`, `POST /commands/:id/attachments` (multipart `files`), `GET|DELETE /commands/:id/attachments/:attachmentId`, `GET /command-logs?date=`, `GET /notifications/mine`, `POST /notifications/:id/read`, `POST /notifications/read-all`,
 `GET /live`, `GET /live/:cameraId/*`, `GET /camera-discovery`, `POST /camera-discovery/scan`, `POST /camera-discovery/add` (admin),
 `GET /meetings/live`, `GET /meetings/by-code/:code`. Real-time meeting traffic uses socket.io on the `/meetings` namespace.
