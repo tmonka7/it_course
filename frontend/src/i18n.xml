@@ -731,7 +731,6 @@
     <text key="Profile saved"><zh>个人资料已保存</zh><ja>プロフィールを保存しました</ja></text>
     <text key="This image could not be read"><zh>无法读取此图片</zh><ja>この画像を読み込めませんでした</ja></text>
     <text key="Name is required"><zh>姓名为必填项</zh><ja>名前は必須です</ja></text>
-    <text key="Invalid email address"><zh>电子邮件地址无效</zh><ja>メールアドレスが無効です</ja></text>
     <text key="The photo must be a PNG, JPEG or WebP image under 200 KB"><zh>照片必须是小于 200 KB 的 PNG、JPEG 或 WebP 图片</zh><ja>写真は 200 KB 未満の PNG、JPEG、WebP 画像にしてください</ja></text>
   </section>
 

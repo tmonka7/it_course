@@ -7,7 +7,6 @@ const userSchema = new mongoose.Schema(
     username: { type: String, required: true, unique: true, trim: true, lowercase: true },
     password: { type: String, required: true, minlength: 6, select: false },
     name: { type: String, required: true, trim: true },
-    email: { type: String, trim: true, lowercase: true },
     role: { type: String, enum: ['admin', 'staff'], default: 'staff' },
     status: { type: String, enum: ['Active', 'Inactive'], default: 'Active' },
     // Page permissions for staff (see utils/permissions.js). Ignored for admins.
@@ -53,6 +52,7 @@ userSchema.set('toJSON', {
   transform: (_doc, ret) => {
     delete ret.password;
     delete ret.faces;
+    delete ret.email; // no longer collected; older accounts may still have it stored
     return ret;
   },
 });

@@ -74,8 +74,8 @@ async function run() {
   await Promise.all(mongoose.modelNames().map((n) => mongoose.model(n).syncIndexes()));
 
   const [adminUser, staffUser] = await User.create([
-    { username: 'admin', password: 'admin123', name: 'Administrator', email: 'admin@school.edu', role: 'admin' },
-    { username: 'staff', password: 'staff123', name: 'Office Staff', email: 'staff@school.edu', role: 'staff', permissions: staffPermissions() },
+    { username: 'admin', password: 'admin123', name: 'Administrator', role: 'admin' },
+    { username: 'staff', password: 'staff123', name: 'Office Staff', role: 'staff', permissions: staffPermissions() },
   ]);
 
   await Setting.create({});

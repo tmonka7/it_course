@@ -101,7 +101,6 @@ function GeneralSettings({ readOnly }) {
 const userColumns = [
   { title: 'Username', dataIndex: 'username' },
   { title: 'Name', dataIndex: 'name' },
-  { title: 'Email', dataIndex: 'email' },
   { title: 'Role', dataIndex: 'role', render: (v) => <StatusTag value={v} /> },
   { title: 'Status', dataIndex: 'status', render: (v) => <StatusTag value={v} /> },
   { title: 'Access', key: 'access', render: (_, r) => permissionSummary(r) },
@@ -139,11 +138,6 @@ function UserManagement() {
             </Col>
             <Col xs={24} md={12}>
               <Form.Item name="name" label={t('Full Name')} rules={[{ required: true }]}>
-                <Input />
-              </Form.Item>
-            </Col>
-            <Col xs={24} md={12}>
-              <Form.Item name="email" label={t('Email')} rules={[{ type: 'email' }]}>
                 <Input />
               </Form.Item>
             </Col>

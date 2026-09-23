@@ -368,7 +368,7 @@ router.use(
   '/users',
   requireRole('admin'),
   crud(User, {
-    searchFields: ['username', 'name', 'email'],
+    searchFields: ['username', 'name'],
     filterFields: ['role', 'status'],
     sort: { username: 1 },
     label: 'user',

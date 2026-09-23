@@ -8,7 +8,6 @@ const DESCRIPTOR_LENGTH = 128;
 const MAX_AVATAR_CHARS = 300 * 1024; // data URL; the page resizes photos to 160 px before uploading
 const MAX_FACE_IMAGE_CHARS = 60 * 1024;
 const IMAGE_DATA_URL = /^data:image\/(png|jpeg|webp);base64,[A-Za-z0-9+/=]+$/;
-const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 const badRequest = (message) => Object.assign(new Error(message), { status: 400 });
 
@@ -37,7 +36,7 @@ router.get(
   })
 );
 
-/** PUT /profile { name, email, phone, title, department, bio, avatar } - username, role and permissions stay with admins. */
+/** PUT /profile { name, phone, title, department, bio, avatar } - username, role and permissions stay with admins. */
 router.put(
   '/',
   asyncHandler(async (req, res) => {
@@ -47,11 +46,6 @@ router.put(
     if (name !== undefined) {
       if (!name) throw badRequest('Name is required');
       user.name = name;
-    }
-    const email = text(body.email, 200);
-    if (email !== undefined) {
-      if (email && !EMAIL.test(email)) throw badRequest('Invalid email address');
-      user.email = email;
     }
     ['phone', 'title', 'department'].forEach((f) => {
       const v = text(body[f], 100);

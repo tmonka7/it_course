@@ -111,11 +111,6 @@ function PersonalInfo() {
             </Form.Item>
           </Col>
           <Col xs={24} md={12}>
-            <Form.Item name="email" label={t('Email')} rules={[{ type: 'email' }]}>
-              <Input maxLength={200} />
-            </Form.Item>
-          </Col>
-          <Col xs={24} md={12}>
             <Form.Item name="phone" label={t('Phone')}>
               <Input maxLength={100} />
             </Form.Item>
