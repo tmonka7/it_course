@@ -1,0 +1,721 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  UI translations for SIST.
+  Each <text> is keyed by the English UI text (English needs no entry); one child element per language.
+  {name} placeholders are filled in by t(key, { name }). A missing entry falls back to English.
+  To add a language: add a <language>, add its element to each <text>, and see README "Languages".
+-->
+<i18n>
+  <languages>
+    <language code="en" name="English" />
+    <language code="zh" name="中文" />
+    <language code="ja" name="日本語" />
+  </languages>
+
+  <section name="common">
+    <!-- Translations shared by every page: generic actions, list page texts, status values, reference data (departments, programs, ...), and fixed server messages. -->
+    <!-- Generic actions and list page (CrudPage) -->
+    <text key="Add"><zh>添加</zh><ja>追加</ja></text>
+    <text key="Save"><zh>保存</zh><ja>保存</ja></text>
+    <text key="Saved"><zh>已保存</zh><ja>保存しました</ja></text>
+    <text key="Created"><zh>已创建</zh><ja>作成しました</ja></text>
+    <text key="Deleted"><zh>已删除</zh><ja>削除しました</ja></text>
+    <text key="Cancel"><zh>取消</zh><ja>キャンセル</ja></text>
+    <text key="Close"><zh>关闭</zh><ja>閉じる</ja></text>
+    <text key="Delete"><zh>删除</zh><ja>削除</ja></text>
+    <text key="Edit"><zh>编辑</zh><ja>編集</ja></text>
+    <text key="View"><zh>查看</zh><ja>閲覧</ja></text>
+    <text key="Create"><zh>新建</zh><ja>作成</ja></text>
+    <text key="All"><zh>全部</zh><ja>すべて</ja></text>
+    <text key="Actions"><zh>操作</zh><ja>操作</ja></text>
+    <text key="Search"><zh>搜索</zh><ja>検索</ja></text>
+    <text key="Search..."><zh>搜索...</zh><ja>検索...</ja></text>
+    <text key="Today"><zh>今天</zh><ja>今日</ja></text>
+    <text key="All dates"><zh>全部日期</zh><ja>すべての日付</ja></text>
+    <text key="Date"><zh>日期</zh><ja>日付</ja></text>
+    <text key="Delete this record?"><zh>确定删除此记录吗？</zh><ja>このレコードを削除しますか？</ja></text>
+    <text key="Showing {from}-{to} of {total}"><zh>第 {from}-{to} 条，共 {total} 条</zh><ja>{total} 件中 {from}–{to} 件を表示</ja></text>
+    <text key="View All"><zh>查看全部</zh><ja>すべて表示</ja></text>
+    <text key="Back"><zh>返回</zh><ja>戻る</ja></text>
+    <text key="Yes"><zh>是</zh><ja>はい</ja></text>
+    <text key="No"><zh>否</zh><ja>いいえ</ja></text>
+    <text key="Name"><zh>名称</zh><ja>名前</ja></text>
+    <text key="Email"><zh>邮件</zh><ja>メール</ja></text>
+    <text key="Phone"><zh>电话</zh><ja>電話番号</ja></text>
+    <text key="Status"><zh>状态</zh><ja>ステータス</ja></text>
+    <text key="Type"><zh>类型</zh><ja>種類</ja></text>
+    <text key="Notes"><zh>备注</zh><ja>備考</ja></text>
+    <text key="Description"><zh>描述</zh><ja>説明</ja></text>
+    <text key="Title"><zh>标题</zh><ja>タイトル</ja></text>
+    <text key="Location"><zh>地点</zh><ja>場所</ja></text>
+    <text key="Time"><zh>时间</zh><ja>時間</ja></text>
+    <text key="Details"><zh>详情</zh><ja>詳細</ja></text>
+    <text key="Department"><zh>院系</zh><ja>学科</ja></text>
+    <text key="Priority"><zh>优先级</zh><ja>優先度</ja></text>
+    <text key="Due Date"><zh>截止日期</zh><ja>期限</ja></text>
+    <text key="Loading"><zh>加载中</zh><ja>読み込み中</ja></text>
+    <text key="Something went wrong"><zh>出错了</zh><ja>エラーが発生しました</ja></text>
+    <text key="Copied"><zh>已复制</zh><ja>コピーしました</ja></text>
+    <text key="Copy failed"><zh>复制失败</zh><ja>コピーに失敗しました</ja></text>
+    <!-- Access control -->
+    <text key="Access denied"><zh>无权访问</zh><ja>アクセス権がありません</ja></text>
+    <text key="You do not have permission to view this page. Ask an administrator if you need access."><zh>您没有查看此页面的权限。如需访问，请联系管理员。</zh><ja>このページを閲覧する権限がありません。必要な場合は管理者に依頼してください。</ja></text>
+    <text key="Back to Home"><zh>返回首页</zh><ja>ホームに戻る</ja></text>
+    <!-- Status and type values (StatusTag, selects) -->
+    <text key="Active"><zh>启用</zh><ja>有効</ja></text>
+    <text key="Inactive"><zh>停用</zh><ja>無効</ja></text>
+    <text key="Published"><zh>已发布</zh><ja>公開</ja></text>
+    <text key="Draft"><zh>草稿</zh><ja>下書き</ja></text>
+    <text key="Pending"><zh>待审核</zh><ja>審査中</ja></text>
+    <text key="Accepted"><zh>已录取</zh><ja>合格</ja></text>
+    <text key="Rejected"><zh>未录取</zh><ja>不合格</ja></text>
+    <text key="Passed"><zh>通过</zh><ja>合格</ja></text>
+    <text key="Failed"><zh>未通过</zh><ja>不合格</ja></text>
+    <text key="Graduated"><zh>已毕业</zh><ja>卒業</ja></text>
+    <text key="Suspended"><zh>休学</zh><ja>休学</ja></text>
+    <text key="On Leave"><zh>休假中</zh><ja>休職中</ja></text>
+    <text key="General"><zh>常规</zh><ja>一般</ja></text>
+    <text key="Event"><zh>活动</zh><ja>イベント</ja></text>
+    <text key="Notice"><zh>通知</zh><ja>お知らせ</ja></text>
+    <text key="Administrator"><zh>管理员</zh><ja>管理者</ja></text>
+    <text key="Staff"><zh>员工</zh><ja>スタッフ</ja></text>
+    <text key="Submitted"><zh>已提交</zh><ja>提出済み</ja></text>
+    <text key="Reviewed"><zh>已审阅</zh><ja>確認済み</ja></text>
+    <text key="Issued"><zh>已下达</zh><ja>発行済み</ja></text>
+    <text key="In Progress"><zh>进行中</zh><ja>進行中</ja></text>
+    <text key="Completed"><zh>已完成</zh><ja>完了</ja></text>
+    <text key="Cancelled"><zh>已取消</zh><ja>キャンセル</ja></text>
+    <text key="Low"><zh>低</zh><ja>低</ja></text>
+    <text key="Normal"><zh>普通</zh><ja>通常</ja></text>
+    <text key="High"><zh>高</zh><ja>高</ja></text>
+    <text key="Urgent"><zh>紧急</zh><ja>緊急</ja></text>
+    <text key="Online"><zh>在线</zh><ja>オンライン</ja></text>
+    <text key="Offline"><zh>离线</zh><ja>オフライン</ja></text>
+    <text key="Maintenance"><zh>维护中</zh><ja>メンテナンス</ja></text>
+    <text key="Sent"><zh>已发送</zh><ja>送信済み</ja></text>
+    <text key="Scheduled"><zh>已安排</zh><ja>予定</ja></text>
+    <text key="Live"><zh>进行中</zh><ja>開催中</ja></text>
+    <text key="Ended"><zh>已结束</zh><ja>終了</ja></text>
+    <text key="Info"><zh>信息</zh><ja>情報</ja></text>
+    <text key="Success"><zh>成功</zh><ja>成功</ja></text>
+    <text key="Warning"><zh>警告</zh><ja>警告</ja></text>
+    <text key="Alert"><zh>告警</zh><ja>アラート</ja></text>
+    <text key="Planned"><zh>计划中</zh><ja>予定</ja></text>
+    <text key="Done"><zh>已完成</zh><ja>完了</ja></text>
+    <text key="Male"><zh>男</zh><ja>男性</ja></text>
+    <text key="Female"><zh>女</zh><ja>女性</ja></text>
+    <!-- Reference data (constants.js) -->
+    <text key="Computer Science"><zh>计算机科学</zh><ja>コンピュータサイエンス</ja></text>
+    <text key="Software Engineering"><zh>软件工程</zh><ja>ソフトウェア工学</ja></text>
+    <text key="Information Systems"><zh>信息系统</zh><ja>情報システム</ja></text>
+    <text key="Data Science"><zh>数据科学</zh><ja>データサイエンス</ja></text>
+    <text key="Cyber Security"><zh>网络安全</zh><ja>サイバーセキュリティ</ja></text>
+    <text key="Others"><zh>其他</zh><ja>その他</ja></text>
+    <text key="Administration"><zh>行政部门</zh><ja>事務局</ja></text>
+    <text key="Bachelor's in CS"><zh>CS 学士</zh><ja>CS 学士課程</ja></text>
+    <text key="Bachelor's in SE"><zh>SE 学士</zh><ja>SE 学士課程</ja></text>
+    <text key="Bachelor's in IS"><zh>IS 学士</zh><ja>IS 学士課程</ja></text>
+    <text key="Bachelor's in DS"><zh>DS 学士</zh><ja>DS 学士課程</ja></text>
+    <text key="Master's in CS"><zh>CS 硕士</zh><ja>CS 修士課程</ja></text>
+    <text key="Master's in SE"><zh>SE 硕士</zh><ja>SE 修士課程</ja></text>
+    <text key="Master's in IS"><zh>IS 硕士</zh><ja>IS 修士課程</ja></text>
+    <text key="PhD in CS"><zh>CS 博士</zh><ja>CS 博士課程</ja></text>
+    <text key="Professor"><zh>教授</zh><ja>教授</ja></text>
+    <text key="Associate Prof."><zh>副教授</zh><ja>准教授</ja></text>
+    <text key="Assistant Prof."><zh>助理教授</zh><ja>助教</ja></text>
+    <text key="Lecturer"><zh>讲师</zh><ja>講師</ja></text>
+    <text key="Fall"><zh>秋季学期</zh><ja>秋学期</ja></text>
+    <text key="Spring"><zh>春季学期</zh><ja>春学期</ja></text>
+    <text key="Summer"><zh>夏季学期</zh><ja>夏学期</ja></text>
+    <text key="Mon"><zh>周一</zh><ja>月</ja></text>
+    <text key="Tue"><zh>周二</zh><ja>火</ja></text>
+    <text key="Wed"><zh>周三</zh><ja>水</ja></text>
+    <text key="Thu"><zh>周四</zh><ja>木</ja></text>
+    <text key="Fri"><zh>周五</zh><ja>金</ja></text>
+    <!-- Fixed server messages (shown through errMsg) -->
+    <text key="Invalid username or password"><zh>用户名或密码错误</zh><ja>ユーザー名またはパスワードが正しくありません</ja></text>
+    <text key="Username and password are required"><zh>请输入用户名和密码</zh><ja>ユーザー名とパスワードを入力してください</ja></text>
+    <text key="This account has been deactivated"><zh>该账户已被停用</zh><ja>このアカウントは無効化されています</ja></text>
+    <text key="Account is not active"><zh>账户未启用</zh><ja>アカウントが有効ではありません</ja></text>
+    <text key="Authentication required"><zh>请先登录</zh><ja>ログインが必要です</ja></text>
+    <text key="Invalid or expired session"><zh>会话无效或已过期</zh><ja>セッションが無効か期限切れです</ja></text>
+    <text key="You do not have permission to perform this action"><zh>您没有执行此操作的权限</zh><ja>この操作を行う権限がありません</ja></text>
+    <text key="Current password is incorrect"><zh>当前密码不正确</zh><ja>現在のパスワードが正しくありません</ja></text>
+    <text key="Record not found"><zh>未找到记录</zh><ja>レコードが見つかりません</ja></text>
+    <text key="Not found"><zh>未找到</zh><ja>見つかりません</ja></text>
+    <text key="Internal server error"><zh>服务器内部错误</zh><ja>サーバーエラーが発生しました</ja></text>
+    <text key="You cannot change your own role"><zh>不能更改自己的角色</zh><ja>自分のロールは変更できません</ja></text>
+    <text key="You cannot deactivate your own account"><zh>不能停用自己的账户</zh><ja>自分のアカウントは無効化できません</ja></text>
+    <text key="You cannot delete your own account"><zh>不能删除自己的账户</zh><ja>自分のアカウントは削除できません</ja></text>
+    <text key="Work order not found"><zh>未找到工单</zh><ja>作業指示が見つかりません</ja></text>
+    <text key="Command not found"><zh>未找到指令</zh><ja>指令が見つかりません</ja></text>
+    <text key="A progress note is required"><zh>请填写进度说明</zh><ja>進捗内容を入力してください</ja></text>
+    <text key="Attachment not found"><zh>未找到附件</zh><ja>添付ファイルが見つかりません</ja></text>
+    <text key="The file is missing on the server"><zh>服务器上缺少该文件</zh><ja>サーバー上にファイルがありません</ja></text>
+    <text key="No files received"><zh>未收到任何文件</zh><ja>ファイルが受信されませんでした</ja></text>
+    <text key="No cameras selected"><zh>未选择摄像头</zh><ja>カメラが選択されていません</ja></text>
+    <text key="No meeting with that code"><zh>不存在该会议代码对应的会议</zh><ja>そのコードの会議はありません</ja></text>
+    <text key="Only the host or an admin can delete this meeting"><zh>只有主持人或管理员可以删除此会议</zh><ja>この会議を削除できるのは主催者か管理者のみです</ja></text>
+    <text key="Media gateway is not configured"><zh>媒体网关未配置</zh><ja>メディアゲートウェイが設定されていません</ja></text>
+    <text key="Stream unavailable"><zh>视频流不可用</zh><ja>映像を取得できません</ja></text>
+    <text key="Subnet must look like 192.168.1.0/24"><zh>子网格式应为 192.168.1.0/24</zh><ja>サブネットは 192.168.1.0/24 の形式で入力してください</ja></text>
+    <text key="Subnet prefix must be between /22 and /30"><zh>子网前缀必须在 /22 到 /30 之间</zh><ja>サブネットのプレフィックスは /22 から /30 の範囲で指定してください</ja></text>
+    <text key="Unsupported language"><zh>不支持的语言</zh><ja>対応していない言語です</ja></text>
+  </section>
+
+  <section name="layout">
+    <!-- Translations for the sidebar, header and shared navigation. -->
+    <!-- Sidebar -->
+    <text key="Home"><zh>首页</zh><ja>ホーム</ja></text>
+    <text key="Student Management"><zh>学生管理</zh><ja>学生管理</ja></text>
+    <text key="Faculty Management"><zh>教师管理</zh><ja>教員管理</ja></text>
+    <text key="Course Management"><zh>课程管理</zh><ja>科目管理</ja></text>
+    <text key="Class Schedule"><zh>课程表</zh><ja>時間割</ja></text>
+    <text key="Admissions"><zh>招生审核</zh><ja>入学審査</ja></text>
+    <text key="Grades &amp; Records"><zh>成绩与档案</zh><ja>成績・記録</ja></text>
+    <text key="Announcements"><zh>公告</zh><ja>お知らせ</ja></text>
+    <text key="Operations"><zh>业务</zh><ja>業務</ja></text>
+    <text key="Daily Reports"><zh>日报</zh><ja>日報</ja></text>
+    <text key="Commands"><zh>指令</zh><ja>指令</ja></text>
+    <text key="Work Schedule"><zh>工作安排</zh><ja>勤務予定</ja></text>
+    <text key="Security"><zh>安防</zh><ja>セキュリティ</ja></text>
+    <text key="Camera Management"><zh>摄像头管理</zh><ja>カメラ管理</ja></text>
+    <text key="Camera View"><zh>监控画面</zh><ja>カメラビュー</ja></text>
+    <text key="Communication"><zh>沟通</zh><ja>コミュニケーション</ja></text>
+    <text key="Video Meetings"><zh>视频会议</zh><ja>ビデオ会議</ja></text>
+    <text key="Notifications"><zh>通知</zh><ja>通知</ja></text>
+    <text key="System Settings"><zh>系统设置</zh><ja>システム設定</ja></text>
+    <text key="Administrative Management System"><zh>行政管理系统</zh><ja>管理システム</ja></text>
+    <text key="Knowledge"><zh>知识</zh><ja>知識</ja></text>
+    <text key="Innovation"><zh>创新</zh><ja>革新</ja></text>
+    <text key="Future"><zh>未来</zh><ja>未来</ja></text>
+    <!-- Header -->
+    <text key="Search students..."><zh>搜索学生...</zh><ja>学生を検索...</ja></text>
+    <text key="Mark all read"><zh>全部标为已读</zh><ja>すべて既読にする</ja></text>
+    <text key="No notifications"><zh>暂无通知</zh><ja>通知はありません</ja></text>
+    <text key="View all notifications"><zh>查看全部通知</zh><ja>すべての通知を見る</ja></text>
+    <text key="Change password"><zh>修改密码</zh><ja>パスワード変更</ja></text>
+    <text key="Change Password"><zh>修改密码</zh><ja>パスワード変更</ja></text>
+    <text key="Log out"><zh>退出登录</zh><ja>ログアウト</ja></text>
+    <text key="Current password"><zh>当前密码</zh><ja>現在のパスワード</ja></text>
+    <text key="New password"><zh>新密码</zh><ja>新しいパスワード</ja></text>
+    <text key="Confirm new password"><zh>确认新密码</zh><ja>新しいパスワード（確認）</ja></text>
+    <text key="Passwords do not match"><zh>两次输入的密码不一致</zh><ja>パスワードが一致しません</ja></text>
+    <text key="Password changed"><zh>密码已修改</zh><ja>パスワードを変更しました</ja></text>
+  </section>
+
+  <section name="dashboard">
+    <!-- Translations for the dashboard area (English text -> Japanese). -->
+    <!-- Welcome banner -->
+    <text key="Welcome to the"><zh>欢迎使用</zh><ja>ようこそ</ja></text>
+    <text key="Manage students, faculty, courses, and campus resources efficiently for a smarter future."><zh>高效管理学生、教师、课程和校园资源，共创更智慧的未来。</zh><ja>学生・教員・科目・キャンパス資源を効率よく管理し、よりスマートな未来へ。</ja></text>
+    <!-- KPI cards -->
+    <text key="Total Students"><zh>学生总数</zh><ja>学生総数</ja></text>
+    <text key="Total Faculty"><zh>教师总数</zh><ja>教員総数</ja></text>
+    <text key="Total Courses"><zh>课程总数</zh><ja>科目総数</ja></text>
+    <text key="Pending Applications"><zh>待审核申请</zh><ja>審査中の出願</ja></text>
+    <text key="vs. last semester"><zh>较上学期</zh><ja>前学期比</ja></text>
+    <text key="new vs. last week"><zh>新增（较上周）</zh><ja>新規出願・前週比</ja></text>
+    <!-- Enrollment trend -->
+    <text key="Enrollment"><zh>在读</zh><ja>在籍</ja></text>
+    <text key="Trend"><zh>趋势</zh><ja>推移</ja></text>
+    <text key="Last 6 Months"><zh>近6个月</zh><ja>過去6か月</ja></text>
+    <text key="Last 12 Months"><zh>近12个月</zh><ja>過去12か月</ja></text>
+    <text key="New Students"><zh>新生</zh><ja>新入生</ja></text>
+    <text key="Jan"><zh>1月</zh><ja>1月</ja></text>
+    <text key="Feb"><zh>2月</zh><ja>2月</ja></text>
+    <text key="Mar"><zh>3月</zh><ja>3月</ja></text>
+    <text key="Apr"><zh>4月</zh><ja>4月</ja></text>
+    <text key="May"><zh>5月</zh><ja>5月</ja></text>
+    <text key="Jun"><zh>6月</zh><ja>6月</ja></text>
+    <text key="Jul"><zh>7月</zh><ja>7月</ja></text>
+    <text key="Aug"><zh>8月</zh><ja>8月</ja></text>
+    <text key="Sep"><zh>9月</zh><ja>9月</ja></text>
+    <text key="Oct"><zh>10月</zh><ja>10月</ja></text>
+    <text key="Nov"><zh>11月</zh><ja>11月</ja></text>
+    <text key="Dec"><zh>12月</zh><ja>12月</ja></text>
+    <!-- Distribution, events, activities -->
+    <text key="Student Distribution"><zh>学生分布</zh><ja>学生分布</ja></text>
+    <text key="Total"><zh>合计</zh><ja>合計</ja></text>
+    <text key="Upcoming Events"><zh>近期活动</zh><ja>今後の予定</ja></text>
+    <text key="No upcoming events"><zh>暂无近期活动</zh><ja>今後の予定はありません</ja></text>
+    <text key="Recent Activities"><zh>最近动态</zh><ja>最近のアクティビティ</ja></text>
+    <text key="All Activities"><zh>全部动态</zh><ja>すべてのアクティビティ</ja></text>
+    <text key="Date &amp; Time"><zh>日期时间</zh><ja>日時</ja></text>
+    <text key="User"><zh>用户</zh><ja>ユーザー</ja></text>
+    <text key="Action"><zh>操作</zh><ja>操作</ja></text>
+    <!-- Quick actions -->
+    <text key="Quick Actions"><zh>快捷操作</zh><ja>クイック操作</ja></text>
+    <text key="Create Schedule"><zh>创建课程表</zh><ja>時間割を作成</ja></text>
+    <text key="View Reports"><zh>查看报表</zh><ja>レポートを表示</ja></text>
+  </section>
+
+  <section name="academic">
+    <!-- Translations for the academic area (English text -> Japanese). -->
+    <!-- Shared by the academic pages -->
+    <text key="e.g. {example}"><zh>例如：{example}</zh><ja>例: {example}</ja></text>
+    <text key="All Status"><zh>全部状态</zh><ja>すべてのステータス</ja></text>
+    <text key="All Departments"><zh>全部院系</zh><ja>すべての学科</ja></text>
+    <text key="ID"><zh>ID</zh><ja>ID</ja></text>
+    <text key="Student"><zh>学生</zh><ja>学生</ja></text>
+    <text key="Course"><zh>课程</zh><ja>科目</ja></text>
+    <text key="Select course"><zh>选择课程</zh><ja>科目を選択</ja></text>
+    <!-- Student Management -->
+    <text key="Add Student"><zh>添加学生</zh><ja>学生を追加</ja></text>
+    <text key="Edit Student"><zh>编辑学生</zh><ja>学生を編集</ja></text>
+    <text key="Search by name, ID, or major..."><zh>按姓名、ID或专业搜索...</zh><ja>名前、ID、専攻で検索...</ja></text>
+    <text key="All Majors"><zh>全部专业</zh><ja>すべての専攻</ja></text>
+    <text key="All Grades"><zh>全部年级</zh><ja>すべての学年</ja></text>
+    <text key="Gender"><zh>性别</zh><ja>性別</ja></text>
+    <text key="Major"><zh>专业</zh><ja>専攻</ja></text>
+    <text key="Grade Level"><zh>年级</zh><ja>学年</ja></text>
+    <text key="Grade 1"><zh>一年级</zh><ja>1年生</ja></text>
+    <text key="Grade 2"><zh>二年级</zh><ja>2年生</ja></text>
+    <text key="Grade 3"><zh>三年级</zh><ja>3年生</ja></text>
+    <text key="Grade 4"><zh>四年级</zh><ja>4年生</ja></text>
+    <text key="Enter student name"><zh>输入学生姓名</zh><ja>学生の名前を入力</ja></text>
+    <text key="Select major"><zh>选择专业</zh><ja>専攻を選択</ja></text>
+    <text key="Select grade"><zh>选择年级</zh><ja>学年を選択</ja></text>
+    <text key="Enter email address"><zh>输入电子邮箱</zh><ja>メールアドレスを入力</ja></text>
+    <text key="Phone number"><zh>电话号码</zh><ja>電話番号</ja></text>
+    <text key="Date of birth"><zh>出生日期</zh><ja>生年月日</ja></text>
+    <text key="Enrollment date"><zh>入学日期</zh><ja>入学日</ja></text>
+    <text key="Upload Photo"><zh>上传照片</zh><ja>写真をアップロード</ja></text>
+    <text key="Remove"><zh>删除</zh><ja>削除</ja></text>
+    <text key="Please choose an image file"><zh>请选择图片文件。</zh><ja>画像ファイルを選択してください</ja></text>
+    <text key="Image must be smaller than 500 KB"><zh>图片大小须小于 500 KB。</zh><ja>画像は 500 KB 未満にしてください</ja></text>
+    <!-- Faculty Management -->
+    <text key="Add Faculty"><zh>添加教师</zh><ja>教員を追加</ja></text>
+    <text key="Edit Faculty"><zh>编辑教师</zh><ja>教員を編集</ja></text>
+    <text key="Search by name, department, or email..."><zh>按姓名、院系或邮箱搜索...</zh><ja>名前、学科、メールで検索...</ja></text>
+    <text key="All Positions"><zh>全部职位</zh><ja>すべての職位</ja></text>
+    <text key="Faculty ID"><zh>教师ID</zh><ja>教員ID</ja></text>
+    <text key="Position"><zh>职位</zh><ja>職位</ja></text>
+    <!-- Course Management -->
+    <text key="Add Course"><zh>添加课程</zh><ja>科目を追加</ja></text>
+    <text key="Edit Course"><zh>编辑课程</zh><ja>科目を編集</ja></text>
+    <text key="Search course name or code..."><zh>搜索课程名称或代码...</zh><ja>科目名またはコードで検索...</ja></text>
+    <text key="Code"><zh>代码</zh><ja>コード</ja></text>
+    <text key="Course Name"><zh>课程名称</zh><ja>科目名</ja></text>
+    <text key="Credits"><zh>学分</zh><ja>単位</ja></text>
+    <text key="Instructor"><zh>授课教师</zh><ja>担当教員</ja></text>
+    <text key="Search faculty"><zh>搜索教师</zh><ja>教員を検索</ja></text>
+    <!-- Class Schedule -->
+    <text key="Add Class"><zh>添加课程安排</zh><ja>授業を追加</ja></text>
+    <text key="Edit Class"><zh>编辑课程安排</zh><ja>授業を編集</ja></text>
+    <text key="Schedule saved"><zh>课程表已保存。</zh><ja>時間割を保存しました</ja></text>
+    <text key="Class removed"><zh>课程安排已删除。</zh><ja>授業を削除しました</ja></text>
+    <text key="No classes on weekends"><zh>周末无课</zh><ja>週末は授業がありません</ja></text>
+    <text key="Click an empty area to add a class"><zh>点击空白区域添加课程安排</zh><ja>空いている場所をクリックして授業を追加</ja></text>
+    <text key="+{count} more"><zh>另有 {count} 项</zh><ja>他 {count} 件</ja></text>
+    <text key="Remove this class from the schedule?"><zh>确定要从课程表中删除此课程安排吗？</zh><ja>この授業を時間割から削除しますか？</ja></text>
+    <text key="Day"><zh>日</zh><ja>日</ja></text>
+    <text key="Week"><zh>周</zh><ja>週</ja></text>
+    <text key="Month"><zh>月</zh><ja>月</ja></text>
+    <text key="Room"><zh>教室</zh><ja>教室</ja></text>
+    <text key="e.g. Room 101"><zh>例如：101 教室</zh><ja>例: 101 教室</ja></text>
+    <!-- Admissions -->
+    <text key="Admissions Management"><zh>招生审核管理</zh><ja>入学審査管理</ja></text>
+    <text key="New Application"><zh>新建申请</zh><ja>新規出願</ja></text>
+    <text key="Edit Application"><zh>编辑申请</zh><ja>出願を編集</ja></text>
+    <text key="Search by name or application ID..."><zh>按姓名或申请编号搜索...</zh><ja>名前または出願IDで検索...</ja></text>
+    <text key="All Programs"><zh>全部项目</zh><ja>すべての課程</ja></text>
+    <text key="Application ID"><zh>申请编号</zh><ja>出願ID</ja></text>
+    <text key="Applicant Name"><zh>申请人姓名</zh><ja>出願者名</ja></text>
+    <text key="Program"><zh>项目</zh><ja>課程</ja></text>
+    <text key="Applied Date"><zh>申请日期</zh><ja>出願日</ja></text>
+    <text key="Accept"><zh>录取</zh><ja>合格にする</ja></text>
+    <text key="Reject"><zh>拒绝</zh><ja>不合格にする</ja></text>
+    <text key="Application accepted"><zh>申请已录取。</zh><ja>出願を合格にしました</ja></text>
+    <text key="Application rejected"><zh>申请已拒绝。</zh><ja>出願を不合格にしました</ja></text>
+    <!-- Grades & Records -->
+    <text key="Add Record"><zh>添加记录</zh><ja>記録を追加</ja></text>
+    <text key="Add Grade Record"><zh>添加成绩记录</zh><ja>成績記録を追加</ja></text>
+    <text key="Edit Grade Record"><zh>编辑成绩记录</zh><ja>成績記録を編集</ja></text>
+    <text key="Search by student name or ID..."><zh>按学生姓名或学号搜索...</zh><ja>学生名またはIDで検索...</ja></text>
+    <text key="All Years"><zh>全部学年</zh><ja>すべての年度</ja></text>
+    <text key="All Semesters"><zh>全部学期</zh><ja>すべての学期</ja></text>
+    <text key="All Courses"><zh>全部课程</zh><ja>すべての科目</ja></text>
+    <text key="Student ID"><zh>学号</zh><ja>学籍番号</ja></text>
+    <text key="Year"><zh>学年</zh><ja>年度</ja></text>
+    <text key="Semester"><zh>学期</zh><ja>学期</ja></text>
+    <text key="Score"><zh>分数</zh><ja>点数</ja></text>
+    <text key="Grade"><zh>成绩</zh><ja>評価</ja></text>
+    <text key="Export"><zh>导出</zh><ja>エクスポート</ja></text>
+    <text key="Exported the first {count} of {total} records"><zh>已导出共 {total} 条记录中的前 {count} 条。</zh><ja>全 {total} 件のうち先頭の {count} 件をエクスポートしました</ja></text>
+    <text key="Search by name or student ID"><zh>按姓名或学号搜索</zh><ja>名前または学籍番号で検索</ja></text>
+    <text key="Letter grade is calculated automatically"><zh>等级成绩将自动计算。</zh><ja>評価は自動で算出されます</ja></text>
+    <!-- Announcements -->
+    <text key="New Announcement"><zh>新建公告</zh><ja>お知らせを作成</ja></text>
+    <text key="Edit Announcement"><zh>编辑公告</zh><ja>お知らせを編集</ja></text>
+    <text key="Search announcements..."><zh>搜索公告...</zh><ja>お知らせを検索...</ja></text>
+    <text key="All Types"><zh>全部类型</zh><ja>すべての種類</ja></text>
+    <text key="Publish Date"><zh>发布日期</zh><ja>公開日</ja></text>
+    <text key="Author"><zh>作者</zh><ja>作成者</ja></text>
+    <text key="Event Date"><zh>活动日期</zh><ja>開催日</ja></text>
+    <text key="Event Time"><zh>活动时间</zh><ja>開催時間</ja></text>
+    <text key="Content"><zh>内容</zh><ja>内容</ja></text>
+    <text key="e.g. Main Auditorium"><zh>例如：大礼堂</zh><ja>例: 大講堂</ja></text>
+  </section>
+
+  <section name="operations">
+    <!-- Translations for the operations area (English text -> Japanese). -->
+    <!-- Shared by the operations pages -->
+    <text key="Search users"><zh>搜索用户</zh><ja>ユーザーを検索</ja></text>
+    <text key="Category"><zh>类别</zh><ja>カテゴリ</ja></text>
+    <text key="Attachments"><zh>附件</zh><ja>添付ファイル</ja></text>
+    <text key="Assignee"><zh>负责人</zh><ja>担当者</ja></text>
+    <text key="Previous month"><zh>上个月</zh><ja>前の月</ja></text>
+    <text key="Next month"><zh>下个月</zh><ja>次の月</ja></text>
+    <!-- Daily reports -->
+    <text key="Reports for {date}"><zh>{date} 的日报</zh><ja>{date} の日報</ja></text>
+    <text key="All Reports"><zh>全部日报</zh><ja>すべての日報</ja></text>
+    <text key="New Report"><zh>新建日报</zh><ja>新規日報</ja></text>
+    <text key="Edit Daily Report"><zh>编辑日报</zh><ja>日報を編集</ja></text>
+    <text key="New Daily Report"><zh>新建日报</zh><ja>新規日報</ja></text>
+    <text key="Search reporter or content..."><zh>搜索报告人或内容...</zh><ja>報告者または内容で検索...</ja></text>
+    <text key="Report date"><zh>报告日期</zh><ja>報告日</ja></text>
+    <text key="Reporter"><zh>报告人</zh><ja>報告者</ja></text>
+    <text key="Report"><zh>日报</zh><ja>日報</ja></text>
+    <text key="Work Done"><zh>完成内容</zh><ja>実施内容</ja></text>
+    <text key="Issues / Problems"><zh>问题 / 困难</zh><ja>課題・問題点</ja></text>
+    <text key="Plan for Tomorrow"><zh>明日计划</zh><ja>明日の予定</ja></text>
+    <text key="Fill from activity log"><zh>从活动日志填充</zh><ja>アクティビティログから入力</ja></text>
+    <text key="No activity recorded on that day"><zh>当天没有活动记录</zh><ja>その日のアクティビティは記録されていません</ja></text>
+    <text key="Report marked as reviewed"><zh>日报已标记为已审阅</zh><ja>日報を確認済みにしました</ja></text>
+    <text key="Mark as reviewed"><zh>标为已审阅</zh><ja>確認済みにする</ja></text>
+    <!-- Commands (work orders) -->
+    <text key="Command"><zh>指令</zh><ja>指令</ja></text>
+    <text key="Issue Command"><zh>下达指令</zh><ja>指令を発行</ja></text>
+    <text key="Edit Command"><zh>编辑指令</zh><ja>指令を編集</ja></text>
+    <text key="Search commands..."><zh>搜索指令...</zh><ja>指令を検索...</ja></text>
+    <text key="Work order date"><zh>工单日期</zh><ja>作業指示日</ja></text>
+    <text key="Issued By"><zh>下达人</zh><ja>発行者</ja></text>
+    <text key="Issued by"><zh>下达人</zh><ja>発行者</ja></text>
+    <text key="Due date"><zh>截止日期</zh><ja>期限</ja></text>
+    <text key="(overdue)"><zh>（已逾期）</zh><ja>（期限超過）</ja></text>
+    <text key="Today's Log"><zh>今日日志</zh><ja>本日のログ</ja></text>
+    <text key="Logged"><zh>已记录</zh><ja>記録済み</ja></text>
+    <text key="Missing"><zh>未记录</zh><ja>未記録</ja></text>
+    <text key="Command marked as {status}"><zh>指令已标记为“{status}”</zh><ja>指令を「{status}」にしました</ja></text>
+    <text key="Assign To"><zh>指派给</zh><ja>担当者</ja></text>
+    <text key="e.g. Prepare midterm exam rooms"><zh>例如：准备期中考试教室</zh><ja>例：中間試験の教室を準備する</ja></text>
+    <text key="Details / Instructions"><zh>详情 / 说明</zh><ja>詳細・指示内容</ja></text>
+    <text key="Up to 10 files per save, 20 MB each."><zh>每次保存最多 10 个文件，每个不超过 20 MB。</zh><ja>1 回の保存につき最大 10 ファイル、各 20 MB までです。</ja></text>
+    <text key="Add files"><zh>添加文件</zh><ja>ファイルを追加</ja></text>
+    <text key="Saved, but the attachments could not be uploaded: {error}"><zh>已保存，但附件上传失败：{error}</zh><ja>保存しましたが、添付ファイルをアップロードできませんでした：{error}</ja></text>
+    <text key="Daily Log"><zh>每日日志</zh><ja>日次ログ</ja></text>
+    <text key="All Assignees"><zh>全部负责人</zh><ja>すべての担当者</ja></text>
+    <text key="Assigned to me"><zh>指派给我的</zh><ja>自分の担当</ja></text>
+    <text key="All Priorities"><zh>全部优先级</zh><ja>すべての優先度</ja></text>
+    <text key="Log / history"><zh>日志 / 历史</zh><ja>ログ・履歴</ja></text>
+    <text key="Start"><zh>开始</zh><ja>開始</ja></text>
+    <text key="Mark completed"><zh>标为已完成</zh><ja>完了にする</ja></text>
+    <!-- Command log -->
+    <text key="Changed"><zh>变更</zh><ja>変更</ja></text>
+    <text key="Daily log"><zh>每日日志</zh><ja>日次ログ</ja></text>
+    <text key="Reminder"><zh>提醒</zh><ja>リマインダー</ja></text>
+    <text key="No log entries yet"><zh>暂无日志记录</zh><ja>ログはまだありません</ja></text>
+    <text key="Progress logged"><zh>进度已记录</zh><ja>進捗を記録しました</ja></text>
+    <text key="No progress has been logged for this command today."><zh>今天尚未记录此指令的进度。</zh><ja>この指令の本日の進捗はまだ記録されていません。</ja></text>
+    <text key="Today's progress"><zh>今日进度</zh><ja>本日の進捗</ja></text>
+    <text key="Describe what was done today"><zh>请描述今天完成的内容</zh><ja>本日実施した内容を入力してください</ja></text>
+    <text key="What was done today, blockers, next steps..."><zh>今日完成内容、阻碍、下一步...</zh><ja>本日の実施内容、障害、次のステップなど...</ja></text>
+    <text key="Change status (optional)"><zh>更改状态（可选）</zh><ja>ステータスを変更（任意）</ja></text>
+    <text key="Set to {status}"><zh>设为“{status}”</zh><ja>「{status}」に変更</ja></text>
+    <text key="Add log entry"><zh>添加日志</zh><ja>ログを追加</ja></text>
+    <text key="Log history"><zh>日志历史</zh><ja>ログ履歴</ja></text>
+    <text key="Entry"><zh>类型</zh><ja>種別</ja></text>
+    <text key="By"><zh>记录人</zh><ja>記録者</ja></text>
+    <text key="Note"><zh>备注</zh><ja>内容</ja></text>
+    <text key="(deleted)"><zh>（已删除）</zh><ja>（削除済み）</ja></text>
+    <text key="Daily Command Log"><zh>指令每日日志</zh><ja>指令の日次ログ</ja></text>
+    <text key="Previous day"><zh>前一天</zh><ja>前日</ja></text>
+    <text key="{count} open command(s) without a progress log on {date}"><zh>{date} 有 {count} 条未完成指令没有进度日志</zh><ja>{date} に進捗ログのない未完了の指令が {count} 件あります</ja></text>
+    <text key="Unassigned"><zh>未指派</zh><ja>未割り当て</ja></text>
+    <!-- Attachments -->
+    <text key="No attachments"><zh>暂无附件</zh><ja>添付ファイルはありません</ja></text>
+    <text key="Attachment removed"><zh>附件已删除</zh><ja>添付ファイルを削除しました</ja></text>
+    <text key="Download"><zh>下载</zh><ja>ダウンロード</ja></text>
+    <text key="Remove {name}?"><zh>确定删除 {name} 吗？</zh><ja>{name} を削除しますか？</ja></text>
+    <text key="Uploaded {count} file(s)"><zh>已上传 {count} 个文件</zh><ja>{count} 件のファイルをアップロードしました</ja></text>
+    <text key="Attach files"><zh>添加附件</zh><ja>ファイルを添付</ja></text>
+    <!-- Work schedule -->
+    <text key="Schedule for {date}"><zh>{date} 的工作安排</zh><ja>{date} の勤務予定</ja></text>
+    <text key="All Scheduled Work"><zh>全部工作安排</zh><ja>すべての勤務予定</ja></text>
+    <text key="Schedule Work"><zh>安排工作</zh><ja>勤務予定を追加</ja></text>
+    <text key="Edit Work Schedule / Record"><zh>编辑工作安排 / 工作记录</zh><ja>勤務予定・作業記録を編集</ja></text>
+    <text key="Search work, location or records..."><zh>搜索工作、地点或记录...</zh><ja>作業、場所、記録で検索...</ja></text>
+    <text key="Work date"><zh>工作日期</zh><ja>作業日</ja></text>
+    <text key="All Staff"><zh>全部负责人</zh><ja>すべての担当者</ja></text>
+    <text key="My schedule"><zh>我的安排</zh><ja>自分の予定</ja></text>
+    <text key="All Categories"><zh>全部类别</zh><ja>すべてのカテゴリ</ja></text>
+    <text key="Work"><zh>工作</zh><ja>作業</ja></text>
+    <text key="Work Record"><zh>工作记录</zh><ja>作業記録</ja></text>
+    <text key="All day"><zh>全天</zh><ja>終日</ja></text>
+    <text key="Marked as done"><zh>已标记为完成</zh><ja>完了にしました</ja></text>
+    <text key="Mark as done"><zh>标为完成</zh><ja>完了にする</ja></text>
+    <text key="e.g. Front desk duty"><zh>例如：前台值班</zh><ja>例：受付当番</ja></text>
+    <text key="Leave empty for all-day work"><zh>全天工作请留空</zh><ja>終日の作業の場合は空欄のままにします</ja></text>
+    <text key="Plan"><zh>计划</zh><ja>計画</ja></text>
+    <text key="What should be done"><zh>需要完成的内容</zh><ja>実施すべき内容</ja></text>
+    <text key="What was actually done, results, issues"><zh>实际完成内容、结果、问题</zh><ja>実際に実施した内容、結果、課題</ja></text>
+    <text key="Duty"><zh>值班</zh><ja>当番</ja></text>
+    <text key="Meeting"><zh>会议</zh><ja>会議</ja></text>
+    <text key="Inspection"><zh>检查</zh><ja>点検</ja></text>
+    <text key="Teaching Support"><zh>教学支持</zh><ja>授業支援</ja></text>
+    <text key="Other"><zh>其他</zh><ja>その他</ja></text>
+  </section>
+
+  <section name="security">
+    <!-- Translations for the security area (English text -> Japanese). -->
+    <!-- Camera Management -->
+    <text key="Add Camera"><zh>添加摄像头</zh><ja>カメラを追加</ja></text>
+    <text key="Edit Camera"><zh>编辑摄像头</zh><ja>カメラを編集</ja></text>
+    <text key="Search camera ID, name, location or IP..."><zh>搜索摄像头 ID、名称、位置或 IP...</zh><ja>カメラ ID・名前・場所・IP で検索...</ja></text>
+    <text key="Camera ID"><zh>摄像头 ID</zh><ja>カメラ ID</ja></text>
+    <text key="Resolution"><zh>分辨率</zh><ja>解像度</ja></text>
+    <text key="IP Address"><zh>IP 地址</zh><ja>IP アドレス</ja></text>
+    <text key="Stream"><zh>视频流</zh><ja>ストリーム</ja></text>
+    <text key="Indoor"><zh>室内</zh><ja>屋内</ja></text>
+    <text key="Outdoor"><zh>室外</zh><ja>屋外</ja></text>
+    <text key="PTZ"><zh>PTZ</zh><ja>PTZ</ja></text>
+    <text key="Manual"><zh>手动</zh><ja>手動</ja></text>
+    <text key="ONVIF"><zh>ONVIF</zh><ja>ONVIF</ja></text>
+    <text key="RTSP scan"><zh>RTSP 扫描</zh><ja>RTSP スキャン</ja></text>
+    <text key="Copy stream URL"><zh>复制视频流 URL</zh><ja>ストリーム URL をコピー</ja></text>
+    <text key="Leave empty to assign the next free ID"><zh>留空则自动分配下一个可用 ID</zh><ja>空欄の場合は次の空き ID が割り当てられます</ja></text>
+    <text key="Auto, e.g. CAM-009"><zh>自动（例如：CAM-009）</zh><ja>自動（例: CAM-009）</ja></text>
+    <text key="e.g. Building A, Lobby"><zh>例如：A 栋大厅</zh><ja>例: A 棟 ロビー</ja></text>
+    <text key="Enter a valid IPv4 address"><zh>请输入有效的 IPv4 地址。</zh><ja>有効な IPv4 アドレスを入力してください</ja></text>
+    <text key="RTSP Stream URL"><zh>RTSP 视频流 URL</zh><ja>RTSP ストリーム URL</ja></text>
+    <text key="RTSP Username"><zh>RTSP 用户名</zh><ja>RTSP ユーザー名</ja></text>
+    <text key="RTSP Password"><zh>RTSP 密码</zh><ja>RTSP パスワード</ja></text>
+    <text key="Leave blank to keep current"><zh>留空则保持当前值</zh><ja>空欄のままにすると現在の値を維持します</ja></text>
+    <text key="Live URL (optional)"><zh>实时画面 URL（可选）</zh><ja>ライブ URL（任意）</ja></text>
+    <text key="A browser-playable stream (HLS .m3u8, MJPEG or MP4). Leave empty to play the RTSP stream through the media gateway."><zh>可在浏览器中播放的视频流（HLS .m3u8、MJPEG 或 MP4）。留空则通过媒体网关播放 RTSP 视频流。</zh><ja>ブラウザで再生できるストリーム（HLS .m3u8、MJPEG、MP4）。空欄の場合は RTSP ストリームをメディアゲートウェイ経由で再生します。</ja></text>
+    <text key="Manufacturer"><zh>厂商</zh><ja>メーカー</ja></text>
+    <text key="Model"><zh>型号</zh><ja>型番</ja></text>
+    <text key="Installed Date"><zh>安装日期</zh><ja>設置日</ja></text>
+    <text key="Discover Cameras"><zh>发现摄像头</zh><ja>カメラを検出</ja></text>
+    <text key="View live"><zh>查看实时画面</zh><ja>ライブ映像を表示</ja></text>
+    <!-- Camera View -->
+    <text key="Double-click to enlarge"><zh>双击放大</zh><ja>ダブルクリックで拡大</ja></text>
+    <text key="(empty channel)"><zh>（空闲通道）</zh><ja>（空きチャンネル）</ja></text>
+    <text key="Change camera"><zh>更换摄像头</zh><ja>カメラを変更</ja></text>
+    <text key="Back to grid"><zh>返回宫格</zh><ja>グリッドに戻る</ja></text>
+    <text key="Enlarge"><zh>放大</zh><ja>拡大</ja></text>
+    <text key="{count} ch"><zh>{count} 通道</zh><ja>{count} ch</ja></text>
+    <text key="Tour"><zh>轮巡</zh><ja>巡回</ja></text>
+    <text key="Online only"><zh>仅在线</zh><ja>オンラインのみ</ja></text>
+    <text key="Fill"><zh>填充</zh><ja>全体に表示</ja></text>
+    <text key="Fit"><zh>适应</zh><ja>枠に合わせる</ja></text>
+    <text key="Reset channels"><zh>重置通道</zh><ja>チャンネルをリセット</ja></text>
+    <text key="Reload camera list"><zh>重新加载摄像头列表</zh><ja>カメラ一覧を再読み込み</ja></text>
+    <text key="Full screen"><zh>全屏</zh><ja>全画面</ja></text>
+    <text key="RTSP cameras need the media gateway to play in the browser."><zh>RTSP 摄像头需要通过媒体网关才能在浏览器中播放。</zh><ja>RTSP カメラをブラウザで再生するにはメディアゲートウェイが必要です。</ja></text>
+    <text key="Start MediaMTX (docker compose up -d mediamtx) and set MEDIAMTX_API_URL and MEDIAMTX_HLS_URL in backend/.env, or give each camera a browser-playable Live URL (HLS, MJPEG or MP4)."><zh>请启动 MediaMTX（docker compose up -d mediamtx）并在 backend/.env 中设置 MEDIAMTX_API_URL 和 MEDIAMTX_HLS_URL，或为每个摄像头设置可在浏览器中播放的实时画面 URL（HLS、MJPEG 或 MP4）。</zh><ja>MediaMTX を起動（docker compose up -d mediamtx）して backend/.env に MEDIAMTX_API_URL と MEDIAMTX_HLS_URL を設定するか、各カメラにブラウザで再生できるライブ URL（HLS、MJPEG、MP4）を設定してください。</ja></text>
+    <text key="No cameras yet. Add them in Camera Management."><zh>暂无摄像头，请在摄像头管理中添加。</zh><ja>カメラがまだありません。カメラ管理で追加してください。</ja></text>
+    <!-- Live player -->
+    <text key="No camera"><zh>无摄像头</zh><ja>カメラなし</ja></text>
+    <text key="Under maintenance"><zh>维护中</zh><ja>メンテナンス中</ja></text>
+    <text key="Media gateway not configured"><zh>未配置媒体网关</zh><ja>メディアゲートウェイ未設定</ja></text>
+    <text key="No stream configured"><zh>未配置视频流</zh><ja>ストリーム未設定</ja></text>
+    <text key="Connecting..."><zh>连接中...</zh><ja>接続中...</ja></text>
+    <text key="No signal - retrying"><zh>无信号 - 正在重试</zh><ja>信号なし - 再試行中</ja></text>
+    <!-- Camera discovery -->
+    <text key="Discover IP Cameras"><zh>发现 IP 摄像头</zh><ja>IP カメラを検出</ja></text>
+    <text key="Enter a name and location for {ips}"><zh>请为 {ips} 输入名称和位置。</zh><ja>{ips} の名前と場所を入力してください</ja></text>
+    <text key="Added {count} camera(s)"><zh>已添加 {count} 个摄像头。</zh><ja>{count} 台のカメラを追加しました</ja></text>
+    <text key="{count} could not be added: {errors}"><zh>{count} 个无法添加：{errors}</zh><ja>{count} 台を追加できませんでした: {errors}</ja></text>
+    <text key="Found via"><zh>发现方式</zh><ja>検出方法</ja></text>
+    <text key="Added as {id}"><zh>已添加为 {id}</zh><ja>{id} として追加済み</ja></text>
+    <text key="Device"><zh>设备</zh><ja>デバイス</ja></text>
+    <text key="Unknown brand"><zh>未知品牌</zh><ja>不明なメーカー</ja></text>
+    <text key="Required"><zh>必填</zh><ja>必須</ja></text>
+    <text key="Add {count} camera(s)"><zh>添加 {count} 个摄像头</zh><ja>{count} 台のカメラを追加</ja></text>
+    <text key="Add cameras"><zh>添加摄像头</zh><ja>カメラを追加</ja></text>
+    <text key="Auto: {subnets}"><zh>自动：{subnets}</zh><ja>自動: {subnets}</ja></text>
+    <text key="Subnet, e.g. 192.168.1.0/24"><zh>子网（例如：192.168.1.0/24）</zh><ja>サブネット（例: 192.168.1.0/24）</ja></text>
+    <text key="Subnet"><zh>子网</zh><ja>サブネット</ja></text>
+    <text key="ONVIF discovery"><zh>ONVIF 发现</zh><ja>ONVIF 検出</ja></text>
+    <text key="RTSP port scan"><zh>RTSP 端口扫描</zh><ja>RTSP ポートスキャン</ja></text>
+    <text key="Scanning..."><zh>扫描中...</zh><ja>スキャン中...</ja></text>
+    <text key="Start scan"><zh>开始扫描</zh><ja>スキャン開始</ja></text>
+    <text key="The scan runs on the server, so it finds cameras on the server's network. When the API runs in Docker it needs host networking for discovery to reach the LAN."><zh>扫描在服务器上运行，因此只能发现服务器所在网络中的摄像头。若 API 运行在 Docker 中，需要使用 host 网络模式才能扫描到局域网。</zh><ja>スキャンはサーバー上で実行されるため、サーバーのネットワーク上のカメラを検出します。API を Docker で実行している場合、LAN に届くようにホストネットワークが必要です。</ja></text>
+    <text key="Found {count} device(s) on {subnets} in {seconds}s"><zh>在 {subnets} 上发现 {count} 个设备（耗时 {seconds} 秒）。</zh><ja>{subnets} で {count} 台のデバイスを検出しました（{seconds} 秒）</ja></text>
+    <text key="the local network"><zh>本地网络</zh><ja>ローカルネットワーク</ja></text>
+    <text key="RTSP login for the selected cameras (optional):"><zh>所选摄像头的 RTSP 登录信息（可选）：</zh><ja>選択したカメラの RTSP ログイン（任意）:</ja></text>
+    <text key="Start a scan to look for cameras"><zh>开始扫描以查找摄像头</zh><ja>スキャンを開始してカメラを探します</ja></text>
+  </section>
+
+  <section name="communication">
+    <!-- Translations for the communication area (English text -> Japanese). -->
+    <!-- Video meetings (list) -->
+    <text key="New Meeting"><zh>新建会议</zh><ja>新しい会議</ja></text>
+    <text key="Edit Meeting"><zh>编辑会议</zh><ja>会議を編集</ja></text>
+    <text key="Search title, code or host..."><zh>搜索标题、会议码或主持人...</zh><ja>タイトル・コード・主催者で検索...</ja></text>
+    <text key="Host"><zh>主持人</zh><ja>主催者</ja></text>
+    <text key="Scheduled For"><zh>预定时间</zh><ja>開催日時</ja></text>
+    <text key="Agenda / Description"><zh>议程 / 说明</zh><ja>議題・説明</ja></text>
+    <text key="e.g. Weekly Staff Meeting"><zh>例如：每周教职工会议</zh><ja>例: 週次スタッフ会議</ja></text>
+    <text key="Enter a code or link"><zh>输入会议码或链接</zh><ja>コードまたはリンクを入力</ja></text>
+    <text key="Join"><zh>加入</zh><ja>参加</ja></text>
+    <text key="Join meeting"><zh>加入会议</zh><ja>会議に参加</ja></text>
+    <text key="Invite link copied"><zh>邀请链接已复制</zh><ja>招待リンクをコピーしました</ja></text>
+    <text key="Copy invite link"><zh>复制邀请链接</zh><ja>招待リンクをコピー</ja></text>
+    <text key="Live · {count} in call"><zh>进行中 · {count} 人在线</zh><ja>開催中 · {count} 人が参加中</ja></text>
+    <!-- Meeting room -->
+    <text key=" (You)"><zh>（你）</zh><ja>（自分）</ja></text>
+    <text key=" · presenting"><zh> · 正在演示</zh><ja> · 発表中</ja></text>
+    <text key="Unpin"><zh>取消固定</zh><ja>ピン留めを解除</ja></text>
+    <text key="Pin to stage"><zh>固定到主画面</zh><ja>ステージにピン留め</ja></text>
+    <text key="No messages yet."><zh>暂无消息。</zh><ja>まだメッセージはありません。</ja></text>
+    <text key="Send a message"><zh>发送消息</zh><ja>メッセージを送信</ja></text>
+    <text key="Microphone"><zh>麦克风</zh><ja>マイク</ja></text>
+    <text key="Camera"><zh>摄像头</zh><ja>カメラ</ja></text>
+    <text key="Ready to join?"><zh>准备好加入了吗？</zh><ja>参加する準備はできましたか？</ja></text>
+    <text key="Meeting code"><zh>会议码</zh><ja>会議コード</ja></text>
+    <text key="No camera or microphone available. You can still join to watch, chat and draw."><zh>没有可用的摄像头或麦克风。你仍可加入会议观看、聊天和绘图。</zh><ja>カメラまたはマイクが利用できません。視聴・チャット・描画のために参加することはできます。</ja></text>
+    <text key="Join now"><zh>立即加入</zh><ja>今すぐ参加</ja></text>
+    <text key="The meeting has ended"><zh>会议已结束</zh><ja>会議は終了しました</ja></text>
+    <text key="Back to meetings"><zh>返回会议列表</zh><ja>会議一覧に戻る</ja></text>
+    <text key="Unable to continue"><zh>无法继续</zh><ja>続行できません</ja></text>
+    <text key="Rejoin"><zh>重新加入</zh><ja>再参加</ja></text>
+    <text key="Screen sharing was cancelled or is not supported in this browser"><zh>屏幕共享已取消，或此浏览器不支持屏幕共享</zh><ja>画面共有がキャンセルされたか、このブラウザでは対応していません</ja></text>
+    <text key="End the meeting for everyone?"><zh>确定为所有人结束会议吗？</zh><ja>全員の会議を終了しますか？</ja></text>
+    <text key="End the meeting for everyone"><zh>为所有人结束会议</zh><ja>全員の会議を終了</ja></text>
+    <text key="End meeting"><zh>结束会议</zh><ja>会議を終了</ja></text>
+    <text key="End"><zh>结束</zh><ja>終了</ja></text>
+    <text key="Leave"><zh>离开</zh><ja>退出</ja></text>
+    <text key="Large meetings may lag (peer-to-peer)"><zh>参会人数较多时可能卡顿（点对点连接）</zh><ja>参加者が多いと遅延する場合があります（P2P 接続）</ja></text>
+    <text key="Chat"><zh>聊天</zh><ja>チャット</ja></text>
+    <text key="People"><zh>参会者</zh><ja>参加者</ja></text>
+    <text key="People ({count})"><zh>参会者（{count}）</zh><ja>参加者（{count}）</ja></text>
+    <text key="Mute"><zh>静音</zh><ja>ミュート</ja></text>
+    <text key="Unmute"><zh>取消静音</zh><ja>ミュート解除</ja></text>
+    <text key="Turn camera off"><zh>关闭摄像头</zh><ja>カメラをオフ</ja></text>
+    <text key="Turn camera on"><zh>开启摄像头</zh><ja>カメラをオン</ja></text>
+    <text key="Share screen"><zh>共享屏幕</zh><ja>画面共有</ja></text>
+    <text key="Stop sharing"><zh>停止共享</zh><ja>共有を停止</ja></text>
+    <text key="Whiteboard"><zh>白板</zh><ja>ホワイトボード</ja></text>
+    <text key="Camera and microphone need a secure (HTTPS) connection."><zh>使用摄像头和麦克风需要安全 (HTTPS) 连接。</zh><ja>カメラとマイクの利用には安全な (HTTPS) 接続が必要です。</ja></text>
+    <text key="Could not connect to the meeting server."><zh>无法连接到会议服务器。</zh><ja>会議サーバーに接続できませんでした。</ja></text>
+    <text key="Connection to the meeting was lost. Rejoin to continue."><zh>与会议的连接已断开。请重新加入以继续。</zh><ja>会議との接続が切れました。続けるには再参加してください。</ja></text>
+    <!-- Whiteboard -->
+    <text key="Colour {color}"><zh>颜色 {color}</zh><ja>色 {color}</ja></text>
+    <text key="Size {size}"><zh>粗细 {size}</zh><ja>サイズ {size}</ja></text>
+    <text key="Eraser"><zh>橡皮擦</zh><ja>消しゴム</ja></text>
+    <text key="Clear"><zh>清空</zh><ja>クリア</ja></text>
+    <text key="Clear the whiteboard for everyone?"><zh>确定为所有人清空白板吗？</zh><ja>全員のホワイトボードをクリアしますか？</ja></text>
+    <text key="Download PNG"><zh>下载 PNG</zh><ja>PNG をダウンロード</ja></text>
+    <!-- Email -->
+    <text key="Compose"><zh>写邮件</zh><ja>作成</ja></text>
+    <text key="Compose Email"><zh>写邮件</zh><ja>メールを作成</ja></text>
+    <text key="Sent Email"><zh>已发送邮件</zh><ja>送信済みメール</ja></text>
+    <text key="Edit Draft"><zh>编辑草稿</zh><ja>下書きを編集</ja></text>
+    <text key="Search subject, message or address..."><zh>搜索主题、正文或地址...</zh><ja>件名・本文・アドレスで検索...</ja></text>
+    <text key="All Audiences"><zh>全部收件对象</zh><ja>すべての宛先</ja></text>
+    <text key="All Students"><zh>全体学生</zh><ja>全学生</ja></text>
+    <text key="All Faculty"><zh>全体教师</zh><ja>全教員</ja></text>
+    <text key="All Users"><zh>全体用户</zh><ja>全ユーザー</ja></text>
+    <text key="Custom"><zh>自定义</zh><ja>カスタム</ja></text>
+    <text key="Subject"><zh>主题</zh><ja>件名</ja></text>
+    <text key="To"><zh>收件人</zh><ja>宛先</ja></text>
+    <text key="Recipients"><zh>收件人数</zh><ja>宛先数</ja></text>
+    <text key="Sent By"><zh>发件人</zh><ja>送信者</ja></text>
+    <text key="Sent At"><zh>发送时间</zh><ja>送信日時</ja></text>
+    <text key="Emails are recorded in the system only. Nothing is delivered to a mail server."><zh>邮件仅记录在系统中，不会投递到邮件服务器。</zh><ja>メールはシステム内に記録されるだけで、メールサーバーには配信されません。</ja></text>
+    <text key="Email Addresses"><zh>邮箱地址</zh><ja>メールアドレス</ja></text>
+    <text key="Add at least one address"><zh>请至少添加一个地址</zh><ja>アドレスを 1 件以上追加してください</ja></text>
+    <text key="Invalid address: {list}"><zh>无效地址：{list}</zh><ja>無効なアドレス: {list}</ja></text>
+    <text key="Type an address and press Enter"><zh>输入地址后按 Enter 键</zh><ja>アドレスを入力して Enter キーを押してください</ja></text>
+    <text key="Message"><zh>正文</zh><ja>本文</ja></text>
+    <text key="Save as draft"><zh>存为草稿</zh><ja>下書きとして保存</ja></text>
+    <text key="Send"><zh>发送</zh><ja>送信</ja></text>
+    <!-- Notifications -->
+    <text key="{count} unread"><zh>{count} 条未读</zh><ja>未読 {count} 件</ja></text>
+    <text key="Mark all as read"><zh>全部标为已读</zh><ja>すべて既読にする</ja></text>
+    <text key="My Notifications"><zh>我的通知</zh><ja>自分の通知</ja></text>
+    <text key="Send &amp; Manage"><zh>发送与管理</zh><ja>送信・管理</ja></text>
+    <text key="Sent Notifications"><zh>已发送通知</zh><ja>送信済みの通知</ja></text>
+    <text key="Send Notification"><zh>发送通知</zh><ja>通知を送信</ja></text>
+    <text key="Edit Notification"><zh>编辑通知</zh><ja>通知を編集</ja></text>
+    <text key="Search notifications..."><zh>搜索通知...</zh><ja>通知を検索...</ja></text>
+    <text key="Audience"><zh>接收对象</zh><ja>送信先</ja></text>
+    <text key="Read By"><zh>已读人数</zh><ja>既読数</ja></text>
+    <text key="Everyone"><zh>所有人</zh><ja>全員</ja></text>
+    <text key="Admins"><zh>管理员</zh><ja>管理者</ja></text>
+    <text key="Send To"><zh>发送给</zh><ja>送信先</ja></text>
+    <text key="All admins"><zh>全体管理员</zh><ja>全管理者</ja></text>
+    <text key="All staff"><zh>全体职员</zh><ja>全スタッフ</ja></text>
+    <text key="A specific user"><zh>指定用户</zh><ja>特定のユーザー</ja></text>
+    <text key="Link (optional)"><zh>链接（可选）</zh><ja>リンク（任意）</ja></text>
+    <text key="Page opened when the notification is clicked, e.g. /commands"><zh>点击通知时打开的页面，例如 /commands</zh><ja>通知をクリックしたときに開くページ（例: /commands）</ja></text>
+    <text key="Participant"><zh>参会者</zh><ja>参加者</ja></text>
+    <text key="This meeting has ended"><zh>此会议已结束</zh><ja>この会議は終了しました</ja></text>
+    <text key="Meeting not found"><zh>未找到会议</zh><ja>会議が見つかりません</ja></text>
+    <text key="Could not join the meeting"><zh>无法加入会议</zh><ja>会議に参加できませんでした</ja></text>
+    <text key="Double-click to return to the grid"><zh>双击返回网格视图</zh><ja>ダブルクリックでグリッド表示に戻る</ja></text>
+  </section>
+
+  <section name="admin">
+    <!-- Translations for login, System Settings, User Management and the permission editor. -->
+    <!-- Login -->
+    <text key="School logo"><zh>学校标志</zh><ja>学校ロゴ</ja></text>
+    <text key="Manage Students · Faculty · Courses · Resources"><zh>统一管理学生 · 教师 · 课程 · 资源</zh><ja>学生・教員・科目・資源をまとめて管理</ja></text>
+    <text key="Build a Smarter Campus"><zh>打造更智慧的校园</zh><ja>よりスマートなキャンパスへ</ja></text>
+    <text key="Welcome Back"><zh>欢迎回来</zh><ja>おかえりなさい</ja></text>
+    <text key="Please login to your account"><zh>请登录您的账户</zh><ja>アカウントにログインしてください</ja></text>
+    <text key="Please enter your username"><zh>请输入用户名</zh><ja>ユーザー名を入力してください</ja></text>
+    <text key="Please enter your password"><zh>请输入密码</zh><ja>パスワードを入力してください</ja></text>
+    <text key="Username"><zh>用户名</zh><ja>ユーザー名</ja></text>
+    <text key="Password"><zh>密码</zh><ja>パスワード</ja></text>
+    <text key="Remember me"><zh>记住我</zh><ja>ログイン状態を保持する</ja></text>
+    <text key="Forgot password?"><zh>忘记密码？</zh><ja>パスワードをお忘れですか？</ja></text>
+    <text key="Contact an administrator to reset your password"><zh>请联系管理员重置密码</zh><ja>パスワードの再設定は管理者に連絡してください</ja></text>
+    <text key="Login"><zh>登录</zh><ja>ログイン</ja></text>
+    <!-- System Settings -->
+    <text key="General Settings"><zh>常规设置</zh><ja>基本設定</ja></text>
+    <text key="Settings saved"><zh>设置已保存</zh><ja>設定を保存しました</ja></text>
+    <text key="Only administrators can change system settings."><zh>只有管理员可以更改系统设置。</zh><ja>システム設定を変更できるのは管理者のみです。</ja></text>
+    <text key="System Name"><zh>系统名称</zh><ja>システム名</ja></text>
+    <text key="Academic Year"><zh>学年</zh><ja>年度</ja></text>
+    <text key="Time Zone"><zh>时区</zh><ja>タイムゾーン</ja></text>
+    <text key="Enable Email Notification"><zh>启用邮件通知</zh><ja>メール通知を有効にする</ja></text>
+    <text key="Enable SMS Notification"><zh>启用 SMS 通知</zh><ja>SMS 通知を有効にする</ja></text>
+    <text key="School Logo"><zh>学校标志</zh><ja>学校ロゴ</ja></text>
+    <text key="Change Logo"><zh>更换标志</zh><ja>ロゴを変更</ja></text>
+    <text key="Save Changes"><zh>保存更改</zh><ja>変更を保存</ja></text>
+    <text key="Backup"><zh>备份</zh><ja>バックアップ</ja></text>
+    <text key="Download Backup"><zh>下载备份</zh><ja>バックアップをダウンロード</ja></text>
+    <text key="Download a JSON snapshot of all records (students, faculty, courses, schedules, admissions, grades, announcements, settings and users without passwords). For full database backups and restores, use mongodump / mongorestore."><zh>以 JSON 格式下载所有记录的快照（学生、教师、课程、课程表、招生审核、成绩、公告、设置以及不含密码的用户）。如需完整备份和恢复数据库，请使用 mongodump / mongorestore。</zh><ja>すべてのレコード（学生、教員、科目、時間割、入学審査、成績、お知らせ、設定、パスワードを除くユーザー）を JSON でダウンロードします。データベース全体のバックアップと復元には mongodump / mongorestore を使用してください。</ja></text>
+    <!-- User Management -->
+    <text key="User Management"><zh>用户管理</zh><ja>ユーザー管理</ja></text>
+    <text key="Add User"><zh>添加用户</zh><ja>ユーザーを追加</ja></text>
+    <text key="Edit User"><zh>编辑用户</zh><ja>ユーザーを編集</ja></text>
+    <text key="Search users..."><zh>搜索用户...</zh><ja>ユーザーを検索...</ja></text>
+    <text key="All Roles"><zh>全部角色</zh><ja>すべてのロール</ja></text>
+    <text key="Full Name"><zh>姓名</zh><ja>氏名</ja></text>
+    <text key="Role"><zh>角色</zh><ja>ロール</ja></text>
+    <text key="Access"><zh>访问权限</zh><ja>アクセス権</ja></text>
+    <text key="Leave blank to keep the current password"><zh>留空则保留当前密码</zh><ja>空欄のままにすると現在のパスワードを維持します</ja></text>
+    <text key="New staff accounts start with read-only access. Adjust it with the key button."><zh>新员工账户默认为只读权限。可通过钥匙按钮进行调整。</zh><ja>新しいスタッフは閲覧のみの権限で作成されます。鍵ボタンから変更できます。</ja></text>
+    <!-- Permission editor -->
+    <text key="Permissions"><zh>权限</zh><ja>権限</ja></text>
+    <text key="Permissions: {name}"><zh>权限：{name}</zh><ja>権限: {name}</ja></text>
+    <text key="Permissions saved"><zh>权限已保存</zh><ja>権限を保存しました</ja></text>
+    <text key="Page"><zh>页面</zh><ja>ページ</ja></text>
+    <text key="All: {action}"><zh>全部：{action}</zh><ja>すべて: {action}</ja></text>
+    <text key="All actions for {page}"><zh>{page} 的全部操作</zh><ja>{page} のすべての操作</ja></text>
+    <text key="Presets:"><zh>预设：</zh><ja>プリセット:</ja></text>
+    <text key="Full access"><zh>完全访问</zh><ja>フルアクセス</ja></text>
+    <text key="Full access (administrator)"><zh>完全访问（管理员）</zh><ja>フルアクセス（管理者）</ja></text>
+    <text key="Read only"><zh>只读</zh><ja>閲覧のみ</ja></text>
+    <text key="No access"><zh>无权访问</zh><ja>アクセスなし</ja></text>
+    <text key="{count} / {total} pages"><zh>{count} / {total} 页</zh><ja>{count} / {total} ページ</ja></text>
+    <text key="Administrators always have full access to every page."><zh>管理员始终拥有所有页面的完全访问权限。</zh><ja>管理者は常にすべてのページにフルアクセスできます。</ja></text>
+    <text key="Granting Create, Edit or Delete also grants View. System Settings and User Management are always limited to administrators."><zh>授予新建、编辑或删除权限时，也会同时授予查看权限。系统设置和用户管理始终仅限管理员使用。</zh><ja>作成・編集・削除を許可すると閲覧も許可されます。システム設定とユーザー管理は常に管理者のみが利用できます。</ja></text>
+    <text key="Academic"><zh>教务</zh><ja>学務</ja></text>
+  </section>
+</i18n>

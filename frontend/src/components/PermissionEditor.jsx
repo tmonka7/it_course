@@ -78,7 +78,7 @@ export default function PermissionEditor({ user, onClose, onSaved }) {
     PERMISSION_PAGES.forEach((p) => {
       if (p.group !== group) {
         group = p.group;
-        out.push({ key: `group-${group}`, isGroup: true, label: group });
+        out.push({ key: `group-${group}`, isGroup: true, label: group, actions: [] });
       }
       out.push({ ...p, isGroup: false });
     });
@@ -111,8 +111,9 @@ export default function PermissionEditor({ user, onClose, onSaved }) {
           </Space>
         ),
         onCell: (r) => (r.isGroup ? { colSpan: 0 } : {}),
+        // antd still calls render for cells hidden by colSpan 0, so group rows (no actions) need a guard.
         render: (_, r) =>
-          r.actions.includes(action) ? (
+          r.isGroup ? null : r.actions.includes(action) ? (
             <Checkbox
               checked={isAdminUser || perms[r.key][action]}
               disabled={isAdminUser}
@@ -131,6 +132,7 @@ export default function PermissionEditor({ user, onClose, onSaved }) {
       width: 70,
       onCell: (r) => (r.isGroup ? { colSpan: 0 } : {}),
       render: (_, r) => {
+        if (r.isGroup) return null;
         const on = r.actions.filter((a) => perms[r.key][a]).length;
         return (
           <Checkbox
