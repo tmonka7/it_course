@@ -234,13 +234,8 @@ export default function MainLayout() {
           <Space size={24}>
             <Notifications />
             <Dropdown menu={userMenu} trigger={['click']}>
-<<<<<<< HEAD
-              <Space style={{ cursor: 'pointer' }}>
-                <Avatar size={38} style={{ background: '#1664ff' }} icon={<UserOutlined />} />
-=======
               <Space className="header-user-trigger" style={{ cursor: 'pointer' }}>
-                <Avatar style={{ background: 'linear-gradient(135deg, #1664ff, #4f8bff)' }} icon={<UserOutlined />} />
->>>>>>> db93803492e77d25db12cbcd222d45e11d20badf
+                <Avatar size={38} style={{ background: 'linear-gradient(135deg, #1664ff, #4f8bff)' }} icon={<UserOutlined />} />
                 {screens.md && (
                   <div className="header-user">
                     <Typography.Text strong>{user?.username}</Typography.Text>

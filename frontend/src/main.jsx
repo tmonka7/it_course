@@ -28,28 +28,16 @@ const theme = {
     fontFamily: "Inter, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif",
   },
   components: {
-<<<<<<< HEAD
-    Layout: { headerBg: '#ffffff', siderBg: '#f7faff', bodyBg: '#f4f7fd' },
+    Layout: { headerBg: '#ffffff', siderBg: '#f7faff', bodyBg: '#f4f7fd', headerHeight: 64, headerPadding: '0 24px' },
     Menu: {
       itemBg: 'transparent',
       itemSelectedBg: '#dbe8ff',
       itemSelectedColor: '#1664ff',
       itemColor: '#344054',
       itemBorderRadius: 10,
-      itemHeight: 46,
-      itemMarginBlock: 4,
-      iconSize: 18,
-    },
-    Table: { headerBg: '#f7f9fc' },
-=======
-    Layout: { headerBg: '#ffffff', siderBg: '#ffffff', bodyBg: '#f4f7fd', headerHeight: 64, headerPadding: '0 24px' },
-    Menu: {
-      itemSelectedBg: '#1664ff',
-      itemSelectedColor: '#ffffff',
-      itemBorderRadius: 8,
       itemMarginInline: 0,
-      itemHeight: 42,
-      iconSize: 17,
+      itemHeight: 46,
+      iconSize: 18,
     },
     Table: {
       headerBg: '#f7f9fc',
@@ -66,7 +54,6 @@ const theme = {
     Modal: { borderRadiusLG: 16, titleFontSize: 16 },
     Tag: { borderRadiusSM: 6 },
     Segmented: { itemSelectedBg: '#1664ff', itemSelectedColor: '#ffffff' },
->>>>>>> db93803492e77d25db12cbcd222d45e11d20badf
   },
 };
 

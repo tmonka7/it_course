@@ -92,8 +92,8 @@ body {
    Shell — sider, header, content
    ========================================================================== */
 .app-sider {
-<<<<<<< HEAD
-  border-right: 1px solid #e6edf8;
+  border-right: 1px solid var(--line);
+  box-shadow: var(--shadow-xs);
 }
 
 .sider-inner {
@@ -103,7 +103,12 @@ body {
 }
 
 .sider-logo {
-  padding: 18px 16px 22px;
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  padding: 18px 16px 20px;
+  background: #f7faff;
+  margin-bottom: 4px;
 }
 
 .sider-footer {
@@ -122,20 +127,6 @@ body {
   padding: 18px 0 20px;
   font-size: 11px;
   color: #7a9cd6;
-=======
-  border-right: 1px solid var(--line);
-  box-shadow: var(--shadow-xs);
-}
-
-.sider-logo {
-  position: sticky;
-  top: 0;
-  z-index: 2;
-  padding: 18px 16px 16px;
-  background: var(--surface);
-  border-bottom: 1px solid var(--line-soft);
-  margin-bottom: 10px;
->>>>>>> db93803492e77d25db12cbcd222d45e11d20badf
 }
 
 .logo {
@@ -152,40 +143,43 @@ body {
 }
 
 .logo-text {
-<<<<<<< HEAD
   display: flex;
   flex-direction: column;
   font-weight: 700;
   font-size: 14px;
-=======
-  font-weight: 650;
-  font-size: 13px;
->>>>>>> db93803492e77d25db12cbcd222d45e11d20badf
   line-height: 1.3;
   letter-spacing: -0.01em;
   color: var(--ink-800);
+}
+
+.logo-subtitle {
+  margin-top: 3px;
+  font-size: 10.5px;
+  font-weight: 500;
+  letter-spacing: 0;
+  color: #475467;
 }
 
 .logo-light .logo-text {
   color: #fff;
 }
 
-/* Sider menu: roomier hit targets, quiet hover, brand-tinted selection */
+/* Sider menu: roomier hit targets, quiet hover, light brand pill for the selected item */
 .app-sider .ant-menu-item,
 .ant-drawer .ant-menu-item {
-  height: 42px;
-  line-height: 42px;
+  height: 46px;
+  line-height: 46px;
   margin-inline: 0;
   margin-block: 4px;
   font-size: 14px;
   font-weight: 500;
   color: var(--ink-700);
-  transition: background var(--t-fast), color var(--t-fast), box-shadow var(--t-fast);
+  transition: background var(--t-fast), color var(--t-fast);
 }
 
 .app-sider .ant-menu-item .anticon,
 .ant-drawer .ant-menu-item .anticon {
-  font-size: 17px;
+  font-size: 18px;
 }
 
 .app-sider .ant-menu-item:not(.ant-menu-item-selected):hover,
@@ -197,14 +191,6 @@ body {
 .app-sider .ant-menu-item-selected,
 .ant-drawer .ant-menu-item-selected {
   font-weight: 600;
-  box-shadow: var(--shadow-brand);
-}
-
-.logo-subtitle {
-  margin-top: 3px;
-  font-size: 10.5px;
-  font-weight: 500;
-  color: #475467;
 }
 
 .app-header {
@@ -253,12 +239,13 @@ body {
   align-items: flex-end;
   line-height: 1.35;
   font-size: 13px;
-  color: #344054;
+  color: var(--ink-700);
 }
 
 .header-clock strong {
   font-size: 16px;
   color: #0f2a5f;
+  font-variant-numeric: tabular-nums;
 }
 
 .app-content {
@@ -278,8 +265,80 @@ body {
   box-shadow: var(--shadow-md);
 }
 
-<<<<<<< HEAD
-/* ---------- Dashboard ---------- */
+.page-card .ant-card-head {
+  border-bottom: 1px solid var(--line-soft);
+  min-height: 52px;
+  padding-inline: 20px;
+}
+
+.page-card .ant-card-head-title {
+  font-weight: 650;
+  letter-spacing: -0.01em;
+  color: var(--ink-800);
+}
+
+.page-title {
+  margin: 0 0 16px;
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--ink-900);
+}
+
+/* ==========================================================================
+   Tables — denser rows, calm header, readable hover
+   ========================================================================== */
+.ant-table-wrapper .ant-table-thead > tr > th {
+  font-size: 12px;
+  font-weight: 650;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--ink-500);
+  border-bottom: 1px solid var(--line);
+}
+
+/* antd draws column dividers in the header; they fight the uppercase labels */
+.ant-table-wrapper .ant-table-thead > tr > th::before {
+  display: none !important;
+}
+
+.ant-table-wrapper .ant-table-tbody > tr > td {
+  border-bottom: 1px solid var(--line-soft);
+}
+
+.ant-table-wrapper .ant-table-tbody > tr:last-child > td {
+  border-bottom: none;
+}
+
+.ant-table-wrapper .ant-table-tbody > tr.ant-table-row:hover > td {
+  background: var(--brand-50);
+}
+
+/* Row action buttons stay muted until the row is hovered or focused */
+.ant-table-row .row-actions .ant-btn {
+  opacity: 0.55;
+  transition: opacity var(--t-fast), background var(--t-fast);
+}
+
+.ant-table-row:hover .row-actions .ant-btn,
+.row-actions .ant-btn:focus-visible {
+  opacity: 1;
+}
+
+.ant-pagination .ant-pagination-total-text {
+  margin-inline-end: auto;
+  color: var(--ink-500);
+  font-size: 13px;
+}
+
+.ant-table-wrapper .ant-pagination {
+  align-items: center;
+  margin-bottom: 0 !important;
+}
+
+/* ==========================================================================
+   Dashboard
+   ========================================================================== */
 .dash {
   display: flex;
   flex-direction: column;
@@ -373,95 +432,15 @@ body {
   padding: 16px 18px;
   border-radius: 14px;
   border: 1px solid;
-=======
-.page-card .ant-card-head {
-  border-bottom: 1px solid var(--line-soft);
-  min-height: 52px;
-  padding-inline: 20px;
-}
-
-.page-card .ant-card-head-title {
-  font-weight: 650;
-  letter-spacing: -0.01em;
-  color: var(--ink-800);
-}
-
-.page-title {
-  margin: 0 0 16px;
-  font-size: 20px;
-  font-weight: 700;
-  letter-spacing: -0.02em;
-  color: var(--ink-900);
-}
-
-/* ==========================================================================
-   Tables — denser rows, calm header, readable hover
-   ========================================================================== */
-.ant-table-wrapper .ant-table-thead > tr > th {
-  font-size: 12px;
-  font-weight: 650;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  color: var(--ink-500);
-  border-bottom: 1px solid var(--line);
-}
-
-/* antd draws column dividers in the header; they fight the uppercase labels */
-.ant-table-wrapper .ant-table-thead > tr > th::before {
-  display: none !important;
-}
-
-.ant-table-wrapper .ant-table-tbody > tr > td {
-  border-bottom: 1px solid var(--line-soft);
-}
-
-.ant-table-wrapper .ant-table-tbody > tr:last-child > td {
-  border-bottom: none;
-}
-
-.ant-table-wrapper .ant-table-tbody > tr.ant-table-row:hover > td {
-  background: var(--brand-50);
-}
-
-/* Row action buttons stay muted until the row is hovered or focused */
-.ant-table-row .row-actions .ant-btn {
-  opacity: 0.55;
-  transition: opacity var(--t-fast), background var(--t-fast);
-}
-
-.ant-table-row:hover .row-actions .ant-btn,
-.row-actions .ant-btn:focus-visible {
-  opacity: 1;
-}
-
-.ant-pagination .ant-pagination-total-text {
-  margin-inline-end: auto;
-  color: var(--ink-500);
-  font-size: 13px;
-}
-
-.ant-table-wrapper .ant-pagination {
-  align-items: center;
-  margin-bottom: 0 !important;
-}
-
-/* ==========================================================================
-   Dashboard
-   ========================================================================== */
-.stat-card {
-  position: relative;
-  overflow: hidden;
-  padding: 18px 20px;
-  border-radius: var(--r-lg);
-  color: #fff;
->>>>>>> db93803492e77d25db12cbcd222d45e11d20badf
   cursor: pointer;
-  isolation: isolate;
-  box-shadow: var(--shadow-sm);
-  transition: transform var(--t-med), box-shadow var(--t-med);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 
-<<<<<<< HEAD
+.kpi-card:focus-visible {
+  outline: 2px solid var(--brand-500);
+  outline-offset: 2px;
+}
+
 .kpi-card:hover {
   transform: translateY(-2px);
   box-shadow: 0 8px 20px rgba(30, 64, 175, 0.1);
@@ -482,69 +461,6 @@ body {
   font-size: 12.5px;
   font-weight: 500;
   color: #344054;
-=======
-.stat-card:hover {
-  transform: translateY(-3px);
-  box-shadow: var(--shadow-lg);
-}
-
-.stat-card:active {
-  transform: translateY(-1px);
-}
-
-.stat-card:focus-visible {
-  outline: 2px solid #fff;
-  outline-offset: -4px;
-}
-
-/* Decorative gloss orbs */
-.stat-card::after,
-.stat-card::before {
-  content: '';
-  position: absolute;
-  border-radius: 50%;
-  z-index: -1;
-  background: rgba(255, 255, 255, 0.13);
-}
-
-.stat-card::after {
-  right: -30px;
-  top: -34px;
-  width: 128px;
-  height: 128px;
-}
-
-.stat-card::before {
-  right: 24px;
-  bottom: -52px;
-  width: 78px;
-  height: 78px;
-  background: rgba(255, 255, 255, 0.09);
-}
-
-.stat-blue { background: linear-gradient(135deg, #1664ff, #4f8bff); }
-.stat-green { background: linear-gradient(135deg, #10b981, #34d399); }
-.stat-purple { background: linear-gradient(135deg, #7c3aed, #a78bfa); }
-.stat-orange { background: linear-gradient(135deg, #f97316, #fbbf24); }
-
-.stat-icon {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 38px;
-  height: 38px;
-  border-radius: var(--r-sm);
-  background: rgba(255, 255, 255, 0.22);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.25);
-  font-size: 20px;
-  margin-bottom: 12px;
-}
-
-.stat-label {
-  font-size: 13px;
-  font-weight: 500;
-  opacity: 0.92;
->>>>>>> db93803492e77d25db12cbcd222d45e11d20badf
 }
 
 .kpi-value {
@@ -552,7 +468,6 @@ body {
   font-size: 26px;
   font-weight: 700;
   line-height: 1.2;
-<<<<<<< HEAD
   color: #0f2a5f;
 }
 
@@ -627,26 +542,6 @@ body {
   position: relative;
   width: 150px;
   height: 150px;
-=======
-  letter-spacing: -0.02em;
-  font-variant-numeric: tabular-nums;
-}
-
-/* "↑ 12%" pill, as in the reference design */
-.stat-delta {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  padding: 3px 8px;
-  margin-bottom: 5px;
-  border-radius: 99px;
-  background: rgba(255, 255, 255, 0.2);
-  font-size: 12px;
-  font-weight: 600;
-  line-height: 1.4;
-  white-space: nowrap;
-  font-variant-numeric: tabular-nums;
->>>>>>> db93803492e77d25db12cbcd222d45e11d20badf
 }
 
 .donut-center {
@@ -662,14 +557,11 @@ body {
 .donut-value {
   font-size: 20px;
   font-weight: 700;
-  letter-spacing: -0.02em;
-  color: var(--ink-800);
-  font-variant-numeric: tabular-nums;
+  color: #1d2b53;
 }
 
 .donut-label {
   font-size: 12px;
-<<<<<<< HEAD
   color: #475467;
 }
 
@@ -685,25 +577,6 @@ body {
   padding: 7px 0;
   font-size: 12px;
   color: #344054;
-=======
-  color: var(--ink-400);
-}
-
-.legend-row {
-  padding: 7px 0;
-  font-size: 13px;
-  color: var(--ink-700);
-  border-bottom: 1px dashed var(--line-soft);
-}
-
-.legend-row:last-child {
-  border-bottom: none;
-}
-
-.legend-row strong {
-  font-variant-numeric: tabular-nums;
-  color: var(--ink-900);
->>>>>>> db93803492e77d25db12cbcd222d45e11d20badf
 }
 
 .legend-dot {
@@ -1153,12 +1026,6 @@ body {
   .page-title {
     font-size: 18px;
   }
-  .stat-card {
-    padding: 16px;
-  }
-  .stat-value {
-    font-size: 26px;
-  }
   .login-card {
     padding: 28px 20px;
   }
@@ -1178,7 +1045,8 @@ body {
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
-  .stat-card:hover,
+  .kpi-card:hover,
+  .quick-btn:hover,
   .slot-card:hover {
     transform: none;
   }
