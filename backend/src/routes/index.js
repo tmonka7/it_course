@@ -1,9 +1,15 @@
 const express = require('express');
 const crud = require('./crud');
+const asyncHandler = require('../utils/asyncHandler');
 const authRoutes = require('./auth');
 const dashboardRoutes = require('./dashboard');
 const settings = require('./settings');
 const notificationRoutes = require('./notifications');
+const commandLogRoutes = require('./commandLogs');
+const liveRoutes = require('./live');
+const cameraDiscoveryRoutes = require('./cameraDiscovery');
+const mediamtx = require('../services/mediamtx');
+const { onCommandSaved } = require('../services/commandEvents');
 const { auth, requireRole } = require('../middleware/auth');
 
 const Student = require('../models/Student');
@@ -16,9 +22,13 @@ const Announcement = require('../models/Announcement');
 const User = require('../models/User');
 const DailyReport = require('../models/DailyReport');
 const Command = require('../models/Command');
+const CommandLog = require('../models/CommandLog');
 const Camera = require('../models/Camera');
 const Email = require('../models/Email');
 const Notification = require('../models/Notification');
+const Meeting = require('../models/Meeting');
+const MeetingMessage = require('../models/MeetingMessage');
+const { liveCounts } = require('../realtime/meetings');
 
 const badRequest = (message) => Object.assign(new Error(message), { status: 400 });
 
@@ -155,6 +165,7 @@ router.use(
   })
 );
 
+router.use(commandLogRoutes);
 router.use(
   '/commands',
   crud(Command, {
@@ -164,24 +175,18 @@ router.use(
     sort: { createdAt: -1 },
     label: 'command',
     describe: (d) => `${d.title} (${d.status})`,
-    sanitize: (body, req) => ({ ...body, issuedBy: body.issuedBy || req.user.name }),
-    afterSave: (doc, req, before) => {
-      const assignee = doc.assignee?._id || doc.assignee;
-      const reassigned = assignee && String(assignee) !== String(before?.assignee);
-      if (reassigned && String(assignee) !== String(req.user._id)) {
-        Notification.notify({
-          title: `New command: ${doc.title}`,
-          message: `${doc.priority} priority${doc.dueDate ? `, due ${doc.dueDate.toISOString().slice(0, 10)}` : ''}.`,
-          type: doc.priority === 'Urgent' || doc.priority === 'High' ? 'Warning' : 'Info',
-          recipient: assignee,
-          link: '/commands',
-          createdBy: req.user.username,
-        });
-      }
+    // The issuer is whoever creates the command; it never changes afterwards.
+    sanitize: ({ issuer, issuedBy, ...body }, req) =>
+      req.params.id ? body : { ...body, issuer: req.user._id, issuedBy: req.user.name },
+    afterSave: onCommandSaved,
+    beforeDelete: async (doc) => {
+      await CommandLog.deleteMany({ command: doc._id });
     },
   })
 );
 
+router.use('/live', liveRoutes);
+router.use('/camera-discovery', requireRole('admin'), cameraDiscoveryRoutes);
 router.use(
   '/cameras',
   crud(Camera, {
@@ -190,6 +195,18 @@ router.use(
     sort: { cameraId: 1 },
     label: 'camera',
     describe: (d) => `${d.name} (${d.cameraId})`,
+    // A blank password on edit keeps the stored one (the browser never receives it).
+    sanitize: ({ hasPassword, ...body }) => {
+      if (!body.rtspPassword) delete body.rtspPassword;
+      return body;
+    },
+    // Gateway sync runs in the background so a gateway outage never blocks saving.
+    afterSave: (doc, req, before) => {
+      mediamtx.safely(mediamtx.syncCamera(doc, before?.cameraId), doc.cameraId);
+    },
+    beforeDelete: (doc) => {
+      mediamtx.safely(mediamtx.removeCamera(doc.cameraId), doc.cameraId);
+    },
   })
 );
 
@@ -215,6 +232,36 @@ router.use(
         doc.sentBy = req.user.name;
       }
       await doc.save();
+    },
+  })
+);
+
+// Meetings: join-by-code lookup and live participant counts sit beside the CRUD routes.
+router.get('/meetings/live', (req, res) => res.json(liveCounts()));
+router.get(
+  '/meetings/by-code/:code',
+  asyncHandler(async (req, res) => {
+    const meeting = await Meeting.findOne({ code: String(req.params.code).toLowerCase().trim() });
+    if (!meeting) return res.status(404).json({ message: 'No meeting with that code' });
+    return res.json(meeting);
+  })
+);
+router.use(
+  '/meetings',
+  crud(Meeting, {
+    searchFields: ['title', 'code', 'hostName'],
+    filterFields: ['status'],
+    sort: { createdAt: -1 },
+    label: 'meeting',
+    describe: (d) => `${d.title} (${d.code})`,
+    // Code, host and live status are managed by the server.
+    sanitize: ({ code, host, hostName, status, startedAt, endedAt, ...body }, req) =>
+      req.params.id ? body : { ...body, host: req.user._id, hostName: req.user.name },
+    beforeDelete: async (doc, req) => {
+      if (String(doc.host) !== String(req.user._id) && req.user.role !== 'admin') {
+        throw badRequest('Only the host or an admin can delete this meeting');
+      }
+      await MeetingMessage.deleteMany({ meeting: doc._id });
     },
   })
 );

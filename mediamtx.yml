@@ -1,0 +1,35 @@
+# Minimal MediaMTX configuration for the SIST camera view.
+# Camera paths are added at runtime by the backend through the control API.
+logLevel: info
+
+api: yes
+apiAddress: :9997
+
+hls: yes
+hlsAddress: :8888
+hlsAlwaysRemux: no
+hlsVariant: mpegts
+hlsSegmentCount: 3
+hlsSegmentDuration: 1s
+
+rtsp: no
+rtmp: no
+webrtc: no
+srt: no
+
+# Both ports are only published on 127.0.0.1 (see docker-compose.yml), so any client may use them.
+authInternalUsers:
+  - user: any
+    pass:
+    ips: []
+    permissions:
+      - action: read
+      - action: playback
+      - action: api
+      - action: publish
+
+pathDefaults:
+  sourceOnDemand: yes
+
+paths:
+  all_others:

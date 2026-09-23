@@ -1,7 +1,11 @@
-import { App, Badge, Button, Col, DatePicker, Form, Input, Row, Select, Tooltip, Typography } from 'antd';
-import { CopyOutlined } from '@ant-design/icons';
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { App, Badge, Button, Col, DatePicker, Divider, Form, Input, Row, Select, Tag, Tooltip, Typography } from 'antd';
+import { AppstoreOutlined, CopyOutlined, EyeOutlined, RadarChartOutlined } from '@ant-design/icons';
 import dayjs from 'dayjs';
 import CrudPage from '../components/CrudPage';
+import CameraDiscovery from '../components/CameraDiscovery';
+import { useAuth } from '../context/AuthContext';
 import { toOptions } from '../constants';
 
 const TYPES = ['Indoor', 'Outdoor', 'PTZ'];
@@ -31,7 +35,20 @@ function StreamUrl({ url }) {
 
 const columns = [
   { title: 'Camera ID', dataIndex: 'cameraId' },
-  { title: 'Name', dataIndex: 'name' },
+  {
+    title: 'Name',
+    dataIndex: 'name',
+    render: (v, r) => (
+      <span>
+        {v}
+        {r.discoveredVia && r.discoveredVia !== 'Manual' && (
+          <Tag bordered={false} color="blue" style={{ marginLeft: 6 }}>
+            {r.discoveredVia}
+          </Tag>
+        )}
+      </span>
+    ),
+  },
   { title: 'Location', dataIndex: 'location' },
   { title: 'Type', dataIndex: 'type', responsive: ['md'] },
   { title: 'Resolution', dataIndex: 'resolution', responsive: ['lg'] },
@@ -40,11 +57,11 @@ const columns = [
   { title: 'Status', dataIndex: 'status', render: (v) => <Badge status={STATUS_BADGE[v] || 'default'} text={v} /> },
 ];
 
-const renderForm = () => (
+const renderForm = (record) => (
   <Row gutter={16}>
     <Col xs={24} md={8}>
-      <Form.Item name="cameraId" label="Camera ID" rules={[{ required: true }]}>
-        <Input placeholder="e.g. CAM-009" />
+      <Form.Item name="cameraId" label="Camera ID" tooltip="Leave empty to assign the next free ID">
+        <Input placeholder="Auto, e.g. CAM-009" />
       </Form.Item>
     </Col>
     <Col xs={24} md={16}>
@@ -77,9 +94,41 @@ const renderForm = () => (
       </Form.Item>
     </Col>
     <Col xs={24} md={16}>
-      <Form.Item name="streamUrl" label="Stream URL">
+      <Form.Item name="streamUrl" label="RTSP Stream URL">
         <Input placeholder="rtsp://192.168.10.101:554/stream1" />
       </Form.Item>
+    </Col>
+    <Col xs={12} md={8}>
+      <Form.Item name="rtspUser" label="RTSP Username">
+        <Input autoComplete="off" />
+      </Form.Item>
+    </Col>
+    <Col xs={12} md={8}>
+      <Form.Item name="rtspPassword" label="RTSP Password">
+        <Input.Password autoComplete="new-password" placeholder={record?.hasPassword ? 'Leave blank to keep current' : ''} />
+      </Form.Item>
+    </Col>
+    <Col xs={24} md={8}>
+      <Form.Item
+        name="liveUrl"
+        label="Live URL (optional)"
+        tooltip="A browser-playable stream (HLS .m3u8, MJPEG or MP4). Leave empty to play the RTSP stream through the media gateway."
+      >
+        <Input placeholder="https://.../index.m3u8" />
+      </Form.Item>
+    </Col>
+    <Col xs={12} md={8}>
+      <Form.Item name="manufacturer" label="Manufacturer">
+        <Input />
+      </Form.Item>
+    </Col>
+    <Col xs={12} md={8}>
+      <Form.Item name="model" label="Model">
+        <Input />
+      </Form.Item>
+    </Col>
+    <Col xs={24}>
+      <Divider style={{ margin: '4px 0 16px' }} />
     </Col>
     <Col xs={12} md={8}>
       <Form.Item name="status" label="Status">
@@ -100,23 +149,49 @@ const renderForm = () => (
 );
 
 export default function Cameras() {
+  const navigate = useNavigate();
+  const { isAdmin } = useAuth();
+  const [discoverOpen, setDiscoverOpen] = useState(false);
+  const [tableKey, setTableKey] = useState(0); // remounts the table after a bulk add
+
   return (
-    <CrudPage
-      title="Camera Management"
-      resource="cameras"
-      addText="Add Camera"
-      modalTitle={(r) => (r ? 'Edit Camera' : 'Add Camera')}
-      searchPlaceholder="Search camera ID, name, location or IP..."
-      columns={columns}
-      filters={[
-        { name: 'status', placeholder: 'All Status', options: toOptions(STATUSES), width: 140 },
-        { name: 'type', placeholder: 'All Types', options: toOptions(TYPES), width: 130 },
-      ]}
-      renderForm={renderForm}
-      toForm={(r) => ({ ...r, installedDate: r.installedDate ? dayjs(r.installedDate) : null })}
-      fromForm={(v) => ({ ...v, installedDate: v.installedDate ? v.installedDate.toISOString() : null })}
-      initialValues={{ type: 'Indoor', resolution: '1080p', status: 'Online' }}
-      modalWidth={720}
-    />
+    <>
+      <CrudPage
+        key={tableKey}
+        title="Camera Management"
+        resource="cameras"
+        addText="Add Camera"
+        modalTitle={(r) => (r ? 'Edit Camera' : 'Add Camera')}
+        searchPlaceholder="Search camera ID, name, location or IP..."
+        columns={columns}
+        filters={[
+          { name: 'status', placeholder: 'All Status', options: toOptions(STATUSES), width: 140 },
+          { name: 'type', placeholder: 'All Types', options: toOptions(TYPES), width: 130 },
+        ]}
+        renderForm={renderForm}
+        toolbarExtra={() => (
+          <>
+            <Button icon={<AppstoreOutlined />} onClick={() => navigate('/camera-view')}>
+              Camera View
+            </Button>
+            {isAdmin && (
+              <Button icon={<RadarChartOutlined />} onClick={() => setDiscoverOpen(true)}>
+                Discover Cameras
+              </Button>
+            )}
+          </>
+        )}
+        rowActions={(record) => (
+          <Tooltip title="View live">
+            <Button type="text" icon={<EyeOutlined />} style={{ color: '#1664ff' }} onClick={() => navigate(`/camera-view?camera=${record._id}`)} />
+          </Tooltip>
+        )}
+        toForm={(r) => ({ ...r, rtspPassword: '', installedDate: r.installedDate ? dayjs(r.installedDate) : null })}
+        fromForm={(v) => ({ ...v, installedDate: v.installedDate ? v.installedDate.toISOString() : null })}
+        initialValues={{ type: 'Indoor', resolution: '1080p', status: 'Online' }}
+        modalWidth={760}
+      />
+      <CameraDiscovery open={discoverOpen} onClose={() => setDiscoverOpen(false)} onAdded={() => setTableKey((k) => k + 1)} />
+    </>
   );
 }

@@ -17,6 +17,9 @@ import Commands from './pages/Commands';
 import Cameras from './pages/Cameras';
 import Emails from './pages/Emails';
 import Notifications from './pages/Notifications';
+import CameraView from './pages/CameraView';
+import Meetings from './pages/Meetings';
+import MeetingRoom from './pages/MeetingRoom';
 
 function RequireAuth({ children }) {
   const { user, loading } = useAuth();
@@ -28,6 +31,15 @@ export default function App() {
   return (
     <Routes>
       <Route path="/login" element={<Login />} />
+      {/* The meeting room uses the whole window, outside the sidebar layout. */}
+      <Route
+        path="/meetings/room/:code"
+        element={
+          <RequireAuth>
+            <MeetingRoom />
+          </RequireAuth>
+        }
+      />
       <Route
         element={
           <RequireAuth>
@@ -47,6 +59,8 @@ export default function App() {
         <Route path="daily-reports" element={<DailyReports />} />
         <Route path="commands" element={<Commands />} />
         <Route path="cameras" element={<Cameras />} />
+        <Route path="camera-view" element={<CameraView />} />
+        <Route path="meetings" element={<Meetings />} />
         <Route path="emails" element={<Emails />} />
         <Route path="notifications" element={<Notifications />} />
         <Route path="settings" element={<Settings />} />

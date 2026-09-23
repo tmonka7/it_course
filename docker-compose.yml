@@ -7,5 +7,16 @@ services:
     volumes:
       - mongo-data:/data/db
 
+  # Media gateway for the live camera view: pulls each camera's RTSP stream and serves it as HLS.
+  # Ports are bound to localhost only; viewers reach streams through the API's authenticated /api/live proxy.
+  mediamtx:
+    image: bluenviron/mediamtx:latest
+    restart: unless-stopped
+    volumes:
+      - ./mediamtx.yml:/mediamtx.yml:ro
+    ports:
+      - "127.0.0.1:9997:9997" # control API (the backend registers cameras here)
+      - "127.0.0.1:8888:8888" # HLS output
+
 volumes:
   mongo-data:

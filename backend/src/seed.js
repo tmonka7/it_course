@@ -18,6 +18,9 @@ const Command = require('./models/Command');
 const Camera = require('./models/Camera');
 const Email = require('./models/Email');
 const Notification = require('./models/Notification');
+const CommandLog = require('./models/CommandLog');
+const Meeting = require('./models/Meeting');
+const MeetingMessage = require('./models/MeetingMessage');
 
 const SURNAMES = ['Zhang', 'Li', 'Wang', 'Chen', 'Liu', 'Zhao', 'Sun', 'Huang', 'Zhou', 'Wu', 'Xu', 'Ma', 'Hu', 'Guo', 'Lin', 'He'];
 const GIVEN_M = ['Wei', 'Lei', 'Tao', 'Hao', 'Yang', 'Jie', 'Ming', 'Qiang', 'Jun', 'Bo', 'Peng', 'Rui', 'Kai', 'Chao'];
@@ -235,12 +238,41 @@ Sent orientation reminders.',
     },
   ]);
 
-  await Command.insertMany([
-    { title: 'Prepare midterm exam rooms', content: 'Assign rooms and invigilators for all midterm exams.', priority: 'High', assignee: staffUser._id, issuedBy: 'Administrator', dueDate: daysAgo(-2), status: 'In Progress' },
-    { title: 'Update faculty contact list', content: 'Verify phone numbers and emails for all faculty.', priority: 'Normal', assignee: staffUser._id, issuedBy: 'Administrator', dueDate: daysAgo(-7), status: 'Issued' },
-    { title: 'Check camera coverage in Building B', content: 'Two cameras reported offline; arrange maintenance.', priority: 'Urgent', assignee: staffUser._id, issuedBy: 'Administrator', dueDate: daysAgo(-1), status: 'Issued' },
-    { title: 'Archive last semester grade sheets', priority: 'Low', assignee: adminUser._id, issuedBy: 'Administrator', dueDate: daysAgo(3), status: 'Completed' },
+  const commands = await Command.insertMany([
+    { title: 'Prepare midterm exam rooms', content: 'Assign rooms and invigilators for all midterm exams.', priority: 'High', assignee: staffUser._id, issuer: adminUser._id, issuedBy: 'Administrator', dueDate: daysAgo(-2), status: 'In Progress' },
+    { title: 'Update faculty contact list', content: 'Verify phone numbers and emails for all faculty.', priority: 'Normal', assignee: staffUser._id, issuer: adminUser._id, issuedBy: 'Administrator', dueDate: daysAgo(-7), status: 'Issued' },
+    { title: 'Check camera coverage in Building B', content: 'Two cameras reported offline; arrange maintenance.', priority: 'Urgent', assignee: staffUser._id, issuer: adminUser._id, issuedBy: 'Administrator', dueDate: daysAgo(-1), status: 'Issued' },
+    { title: 'Archive last semester grade sheets', priority: 'Low', assignee: adminUser._id, issuer: adminUser._id, issuedBy: 'Administrator', dueDate: daysAgo(3), status: 'Completed' },
   ]);
+
+  const at = (daysBack, hour) => {
+    const d = daysAgo(daysBack);
+    d.setHours(hour, 15);
+    return d;
+  };
+  const logs = [];
+  commands.forEach((c, i) => {
+    logs.push({ command: c._id, type: 'Created', note: 'Command issued', status: 'Issued', user: adminUser._id, author: 'Administrator', createdAt: at(3, 9) });
+    if (i === 0) {
+      logs.push(
+        { command: c._id, type: 'Update', note: 'Status: Issued → In Progress', status: 'In Progress', user: staffUser._id, author: 'Office Staff', createdAt: at(2, 10) },
+        { command: c._id, type: 'Progress', note: 'Collected the exam timetable from all departments.', status: 'In Progress', user: staffUser._id, author: 'Office Staff', createdAt: at(2, 16) },
+        { command: c._id, type: 'Progress', note: 'Rooms booked for CS and SE exams; IS still pending.', status: 'In Progress', user: staffUser._id, author: 'Office Staff', createdAt: at(1, 16) },
+        { command: c._id, type: 'Progress', note: 'All rooms booked. Assigning invigilators now.', status: 'In Progress', user: staffUser._id, author: 'Office Staff', createdAt: at(0, 11) }
+      );
+    }
+    if (i === 3) {
+      logs.push({ command: c._id, type: 'Update', note: 'Status: Issued → Completed', status: 'Completed', user: adminUser._id, author: 'Administrator', createdAt: at(1, 14) });
+    }
+  });
+  // insertMany keeps the explicit createdAt values (timestamps only fill missing ones).
+  await CommandLog.insertMany(logs);
+
+  const meetings = await Meeting.create([
+    { title: 'Weekly Staff Meeting', description: 'Weekly sync for administrative staff.', scheduledAt: at(-1, 10), host: adminUser._id, hostName: 'Administrator' },
+    { title: 'Midterm Exam Planning', description: 'Room and invigilator assignments.', scheduledAt: at(-2, 14), host: staffUser._id, hostName: 'Office Staff' },
+  ]);
+  await MeetingMessage.create({ meeting: meetings[0]._id, user: adminUser._id, name: 'Administrator', text: 'Agenda: exam rooms, camera maintenance, orientation.' });
 
   const CAMERAS = [
     ['CAM-001', 'Main Gate', 'Main Entrance', 'Outdoor', '4K', 'Online'],
@@ -255,6 +287,7 @@ Sent orientation reminders.',
   await Camera.insertMany(
     CAMERAS.map(([cameraId, name, location, type, resolution, status], i) => ({
       cameraId,
+      discoveredVia: 'Manual',
       name,
       location,
       type,

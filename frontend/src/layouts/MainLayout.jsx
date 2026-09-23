@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { App, Avatar, Badge, Button, Drawer, Dropdown, Form, Grid, Input, Layout, List, Menu, Modal, Popover, Space, Typography } from 'antd';
 import {
+  AppstoreOutlined,
   BellOutlined,
   BookOutlined,
   CalendarOutlined,
@@ -15,12 +16,14 @@ import {
   LogoutOutlined,
   MailOutlined,
   MenuOutlined,
+  MessageOutlined,
   NotificationOutlined,
   SearchOutlined,
   SettingOutlined,
   SolutionOutlined,
   TeamOutlined,
   UserOutlined,
+  VideoCameraAddOutlined,
   VideoCameraOutlined,
 } from '@ant-design/icons';
 import dayjs from 'dayjs';
@@ -42,13 +45,39 @@ const MENU = [
   { key: '/admissions', icon: <FileAddOutlined />, label: 'Admissions' },
   { key: '/grades', icon: <FileTextOutlined />, label: 'Grades & Records' },
   { key: '/announcements', icon: <NotificationOutlined />, label: 'Announcements' },
-  { key: '/daily-reports', icon: <FileDoneOutlined />, label: 'Daily Reports' },
-  { key: '/commands', icon: <FlagOutlined />, label: 'Commands' },
-  { key: '/cameras', icon: <VideoCameraOutlined />, label: 'Camera Management' },
-  { key: '/emails', icon: <MailOutlined />, label: 'Email' },
-  { key: '/notifications', icon: <BellOutlined />, label: 'Notifications' },
+  {
+    key: 'operations',
+    icon: <FlagOutlined />,
+    label: 'Operations',
+    children: [
+      { key: '/daily-reports', icon: <FileDoneOutlined />, label: 'Daily Reports' },
+      { key: '/commands', icon: <FlagOutlined />, label: 'Commands' },
+    ],
+  },
+  {
+    key: 'security',
+    icon: <VideoCameraOutlined />,
+    label: 'Security',
+    children: [
+      { key: '/cameras', icon: <VideoCameraOutlined />, label: 'Camera Management' },
+      { key: '/camera-view', icon: <AppstoreOutlined />, label: 'Camera View' },
+    ],
+  },
+  {
+    key: 'communication',
+    icon: <MessageOutlined />,
+    label: 'Communication',
+    children: [
+      { key: '/meetings', icon: <VideoCameraAddOutlined />, label: 'Video Meetings' },
+      { key: '/emails', icon: <MailOutlined />, label: 'Email' },
+      { key: '/notifications', icon: <BellOutlined />, label: 'Notifications' },
+    ],
+  },
   { key: '/settings', icon: <SettingOutlined />, label: 'System Settings' },
 ];
+
+// Leaf items with the submenu they belong to, for route highlighting.
+const MENU_LEAVES = MENU.flatMap((m) => (m.children ? m.children.map((c) => ({ ...c, parent: m.key })) : [m]));
 
 function NotificationBell() {
   const [data, setData] = useState({ unread: 0, items: [] });
@@ -198,12 +227,21 @@ export default function MainLayout() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const selected = MENU.find((m) => location.pathname.startsWith(m.key))?.key;
+  const current = MENU_LEAVES.find((m) => location.pathname.startsWith(m.key));
+  const selected = current?.key;
+  const [openKeys, setOpenKeys] = useState(current?.parent ? [current.parent] : []);
+
+  // Open the submenu of the current page when navigating (e.g. from a notification link).
+  useEffect(() => {
+    if (current?.parent) setOpenKeys((keys) => (keys.includes(current.parent) ? keys : [...keys, current.parent]));
+  }, [current?.parent]);
 
   const menu = (
     <Menu
       mode="inline"
       selectedKeys={selected ? [selected] : []}
+      openKeys={openKeys}
+      onOpenChange={setOpenKeys}
       items={MENU}
       onClick={({ key }) => {
         navigate(key);

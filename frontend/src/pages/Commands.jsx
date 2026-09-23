@@ -1,5 +1,7 @@
-import { App, Button, Col, DatePicker, Form, Input, Row, Select, Tooltip, Typography } from 'antd';
-import { CheckCircleOutlined, PlayCircleOutlined } from '@ant-design/icons';
+import { useEffect, useRef, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
+import { App, Button, Col, DatePicker, Form, Input, Row, Select, Tag, Tooltip, Typography } from 'antd';
+import { CalendarOutlined, CheckCircleOutlined, PlayCircleOutlined, ProfileOutlined } from '@ant-design/icons';
 import dayjs from 'dayjs';
 import CrudPage from '../components/CrudPage';
 import StatusTag from '../components/StatusTag';
@@ -7,9 +9,10 @@ import RemoteSelect from '../components/RemoteSelect';
 import { useAuth } from '../context/AuthContext';
 import api, { errMsg } from '../api';
 import { toOptions } from '../constants';
+import { COMMAND_STATUSES, CommandLogDrawer, DailyCommandLogModal } from '../components/CommandLog';
 
 const PRIORITIES = ['Low', 'Normal', 'High', 'Urgent'];
-const STATUSES = ['Issued', 'In Progress', 'Completed', 'Cancelled'];
+const STATUSES = COMMAND_STATUSES;
 const isOpen = (status) => status === 'Issued' || status === 'In Progress';
 
 const columns = [
@@ -34,6 +37,50 @@ const userLabel = (u) => `${u.name} (${u.username})`;
 export default function Commands() {
   const { message } = App.useApp();
   const { user, isAdmin } = useAuth();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [logFor, setLogFor] = useState(null); // command id shown in the log drawer
+  const [dailyOpen, setDailyOpen] = useState(false);
+  const [loggedToday, setLoggedToday] = useState(new Set());
+  const [version, setVersion] = useState(0); // bumps to refresh the "Today's Log" column
+  const reloadTable = useRef(() => {}); // CrudPage's reload, captured from rowActions
+
+  // Notification links open a command's log with /commands?open=<id>.
+  useEffect(() => {
+    const id = searchParams.get('open');
+    if (!id) return;
+    setLogFor(id);
+    setSearchParams(
+      (p) => {
+        p.delete('open');
+        return p;
+      },
+      { replace: true }
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams]);
+
+  useEffect(() => {
+    api
+      .get('/command-logs', { params: { date: dayjs().format('YYYY-MM-DD'), type: 'Progress' } })
+      .then(({ data }) => setLoggedToday(new Set(data.loggedCommandIds.map(String))))
+      .catch(() => {});
+  }, [version]);
+
+  const allColumns = [
+    ...columns,
+    {
+      title: "Today's Log",
+      key: 'today',
+      render: (_, r) => {
+        if (!isOpen(r.status)) return <Typography.Text type="secondary">-</Typography.Text>;
+        return loggedToday.has(String(r._id)) ? (
+          <Tag bordered={false} color="green">Logged</Tag>
+        ) : (
+          <Tag bordered={false} color="orange">Missing</Tag>
+        );
+      },
+    },
+  ];
 
   const setStatus = async (record, status, reload) => {
     try {
@@ -92,37 +139,66 @@ export default function Commands() {
   );
 
   return (
-    <CrudPage
-      title="Commands"
-      resource="commands"
-      addText="Issue Command"
-      modalTitle={(r) => (r ? 'Edit Command' : 'Issue Command')}
-      searchPlaceholder="Search commands..."
-      columns={columns}
-      filters={[
-        { name: 'assignee', placeholder: 'All Assignees', options: [{ value: user._id, label: 'Assigned to me' }], width: 150 },
-        { name: 'status', placeholder: 'All Status', options: toOptions(STATUSES), width: 140 },
-        { name: 'priority', placeholder: 'All Priorities', options: toOptions(PRIORITIES), width: 140 },
-      ]}
-      renderForm={renderForm}
-      toForm={(r) => ({ ...r, assignee: r.assignee?._id, dueDate: r.dueDate ? dayjs(r.dueDate) : null })}
-      fromForm={(v) => ({ ...v, dueDate: v.dueDate ? v.dueDate.endOf('day').toISOString() : null })}
-      initialValues={{ priority: 'Normal', status: 'Issued', assignee: isAdmin ? undefined : user._id }}
-      modalWidth={720}
-      rowActions={(record, reload) => (
-        <>
-          {record.status === 'Issued' && (
-            <Tooltip title="Start">
-              <Button type="text" icon={<PlayCircleOutlined />} style={{ color: '#d97706' }} onClick={() => setStatus(record, 'In Progress', reload)} />
-            </Tooltip>
-          )}
-          {isOpen(record.status) && (
-            <Tooltip title="Mark completed">
-              <Button type="text" icon={<CheckCircleOutlined />} style={{ color: '#16a34a' }} onClick={() => setStatus(record, 'Completed', reload)} />
-            </Tooltip>
-          )}
-        </>
-      )}
-    />
+    <>
+      <CrudPage
+        title="Commands"
+        resource="commands"
+        addText="Issue Command"
+        modalTitle={(r) => (r ? 'Edit Command' : 'Issue Command')}
+        searchPlaceholder="Search commands..."
+        columns={allColumns}
+        toolbarExtra={() => (
+          <Button icon={<CalendarOutlined />} onClick={() => setDailyOpen(true)}>
+            Daily Log
+          </Button>
+        )}
+        filters={[
+          { name: 'assignee', placeholder: 'All Assignees', options: [{ value: user._id, label: 'Assigned to me' }], width: 150 },
+          { name: 'status', placeholder: 'All Status', options: toOptions(STATUSES), width: 140 },
+          { name: 'priority', placeholder: 'All Priorities', options: toOptions(PRIORITIES), width: 140 },
+        ]}
+        renderForm={renderForm}
+        toForm={(r) => ({ ...r, assignee: r.assignee?._id, dueDate: r.dueDate ? dayjs(r.dueDate) : null })}
+        fromForm={(v) => ({ ...v, dueDate: v.dueDate ? v.dueDate.endOf('day').toISOString() : null })}
+        initialValues={{ priority: 'Normal', status: 'Issued', assignee: isAdmin ? undefined : user._id }}
+        modalWidth={720}
+        rowActions={(record, reload) => {
+          reloadTable.current = reload;
+          return (
+            <>
+              <Tooltip title="Log / history">
+                <Button type="text" icon={<ProfileOutlined />} style={{ color: '#1664ff' }} onClick={() => setLogFor(record._id)} />
+              </Tooltip>
+              {record.status === 'Issued' && (
+                <Tooltip title="Start">
+                  <Button type="text" icon={<PlayCircleOutlined />} style={{ color: '#d97706' }} onClick={() => setStatus(record, 'In Progress', reload)} />
+                </Tooltip>
+              )}
+              {isOpen(record.status) && (
+                <Tooltip title="Mark completed">
+                  <Button type="text" icon={<CheckCircleOutlined />} style={{ color: '#16a34a' }} onClick={() => setStatus(record, 'Completed', reload)} />
+                </Tooltip>
+              )}
+            </>
+          );
+        }}
+      />
+      <CommandLogDrawer
+        commandId={logFor}
+        onClose={() => setLogFor(null)}
+        onChanged={() => {
+          setVersion((v) => v + 1);
+          reloadTable.current();
+        }}
+      />
+      <DailyCommandLogModal
+        open={dailyOpen}
+        onClose={() => setDailyOpen(false)}
+        onOpenCommand={(id) => {
+          setDailyOpen(false);
+          setLogFor(id);
+        }}
+      />
+    </>
   );
 }
