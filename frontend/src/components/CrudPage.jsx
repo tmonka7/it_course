@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { App, Button, Card, Flex, Form, Input, Modal, Popconfirm, Select, Space, Table, Tooltip, Typography } from 'antd';
+import { App, Button, Card, Flex, Form, Input, Modal, Popconfirm, Select, Space, Table, Tooltip } from 'antd';
 import { DeleteOutlined, EditOutlined, PlusOutlined, SearchOutlined } from '@ant-design/icons';
 import api, { errMsg } from '../api';
 
@@ -155,7 +155,7 @@ export default function CrudPage({
       fixed: 'right',
       width: rowActions ? 150 : 100,
       render: (_, record) => (
-        <Space size={0}>
+        <Space size={0} className="row-actions">
           {rowActions?.(record, load)}
           {canWrite && (
             <>
@@ -177,9 +177,9 @@ export default function CrudPage({
   return (
     <Card className="page-card" bordered={false}>
       <Flex justify="space-between" align="center" wrap="wrap" gap={12} style={{ marginBottom: 16 }}>
-        <Typography.Title level={4} style={{ margin: 0 }}>
+        <h1 className="page-title" style={{ margin: 0 }}>
           {title}
-        </Typography.Title>
+        </h1>
         <Space wrap>
           {toolbarExtra?.({ query })}
           {canWrite && (

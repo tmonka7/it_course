@@ -214,9 +214,7 @@ export default function Settings() {
 
   return (
     <>
-      <Typography.Title level={4} style={{ marginTop: 0 }}>
-        System Settings
-      </Typography.Title>
+      <h1 className="page-title">System Settings</h1>
       <Row gutter={[16, 16]}>
         <Col xs={24} md={6} xl={5}>
           <Card bordered={false} className="page-card" styles={{ body: { padding: 8 } }}>

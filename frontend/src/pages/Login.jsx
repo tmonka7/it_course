@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
-import { Alert, Button, Checkbox, Flex, Form, Input, Typography } from 'antd';
+import { Alert, Button, Checkbox, Flex, Form, Input, Tooltip, Typography } from 'antd';
 import { LockOutlined, UserOutlined } from '@ant-design/icons';
 import { useAuth } from '../context/AuthContext';
 import { useSettings } from '../context/SettingsContext';
@@ -75,9 +75,9 @@ export default function Login() {
               <Form.Item name="remember" valuePropName="checked" noStyle>
                 <Checkbox>Remember me</Checkbox>
               </Form.Item>
-              <Typography.Text type="secondary" style={{ fontSize: 13 }}>
-                Forgot password? Contact an administrator
-              </Typography.Text>
+              <Tooltip title="Contact an administrator to reset your password">
+                <Typography.Link style={{ fontSize: 13 }}>Forgot password?</Typography.Link>
+              </Tooltip>
             </Flex>
             <Button type="primary" htmlType="submit" block loading={loading}>
               Login
