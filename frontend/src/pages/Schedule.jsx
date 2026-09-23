@@ -3,7 +3,9 @@ import { App, Badge, Button, Calendar, Card, Empty, Flex, Form, Input, Modal, Po
 import { LeftOutlined, PlusOutlined, RightOutlined } from '@ant-design/icons';
 import dayjs from 'dayjs';
 import api, { errMsg } from '../api';
+import { useAuth } from '../context/AuthContext';
 import { DEPARTMENT_COLORS, PERIODS, WEEKDAYS } from '../constants';
+import { t } from '../i18n';
 
 // Monday of the week containing `d` (dayjs weeks start on Sunday by default).
 const mondayOf = (d) => d.subtract((d.day() + 6) % 7, 'day').startOf('day');
@@ -23,6 +25,10 @@ function SlotCard({ slot, onClick }) {
 
 export default function Schedule() {
   const { message } = App.useApp();
+  const { can } = useAuth();
+  const canCreate = can('schedule', 'create');
+  const canEdit = can('schedule', 'edit');
+  const canDelete = can('schedule', 'delete');
   const [view, setView] = useState('Week');
   const [date, setDate] = useState(dayjs());
   const [slots, setSlots] = useState([]);
@@ -48,7 +54,7 @@ export default function Schedule() {
   useEffect(() => {
     load();
     api
-      .get('/courses', { params: { pageSize: 1000, status: 'Active' } })
+      .get('/lookup/courses', { params: { pageSize: 1000, status: 'Active' } })
       .then(({ data }) => setCourses(data.items.map((c) => ({ value: c._id, label: `${c.code} ${c.name}` }))))
       .catch(() => {});
   }, [load]);
@@ -88,7 +94,7 @@ export default function Schedule() {
     try {
       if (modal.record) await api.put(`/schedules/${modal.record._id}`, values);
       else await api.post('/schedules', values);
-      message.success('Schedule saved');
+      message.success(t('Schedule saved'));
       closeModal();
       load();
     } catch (err) {
@@ -101,7 +107,7 @@ export default function Schedule() {
   const remove = async () => {
     try {
       await api.delete(`/schedules/${modal.record._id}`);
-      message.success('Class removed');
+      message.success(t('Class removed'));
       closeModal();
       load();
     } catch (err) {
@@ -110,17 +116,17 @@ export default function Schedule() {
   };
 
   const renderGrid = () => {
-    if (!days.length) return <Empty description="No classes on weekends" style={{ padding: 48 }} />;
+    if (!days.length) return <Empty description={t('No classes on weekends')} style={{ padding: 48 }} />;
     return (
       <div className="schedule-scroll">
         <div className="schedule-grid" style={{ gridTemplateColumns: `110px repeat(${days.length}, minmax(140px, 1fr))` }}>
-          <div className="sg-head">Time</div>
+          <div className="sg-head">{t('Time')}</div>
           {days.map((d) => {
             const dayDate = monday.add(d - 1, 'day');
             const today = dayDate.isSame(dayjs(), 'day');
             return (
               <div key={d} className={`sg-head ${today ? 'sg-today' : ''}`}>
-                {WEEKDAYS[d - 1]}
+                {t(WEEKDAYS[d - 1])}
                 <div className="sg-date">{dayDate.format('MM/DD')}</div>
               </div>
             );
@@ -131,9 +137,9 @@ export default function Schedule() {
               {days.map((d) => (
                 <div
                   key={d}
-                  className="sg-cell"
-                  onClick={(e) => e.target === e.currentTarget && openModal(null, { day: d, period })}
-                  title="Click an empty area to add a class"
+                  className={`sg-cell ${canCreate ? '' : 'read-only'}`}
+                  onClick={(e) => canCreate && e.target === e.currentTarget && openModal(null, { day: d, period })}
+                  title={canCreate ? t('Click an empty area to add a class') : undefined}
                 >
                   {(grid[`${d}-${period}`] || []).map((s) => (
                     <SlotCard key={s._id} slot={s} onClick={() => openModal(s)} />
@@ -165,7 +171,7 @@ export default function Schedule() {
                 <Badge color={DEPARTMENT_COLORS[s.course?.department] || '#1664ff'} text={`${s.course?.code} ${PERIODS[s.period].slice(0, 5)}`} />
               </li>
             ))}
-            {daySlots.length > 3 && <li className="slot-sub">+{daySlots.length - 3} more</li>}
+            {daySlots.length > 3 && <li className="slot-sub">{t('+{count} more', { count: daySlots.length - 3 })}</li>}
           </ul>
         );
       }}
@@ -176,11 +182,13 @@ export default function Schedule() {
     <Card className="page-card" bordered={false}>
       <Flex justify="space-between" align="center" wrap="wrap" gap={12} style={{ marginBottom: 16 }}>
         <h1 className="page-title" style={{ margin: 0 }}>
-          Class Schedule
+          {t('Class Schedule')}
         </h1>
-        <Button type="primary" icon={<PlusOutlined />} onClick={() => openModal(null, { day: Math.min(isoDay(date), 5), period: 0 })}>
-          Add Class
-        </Button>
+        {canCreate && (
+          <Button type="primary" icon={<PlusOutlined />} onClick={() => openModal(null, { day: Math.min(isoDay(date), 5), period: 0 })}>
+            {t('Add Class')}
+          </Button>
+        )}
       </Flex>
 
       <Flex justify="space-between" align="center" wrap="wrap" gap={12} style={{ marginBottom: 16 }}>
@@ -190,32 +198,34 @@ export default function Schedule() {
             {rangeLabel}
           </Typography.Text>
           <Button icon={<RightOutlined />} onClick={() => shift(1)} />
-          <Button onClick={() => setDate(dayjs())}>Today</Button>
+          <Button onClick={() => setDate(dayjs())}>{t('Today')}</Button>
         </Space>
-        <Segmented options={['Day', 'Week', 'Month']} value={view} onChange={setView} />
+        <Segmented options={['Day', 'Week', 'Month'].map((v) => ({ label: t(v), value: v }))} value={view} onChange={setView} />
       </Flex>
 
       <Spin spinning={loading}>{view === 'Month' ? renderMonth() : renderGrid()}</Spin>
 
       <Modal
-        title={modal.record ? 'Edit Class' : 'Add Class'}
+        title={modal.record ? t('Edit Class') : t('Add Class')}
         open={modal.open}
         onCancel={closeModal}
         destroyOnClose
         footer={
           <Flex justify="space-between">
             <div>
-              {modal.record && (
-                <Popconfirm title="Remove this class from the schedule?" okButtonProps={{ danger: true }} onConfirm={remove}>
-                  <Button danger>Delete</Button>
+              {modal.record && canDelete && (
+                <Popconfirm title={t('Remove this class from the schedule?')} okText={t('Delete')} cancelText={t('Cancel')} okButtonProps={{ danger: true }} onConfirm={remove}>
+                  <Button danger>{t('Delete')}</Button>
                 </Popconfirm>
               )}
             </div>
             <Space>
-              <Button onClick={closeModal}>Cancel</Button>
-              <Button type="primary" loading={saving} onClick={save}>
-                Save
-              </Button>
+              <Button onClick={closeModal}>{t('Cancel')}</Button>
+              {(modal.record ? canEdit : canCreate) && (
+                <Button type="primary" loading={saving} onClick={save}>
+                  {t('Save')}
+                </Button>
+              )}
             </Space>
           </Flex>
         }
@@ -225,6 +235,7 @@ export default function Schedule() {
             form={form}
             layout="vertical"
             preserve={false}
+            disabled={modal.record ? !canEdit : !canCreate}
             style={{ marginTop: 16 }}
             initialValues={
               modal.record
@@ -232,19 +243,19 @@ export default function Schedule() {
                 : modal.defaults
             }
           >
-            <Form.Item name="course" label="Course" rules={[{ required: true }]}>
-              <Select showSearch optionFilterProp="label" options={courses} placeholder="Select course" />
+            <Form.Item name="course" label={t('Course')} rules={[{ required: true }]}>
+              <Select showSearch optionFilterProp="label" options={courses} placeholder={t('Select course')} />
             </Form.Item>
             <Flex gap={16}>
-              <Form.Item name="day" label="Day" rules={[{ required: true }]} style={{ flex: 1 }}>
-                <Select options={WEEKDAYS.map((w, i) => ({ label: w, value: i + 1 }))} />
+              <Form.Item name="day" label={t('Day')} rules={[{ required: true }]} style={{ flex: 1 }}>
+                <Select options={WEEKDAYS.map((w, i) => ({ label: t(w), value: i + 1 }))} />
               </Form.Item>
-              <Form.Item name="period" label="Time" rules={[{ required: true }]} style={{ flex: 1 }}>
+              <Form.Item name="period" label={t('Time')} rules={[{ required: true }]} style={{ flex: 1 }}>
                 <Select options={PERIODS.map((p, i) => ({ label: p, value: i }))} />
               </Form.Item>
             </Flex>
-            <Form.Item name="room" label="Room" rules={[{ required: true }]}>
-              <Input placeholder="e.g. Room 101" />
+            <Form.Item name="room" label={t('Room')} rules={[{ required: true }]}>
+              <Input placeholder={t('e.g. Room 101')} />
             </Form.Item>
           </Form>
         )}

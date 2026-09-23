@@ -34,26 +34,28 @@ import { useAuth } from '../context/AuthContext';
 import api, { errMsg } from '../api';
 import NotificationItem from '../components/NotificationItem';
 import { fetchMyNotifications, markAllRead, markRead, onNotificationsChanged } from '../notifications';
+import LanguageSwitcher from '../components/LanguageSwitcher';
+import { currentLanguage, t } from '../i18n';
 
 const { Header, Sider, Content } = Layout;
 
 const MENU = [
-  { key: '/dashboard', icon: <HomeOutlined />, label: 'Home' },
-  { key: '/students', icon: <TeamOutlined />, label: 'Student Management' },
-  { key: '/faculty', icon: <SolutionOutlined />, label: 'Faculty Management' },
-  { key: '/courses', icon: <BookOutlined />, label: 'Course Management' },
-  { key: '/schedule', icon: <CalendarOutlined />, label: 'Class Schedule' },
-  { key: '/admissions', icon: <FileAddOutlined />, label: 'Admissions' },
-  { key: '/grades', icon: <FileTextOutlined />, label: 'Grades & Records' },
-  { key: '/announcements', icon: <NotificationOutlined />, label: 'Announcements' },
+  { key: '/dashboard', page: 'dashboard', icon: <HomeOutlined />, label: 'Home' },
+  { key: '/students', page: 'students', icon: <TeamOutlined />, label: 'Student Management' },
+  { key: '/faculty', page: 'faculty', icon: <SolutionOutlined />, label: 'Faculty Management' },
+  { key: '/courses', page: 'courses', icon: <BookOutlined />, label: 'Course Management' },
+  { key: '/schedule', page: 'schedule', icon: <CalendarOutlined />, label: 'Class Schedule' },
+  { key: '/admissions', page: 'admissions', icon: <FileAddOutlined />, label: 'Admissions' },
+  { key: '/grades', page: 'grades', icon: <FileTextOutlined />, label: 'Grades & Records' },
+  { key: '/announcements', page: 'announcements', icon: <NotificationOutlined />, label: 'Announcements' },
   {
     key: 'operations',
     icon: <FlagOutlined />,
     label: 'Operations',
     children: [
-      { key: '/daily-reports', icon: <FileDoneOutlined />, label: 'Daily Reports' },
-      { key: '/commands', icon: <FlagOutlined />, label: 'Commands' },
-      { key: '/work-schedule', icon: <ScheduleOutlined />, label: 'Work Schedule' },
+      { key: '/daily-reports', page: 'dailyReports', icon: <FileDoneOutlined />, label: 'Daily Reports' },
+      { key: '/commands', page: 'commands', icon: <FlagOutlined />, label: 'Commands' },
+      { key: '/work-schedule', page: 'workSchedule', icon: <ScheduleOutlined />, label: 'Work Schedule' },
     ],
   },
   {
@@ -61,8 +63,8 @@ const MENU = [
     icon: <VideoCameraOutlined />,
     label: 'Security',
     children: [
-      { key: '/cameras', icon: <VideoCameraOutlined />, label: 'Camera Management' },
-      { key: '/camera-view', icon: <AppstoreOutlined />, label: 'Camera View' },
+      { key: '/cameras', page: 'cameras', icon: <VideoCameraOutlined />, label: 'Camera Management' },
+      { key: '/camera-view', page: 'cameraView', icon: <AppstoreOutlined />, label: 'Camera View' },
     ],
   },
   {
@@ -70,8 +72,8 @@ const MENU = [
     icon: <MessageOutlined />,
     label: 'Communication',
     children: [
-      { key: '/meetings', icon: <VideoCameraAddOutlined />, label: 'Video Meetings' },
-      { key: '/emails', icon: <MailOutlined />, label: 'Email' },
+      { key: '/meetings', page: 'meetings', icon: <VideoCameraAddOutlined />, label: 'Video Meetings' },
+      { key: '/emails', page: 'emails', icon: <MailOutlined />, label: 'Email' },
       { key: '/notifications', icon: <BellOutlined />, label: 'Notifications' },
     ],
   },
@@ -80,6 +82,16 @@ const MENU = [
 
 // Leaf items with the submenu they belong to, for route highlighting.
 const MENU_LEAVES = MENU.flatMap((m) => (m.children ? m.children.map((c) => ({ ...c, parent: m.key })) : [m]));
+
+/** Menu items the user may view, with translated labels; groups with no visible items are dropped. */
+function visibleMenu(can) {
+  const leaf = ({ page, label, ...item }) => ({ ...item, label: t(label) });
+  return MENU.map((m) => {
+    if (!m.children) return !m.page || can(m.page) ? leaf(m) : null;
+    const children = m.children.filter((c) => !c.page || can(c.page)).map(leaf);
+    return children.length ? { ...m, label: t(m.label), children } : null;
+  }).filter(Boolean);
+}
 
 function NotificationBell() {
   const [data, setData] = useState({ unread: 0, items: [] });
@@ -114,10 +126,10 @@ function NotificationBell() {
       onOpenChange={setOpen}
       title={
         <div className="notif-pop-head">
-          <span>Notifications</span>
+          <span>{t('Notifications')}</span>
           {data.unread > 0 && (
             <Button type="link" size="small" onClick={() => markAllRead().catch(() => {})}>
-              Mark all read
+              {t('Mark all read')}
             </Button>
           )}
         </div>
@@ -127,7 +139,7 @@ function NotificationBell() {
           <List
             size="small"
             dataSource={data.items}
-            locale={{ emptyText: 'No notifications' }}
+            locale={{ emptyText: t('No notifications') }}
             renderItem={(n) => <NotificationItem item={n} onOpen={openItem} />}
           />
           <Button
@@ -138,13 +150,13 @@ function NotificationBell() {
               navigate('/notifications');
             }}
           >
-            View all notifications
+            {t('View all notifications')}
           </Button>
         </div>
       }
     >
       <Badge count={data.unread} size="small">
-        <Button type="text" shape="circle" aria-label="Notifications" icon={<BellOutlined style={{ fontSize: 18 }} />} />
+        <Button type="text" shape="circle" aria-label={t('Notifications')} icon={<BellOutlined style={{ fontSize: 18 }} />} />
       </Badge>
     </Popover>
   );
@@ -161,7 +173,7 @@ function Clock() {
       <span>
         {now.format('YYYY-MM-DD')}&nbsp;&nbsp;{now.format('dddd')}
       </span>
-      <strong>{now.format('hh:mm A')}</strong>
+      <strong>{now.format(currentLanguage() === 'ja' ? 'HH:mm' : 'hh:mm A')}</strong>
     </div>
   );
 }
@@ -181,7 +193,7 @@ function ChangePasswordModal({ open, onClose }) {
     setSaving(true);
     try {
       await api.put('/auth/password', values);
-      message.success('Password changed');
+      message.success(t('Password changed'));
       onClose();
     } catch (err) {
       message.error(errMsg(err));
@@ -191,24 +203,33 @@ function ChangePasswordModal({ open, onClose }) {
   };
 
   return (
-    <Modal title="Change Password" open={open} onOk={submit} onCancel={onClose} confirmLoading={saving} destroyOnClose>
+    <Modal
+      title={t('Change Password')}
+      open={open}
+      onOk={submit}
+      onCancel={onClose}
+      okText={t('Save')}
+      cancelText={t('Cancel')}
+      confirmLoading={saving}
+      destroyOnClose
+    >
       {open && (
         <Form form={form} layout="vertical" preserve={false}>
-          <Form.Item name="currentPassword" label="Current password" rules={[{ required: true }]}>
+          <Form.Item name="currentPassword" label={t('Current password')} rules={[{ required: true }]}>
             <Input.Password />
           </Form.Item>
-          <Form.Item name="newPassword" label="New password" rules={[{ required: true, min: 6 }]}>
+          <Form.Item name="newPassword" label={t('New password')} rules={[{ required: true, min: 6 }]}>
             <Input.Password />
           </Form.Item>
           <Form.Item
             name="confirm"
-            label="Confirm new password"
+            label={t('Confirm new password')}
             dependencies={['newPassword']}
             rules={[
               { required: true },
               ({ getFieldValue }) => ({
                 validator: (_, v) =>
-                  !v || v === getFieldValue('newPassword') ? Promise.resolve() : Promise.reject(new Error('Passwords do not match')),
+                  !v || v === getFieldValue('newPassword') ? Promise.resolve() : Promise.reject(new Error(t('Passwords do not match'))),
               }),
             ]}
           >
@@ -225,7 +246,7 @@ export default function MainLayout() {
   const isMobile = screens.lg === false; // breakpoints are unknown ({}) on the very first render
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [pwdOpen, setPwdOpen] = useState(false);
-  const { user, logout } = useAuth();
+  const { user, logout, can } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -244,7 +265,7 @@ export default function MainLayout() {
       selectedKeys={selected ? [selected] : []}
       openKeys={openKeys}
       onOpenChange={setOpenKeys}
-      items={MENU}
+      items={visibleMenu(can)}
       onClick={({ key }) => {
         navigate(key);
         setDrawerOpen(false);
@@ -255,9 +276,9 @@ export default function MainLayout() {
 
   const userMenu = {
     items: [
-      { key: 'password', icon: <LockOutlined />, label: 'Change password' },
+      { key: 'password', icon: <LockOutlined />, label: t('Change password') },
       { type: 'divider' },
-      { key: 'logout', icon: <LogoutOutlined />, label: 'Log out', danger: true },
+      { key: 'logout', icon: <LogoutOutlined />, label: t('Log out'), danger: true },
     ],
     onClick: ({ key }) => {
       if (key === 'password') setPwdOpen(true);
@@ -274,12 +295,14 @@ export default function MainLayout() {
         <Sider width={256} className="app-sider" style={{ position: 'sticky', top: 0, height: '100vh', overflow: 'auto' }}>
           <div className="sider-inner">
             <div className="sider-logo">
-              <Logo size={46} subtitle="Administrative Management System" />
+              <Logo size={46} subtitle={t('Administrative Management System')} />
             </div>
             {menu}
             <div className="sider-footer">
               <CampusArt className="sider-campus" />
-              <div className="sider-tagline">Knowledge &middot; Innovation &middot; Future</div>
+              <div className="sider-tagline">
+                {t('Knowledge')} &middot; {t('Innovation')} &middot; {t('Future')}
+              </div>
             </div>
           </div>
         </Sider>
@@ -299,11 +322,11 @@ export default function MainLayout() {
         <Header className="app-header">
           <Space size={12} style={{ flex: 1, minWidth: 0 }}>
             {isMobile && <Button type="text" icon={<MenuOutlined />} onClick={() => setDrawerOpen(true)} />}
-            {screens.sm && (
+            {screens.sm && can('students') && (
               <Input
                 allowClear
                 prefix={<SearchOutlined style={{ color: '#98a2b3' }} />}
-                placeholder="Search..."
+                placeholder={t('Search students...')}
                 className="header-search"
                 onPressEnter={(e) => {
                   const q = e.currentTarget.value.trim();
@@ -312,7 +335,8 @@ export default function MainLayout() {
               />
             )}
           </Space>
-          <Space size={24}>
+          <Space size={screens.md ? 20 : 8}>
+            <LanguageSwitcher />
             <NotificationBell />
             <Dropdown menu={userMenu} trigger={['click']}>
               <Space className="header-user-trigger" style={{ cursor: 'pointer' }}>
@@ -321,7 +345,7 @@ export default function MainLayout() {
                   <div className="header-user">
                     <Typography.Text strong>{user?.username}</Typography.Text>
                     <Typography.Text type="secondary" style={{ fontSize: 12 }}>
-                      {user?.role === 'admin' ? 'Administrator' : 'Staff'}
+                      {t(user?.role === 'admin' ? 'Administrator' : 'Staff')}
                     </Typography.Text>
                   </div>
                 )}

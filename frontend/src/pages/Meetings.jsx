@@ -7,6 +7,7 @@ import CrudPage from '../components/CrudPage';
 import StatusTag from '../components/StatusTag';
 import api, { errMsg } from '../api';
 import { toOptions } from '../constants';
+import { t } from '../i18n';
 
 const STATUSES = ['Scheduled', 'Live', 'Ended'];
 const roomPath = (code) => `/meetings/room/${code}`;
@@ -14,17 +15,17 @@ const roomPath = (code) => `/meetings/room/${code}`;
 const renderForm = () => (
   <Row gutter={16}>
     <Col xs={24}>
-      <Form.Item name="title" label="Title" rules={[{ required: true }]}>
-        <Input placeholder="e.g. Weekly Staff Meeting" />
+      <Form.Item name="title" label={t('Title')} rules={[{ required: true }]}>
+        <Input placeholder={t('e.g. Weekly Staff Meeting')} />
       </Form.Item>
     </Col>
     <Col xs={24} md={12}>
-      <Form.Item name="scheduledAt" label="Scheduled For">
+      <Form.Item name="scheduledAt" label={t('Scheduled For')}>
         <DatePicker showTime={{ format: 'HH:mm', minuteStep: 5 }} format="YYYY-MM-DD HH:mm" style={{ width: '100%' }} />
       </Form.Item>
     </Col>
     <Col xs={24}>
-      <Form.Item name="description" label="Agenda / Description">
+      <Form.Item name="description" label={t('Agenda / Description')}>
         <Input.TextArea rows={4} />
       </Form.Item>
     </Col>
@@ -48,9 +49,9 @@ function JoinByCode() {
   };
   return (
     <Space.Compact>
-      <Input placeholder="Enter a code or link" value={code} onChange={(e) => setCode(e.target.value)} onPressEnter={join} style={{ width: 200 }} />
+      <Input placeholder={t('Enter a code or link')} value={code} onChange={(e) => setCode(e.target.value)} onPressEnter={join} style={{ width: 200 }} />
       <Button icon={<LoginOutlined />} onClick={join}>
-        Join
+        {t('Join')}
       </Button>
     </Space.Compact>
   );
@@ -75,7 +76,7 @@ export default function Meetings() {
   const copyLink = (code) =>
     navigator.clipboard
       ?.writeText(`${window.location.origin}${roomPath(code)}`)
-      .then(() => message.success('Invite link copied'), () => message.error('Copy failed'));
+      .then(() => message.success(t('Invite link copied')), () => message.error(t('Copy failed')));
 
   const columns = [
     { title: 'Title', dataIndex: 'title' },
@@ -85,7 +86,7 @@ export default function Meetings() {
       render: (v) => (
         <Space size={2}>
           <Typography.Text code>{v}</Typography.Text>
-          <Tooltip title="Copy invite link">
+          <Tooltip title={t('Copy invite link')}>
             <Button type="text" size="small" icon={<CopyOutlined />} onClick={() => copyLink(v)} />
           </Tooltip>
         </Space>
@@ -97,7 +98,7 @@ export default function Meetings() {
       title: 'Status',
       dataIndex: 'status',
       render: (v, r) =>
-        live[r.code] ? <Badge status="processing" text={`Live · ${live[r.code]} in call`} /> : <StatusTag value={v === 'Live' ? 'Scheduled' : v} />,
+        live[r.code] ? <Badge status="processing" text={t('Live · {count} in call', { count: live[r.code] })} /> : <StatusTag value={v === 'Live' ? 'Scheduled' : v} />,
     },
   ];
 
@@ -117,9 +118,9 @@ export default function Meetings() {
       initialValues={{ scheduledAt: dayjs().add(1, 'hour').startOf('hour') }}
       rowActions={(record) =>
         record.status !== 'Ended' && (
-          <Tooltip title="Join meeting">
+          <Tooltip title={t('Join meeting')}>
             <Button type="primary" size="small" icon={<VideoCameraAddOutlined />} onClick={() => navigate(roomPath(record.code))}>
-              Join
+              {t('Join')}
             </Button>
           </Tooltip>
         )

@@ -3,6 +3,7 @@ import { App, Button, Calendar, Card, Space, Typography } from 'antd';
 import { LeftOutlined, RightOutlined } from '@ant-design/icons';
 import dayjs from 'dayjs';
 import api, { errMsg } from '../api';
+import { t } from '../i18n';
 
 /**
  * Month calendar for a dated resource. Each day cell shows `renderDay(items)`; today is highlighted and the
@@ -46,22 +47,22 @@ export default function CalendarBoard({ title, resource, dateField = 'date', val
     <Card className="page-card calendar-board" bordered={false}>
       <div className="calendar-head">
         <h1 className="page-title" style={{ margin: 0 }}>
-          {title}
+          {t(title)}
         </h1>
         <Space wrap>
           {legend}
-          <Button icon={<LeftOutlined />} onClick={() => goto(month.subtract(1, 'month'))} aria-label="Previous month" />
+          <Button icon={<LeftOutlined />} onClick={() => goto(month.subtract(1, 'month'))} aria-label={t('Previous month')} />
           <Typography.Text strong className="calendar-month">
             {month.format('MMMM YYYY')}
           </Typography.Text>
-          <Button icon={<RightOutlined />} onClick={() => goto(month.add(1, 'month'))} aria-label="Next month" />
+          <Button icon={<RightOutlined />} onClick={() => goto(month.add(1, 'month'))} aria-label={t('Next month')} />
           <Button
             onClick={() => {
               goto(today);
               onSelect(today);
             }}
           >
-            Today
+            {t('Today')}
           </Button>
         </Space>
       </div>
@@ -86,7 +87,7 @@ export default function CalendarBoard({ title, resource, dateField = 'date', val
             <div className={classes}>
               <div className="cal-date">
                 <span>{d.date()}</span>
-                {d.isSame(today, 'day') && <span className="cal-today-tag">Today</span>}
+                {d.isSame(today, 'day') && <span className="cal-today-tag">{t('Today')}</span>}
               </div>
               <div className="cal-items">{dayItems.length > 0 && renderDay(dayItems, d)}</div>
             </div>

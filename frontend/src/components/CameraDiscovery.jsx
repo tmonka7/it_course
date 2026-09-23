@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Alert, App, Button, Checkbox, Empty, Input, Modal, Space, Table, Tag, Typography } from 'antd';
 import { RadarChartOutlined } from '@ant-design/icons';
 import api, { errMsg } from '../api';
+import { t } from '../i18n';
 
 /**
  * Scans the LAN for IP cameras (ONVIF WS-Discovery + RTSP port scan on the server) and adds the selected ones.
@@ -65,7 +66,7 @@ export default function CameraDiscovery({ open, onClose, onAdded }) {
     const devices = result.devices.filter((d) => selected.includes(d.ip));
     const missing = devices.filter((d) => !rows[d.ip].name.trim() || !rows[d.ip].location.trim());
     if (missing.length) {
-      message.warning(`Enter a name and location for ${missing.map((d) => d.ip).join(', ')}`);
+      message.warning(t('Enter a name and location for {ips}', { ips: missing.map((d) => d.ip).join(', ') }));
       return;
     }
     setAdding(true);
@@ -81,8 +82,8 @@ export default function CameraDiscovery({ open, onClose, onAdded }) {
           ...(creds.rtspUser ? creds : {}),
         })),
       });
-      message.success(`Added ${data.created.length} camera(s)`);
-      if (data.errors.length) message.warning(`${data.errors.length} could not be added: ${data.errors.map((e) => e.message).join('; ')}`);
+      message.success(t('Added {count} camera(s)', { count: data.created.length }));
+      if (data.errors.length) message.warning(t('{count} could not be added: {errors}', { count: data.errors.length, errors: data.errors.map((e) => e.message).join('; ') }));
       onAdded?.();
       onClose();
     } catch (err) {
@@ -93,45 +94,45 @@ export default function CameraDiscovery({ open, onClose, onAdded }) {
   };
 
   const columns = [
-    { title: 'IP Address', dataIndex: 'ip', width: 130 },
+    { title: t('IP Address'), dataIndex: 'ip', width: 130 },
     {
-      title: 'Found via',
+      title: t('Found via'),
       dataIndex: 'via',
       width: 110,
       render: (v, d) => (
         <Space size={2} direction="vertical">
-          <Tag bordered={false} color={v === 'ONVIF' ? 'blue' : 'default'}>{v}</Tag>
-          {d.existingCameraId && <Tag bordered={false} color="green">Added as {d.existingCameraId}</Tag>}
+          <Tag bordered={false} color={v === 'ONVIF' ? 'blue' : 'default'}>{t(v)}</Tag>
+          {d.existingCameraId && <Tag bordered={false} color="green">{t('Added as {id}', { id: d.existingCameraId })}</Tag>}
         </Space>
       ),
     },
     {
-      title: 'Device',
+      title: t('Device'),
       width: 170,
       render: (_, d) => (
         <div style={{ lineHeight: 1.35 }}>
-          <div>{d.manufacturer || 'Unknown brand'}</div>
+          <div>{d.manufacturer || t('Unknown brand')}</div>
           <Typography.Text type="secondary" style={{ fontSize: 12 }}>
             {[d.model, d.server].filter(Boolean).join(' · ') || '-'}
           </Typography.Text>
         </div>
       ),
     },
-    { title: 'Name', width: 180, render: (_, d) => <Input size="small" value={rows[d.ip]?.name} onChange={(e) => edit(d.ip, 'name', e.target.value)} /> },
+    { title: t('Name'), width: 180, render: (_, d) => <Input size="small" value={rows[d.ip]?.name} onChange={(e) => edit(d.ip, 'name', e.target.value)} /> },
     {
-      title: 'Location',
+      title: t('Location'),
       width: 170,
-      render: (_, d) => <Input size="small" placeholder="Required" value={rows[d.ip]?.location} onChange={(e) => edit(d.ip, 'location', e.target.value)} />,
+      render: (_, d) => <Input size="small" placeholder={t('Required')} value={rows[d.ip]?.location} onChange={(e) => edit(d.ip, 'location', e.target.value)} />,
     },
     {
-      title: 'RTSP Stream URL',
+      title: t('RTSP Stream URL'),
       render: (_, d) => <Input size="small" value={rows[d.ip]?.streamUrl} onChange={(e) => edit(d.ip, 'streamUrl', e.target.value)} />,
     },
   ];
 
   return (
     <Modal
-      title="Discover IP Cameras"
+      title={t('Discover IP Cameras')}
       open={open}
       onCancel={onClose}
       width={1100}
@@ -139,10 +140,10 @@ export default function CameraDiscovery({ open, onClose, onAdded }) {
       maskClosable={false}
       footer={[
         <Button key="cancel" onClick={onClose}>
-          Close
+          {t('Close')}
         </Button>,
         <Button key="add" type="primary" disabled={!selected.length} loading={adding} onClick={add}>
-          Add {selected.length || ''} camera{selected.length === 1 ? '' : 's'}
+          {selected.length ? t('Add {count} camera(s)', { count: selected.length }) : t('Add cameras')}
         </Button>,
       ]}
     >
@@ -152,25 +153,26 @@ export default function CameraDiscovery({ open, onClose, onAdded }) {
           style={{ width: 260 }}
           value={subnet}
           onChange={(e) => setSubnet(e.target.value)}
-          placeholder={subnets.length ? `Auto: ${subnets.join(', ')}` : 'Subnet, e.g. 192.168.1.0/24'}
-          addonBefore="Subnet"
+          placeholder={subnets.length ? t('Auto: {subnets}', { subnets: subnets.join(', ') }) : t('Subnet, e.g. 192.168.1.0/24')}
+          addonBefore={t('Subnet')}
         />
         <Checkbox.Group
           value={methods}
           onChange={setMethods}
           options={[
-            { value: 'onvif', label: 'ONVIF discovery' },
-            { value: 'rtsp', label: 'RTSP port scan' },
+            { value: 'onvif', label: t('ONVIF discovery') },
+            { value: 'rtsp', label: t('RTSP port scan') },
           ]}
         />
         <Button type="primary" icon={<RadarChartOutlined />} loading={scanning} disabled={!methods.length} onClick={scan}>
-          {scanning ? 'Scanning...' : 'Start scan'}
+          {scanning ? t('Scanning...') : t('Start scan')}
         </Button>
       </Space>
 
       <Typography.Paragraph type="secondary" style={{ fontSize: 12, marginBottom: 12 }}>
-        The scan runs on the server, so it finds cameras on the server&apos;s network. When the API runs in Docker it needs host networking for
-        discovery to reach the LAN.
+        {t(
+          "The scan runs on the server, so it finds cameras on the server's network. When the API runs in Docker it needs host networking for discovery to reach the LAN."
+        )}
       </Typography.Paragraph>
 
       {result && (
@@ -179,14 +181,18 @@ export default function CameraDiscovery({ open, onClose, onAdded }) {
             type={result.devices.length ? 'success' : 'info'}
             showIcon
             style={{ marginBottom: 12 }}
-            message={`Found ${result.devices.length} device(s) on ${result.subnets.join(', ') || 'the local network'} in ${(result.durationMs / 1000).toFixed(1)}s`}
+            message={t('Found {count} device(s) on {subnets} in {seconds}s', {
+              count: result.devices.length,
+              subnets: result.subnets.join(', ') || t('the local network'),
+              seconds: (result.durationMs / 1000).toFixed(1),
+            })}
           />
           {result.devices.length > 0 && (
             <>
               <Space wrap style={{ marginBottom: 12 }}>
-                <Typography.Text>RTSP login for the selected cameras (optional):</Typography.Text>
-                <Input size="small" style={{ width: 150 }} placeholder="Username" value={creds.rtspUser} onChange={(e) => setCreds((c) => ({ ...c, rtspUser: e.target.value }))} />
-                <Input.Password size="small" style={{ width: 150 }} placeholder="Password" value={creds.rtspPassword} onChange={(e) => setCreds((c) => ({ ...c, rtspPassword: e.target.value }))} />
+                <Typography.Text>{t('RTSP login for the selected cameras (optional):')}</Typography.Text>
+                <Input size="small" style={{ width: 150 }} placeholder={t('Username')} value={creds.rtspUser} onChange={(e) => setCreds((c) => ({ ...c, rtspUser: e.target.value }))} />
+                <Input.Password size="small" style={{ width: 150 }} placeholder={t('Password')} value={creds.rtspPassword} onChange={(e) => setCreds((c) => ({ ...c, rtspPassword: e.target.value }))} />
               </Space>
               <Table
                 rowKey="ip"
@@ -205,7 +211,7 @@ export default function CameraDiscovery({ open, onClose, onAdded }) {
           )}
         </>
       )}
-      {!result && !scanning && <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="Start a scan to look for cameras" />}
+      {!result && !scanning && <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description={t('Start a scan to look for cameras')} />}
     </Modal>
   );
 }

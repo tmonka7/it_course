@@ -19,6 +19,7 @@ import dayjs from 'dayjs';
 import useMeeting from '../meeting/useMeeting';
 import Whiteboard from '../meeting/Whiteboard';
 import { useAuth } from '../context/AuthContext';
+import { t } from '../i18n';
 
 const MESH_LIMIT = 6; // peer-to-peer mesh: every participant sends to every other one
 
@@ -47,12 +48,12 @@ function VideoTile({ name, stream, media, isSelf, pinned, onPin, large }) {
         {media?.audio ? <AudioOutlined /> : <AudioMutedOutlined style={{ color: '#f87171' }} />}
         <span>
           {name}
-          {isSelf ? ' (You)' : ''}
-          {media?.screen ? ' · presenting' : ''}
+          {isSelf ? t(' (You)') : ''}
+          {media?.screen ? t(' · presenting') : ''}
         </span>
       </div>
       {onPin && (
-        <Tooltip title={pinned ? 'Unpin' : 'Pin to stage'}>
+        <Tooltip title={pinned ? t('Unpin') : t('Pin to stage')}>
           <button type="button" className={`meet-pin ${pinned ? 'active' : ''}`} onClick={onPin}>
             <PushpinOutlined />
           </button>
@@ -77,7 +78,7 @@ function ChatPanel({ messages, onSend, selfUserId }) {
   return (
     <div className="meet-panel-body">
       <div className="meet-chat" ref={listRef}>
-        {messages.length === 0 && <Typography.Text type="secondary">No messages yet.</Typography.Text>}
+        {messages.length === 0 && <Typography.Text type="secondary">{t('No messages yet.')}</Typography.Text>}
         {messages.map((m) => (
           <div key={m._id} className={`chat-msg ${String(m.user) === String(selfUserId) ? 'mine' : ''}`}>
             <div className="chat-meta">
@@ -92,7 +93,7 @@ function ChatPanel({ messages, onSend, selfUserId }) {
           value={text}
           onChange={(e) => setText(e.target.value)}
           autoSize={{ minRows: 1, maxRows: 4 }}
-          placeholder="Send a message"
+          placeholder={t('Send a message')}
           maxLength={2000}
           onPressEnter={(e) => {
             if (!e.shiftKey) {
@@ -118,27 +119,27 @@ function Lobby({ m, code, onJoin, onBack }) {
       <div className="meet-lobby-preview">
         <VideoTile name={user?.name} stream={m.localStream} media={m.media} isSelf large />
         <div className="meet-lobby-controls">
-          <ControlButton on={m.media.audio} onIcon={<AudioOutlined />} offIcon={<AudioMutedOutlined />} label="Microphone" onClick={m.toggleMic} />
-          <ControlButton on={m.media.video} onIcon={<VideoCameraOutlined />} offIcon={<VideoCameraOutlined />} label="Camera" onClick={m.toggleCamera} />
+          <ControlButton on={m.media.audio} onIcon={<AudioOutlined />} offIcon={<AudioMutedOutlined />} label={t('Microphone')} onClick={m.toggleMic} />
+          <ControlButton on={m.media.video} onIcon={<VideoCameraOutlined />} offIcon={<VideoCameraOutlined />} label={t('Camera')} onClick={m.toggleCamera} />
         </div>
       </div>
       <div className="meet-lobby-side">
         <Typography.Title level={3} style={{ marginTop: 0 }}>
-          Ready to join?
+          {t('Ready to join?')}
         </Typography.Title>
         <Typography.Paragraph type="secondary">
-          Meeting code <Typography.Text code>{code}</Typography.Text>
+          {t('Meeting code')} <Typography.Text code>{code}</Typography.Text>
         </Typography.Paragraph>
         {m.error && <Typography.Paragraph type="danger">{m.error}</Typography.Paragraph>}
         {!m.localStream?.getTracks().length && m.localStream && (
-          <Typography.Paragraph type="secondary">No camera or microphone available. You can still join to watch, chat and draw.</Typography.Paragraph>
+          <Typography.Paragraph type="secondary">{t('No camera or microphone available. You can still join to watch, chat and draw.')}</Typography.Paragraph>
         )}
         <Space>
           <Button type="primary" size="large" loading={m.phase === 'joining'} onClick={onJoin}>
-            Join now
+            {t('Join now')}
           </Button>
           <Button size="large" onClick={onBack}>
-            Back
+            {t('Back')}
           </Button>
         </Space>
       </div>
@@ -194,8 +195,8 @@ export default function MeetingRoom() {
     return (
       <Result
         status="info"
-        title="The meeting has ended"
-        extra={<Button type="primary" onClick={() => navigate('/meetings')}>Back to meetings</Button>}
+        title={t('The meeting has ended')}
+        extra={<Button type="primary" onClick={() => navigate('/meetings')}>{t('Back to meetings')}</Button>}
       />
     );
   }
@@ -203,14 +204,14 @@ export default function MeetingRoom() {
     return (
       <Result
         status="warning"
-        title="Unable to continue"
+        title={t('Unable to continue')}
         subTitle={m.error}
         extra={[
           <Button key="retry" type="primary" onClick={() => window.location.reload()}>
-            Rejoin
+            {t('Rejoin')}
           </Button>,
           <Button key="back" onClick={leave}>
-            Back to meetings
+            {t('Back to meetings')}
           </Button>,
         ]}
       />
@@ -228,13 +229,13 @@ export default function MeetingRoom() {
 
   const toggleScreen = async () => {
     if (m.media.screen) await m.stopScreenShare();
-    else if (!(await m.startScreenShare())) message.info('Screen sharing was cancelled or is not supported in this browser');
+    else if (!(await m.startScreenShare())) message.info(t('Screen sharing was cancelled or is not supported in this browser'));
   };
 
   const endForAll = () =>
     modal.confirm({
-      title: 'End the meeting for everyone?',
-      okText: 'End meeting',
+      title: t('End the meeting for everyone?'),
+      okText: t('End meeting'),
       okButtonProps: { danger: true },
       onOk: () => m.endForAll(),
     });
@@ -247,13 +248,13 @@ export default function MeetingRoom() {
           <span className="meet-code">{m.meeting.code}</span>
         </div>
         <Space>
-          {tiles.length > MESH_LIMIT && <Typography.Text type="warning">Large meetings may lag (peer-to-peer)</Typography.Text>}
+          {tiles.length > MESH_LIMIT && <Typography.Text type="warning">{t('Large meetings may lag (peer-to-peer)')}</Typography.Text>}
           <Button
             size="small"
             icon={<CopyOutlined />}
-            onClick={() => navigator.clipboard?.writeText(inviteLink).then(() => message.success('Invite link copied'))}
+            onClick={() => navigator.clipboard?.writeText(inviteLink).then(() => message.success(t('Invite link copied')))}
           >
-            Copy invite link
+            {t('Copy invite link')}
           </Button>
         </Space>
       </header>
@@ -280,27 +281,27 @@ export default function MeetingRoom() {
         {panel && (
           <aside className="meet-panel">
             <div className="meet-panel-head">
-              <strong>{panel === 'chat' ? 'Chat' : `People (${tiles.length})`}</strong>
+              <strong>{panel === 'chat' ? t('Chat') : t('People ({count})', { count: tiles.length })}</strong>
               <Button type="text" size="small" onClick={() => setPanel(null)}>
-                Close
+                {t('Close')}
               </Button>
             </div>
             {panel === 'chat' ? (
               <ChatPanel messages={m.messages} onSend={m.sendChat} selfUserId={user?._id} />
             ) : (
               <div className="meet-panel-body meet-people">
-                {tiles.map((t) => (
-                  <div key={t.id} className="person">
+                {tiles.map((p) => (
+                  <div key={p.id} className="person">
                     <Avatar size="small" style={{ background: '#1664ff' }}>
-                      {t.name?.[0]?.toUpperCase()}
+                      {p.name?.[0]?.toUpperCase()}
                     </Avatar>
                     <span className="person-name">
-                      {t.name}
-                      {t.isSelf ? ' (You)' : ''}
+                      {p.name}
+                      {p.isSelf ? t(' (You)') : ''}
                     </span>
-                    {t.media?.screen && <DesktopOutlined style={{ color: '#1664ff' }} />}
-                    {t.media?.audio ? <AudioOutlined /> : <AudioMutedOutlined style={{ color: '#ef4444' }} />}
-                    <VideoCameraOutlined style={{ color: t.media?.video ? undefined : '#cbd5e1' }} />
+                    {p.media?.screen && <DesktopOutlined style={{ color: '#1664ff' }} />}
+                    {p.media?.audio ? <AudioOutlined /> : <AudioMutedOutlined style={{ color: '#ef4444' }} />}
+                    <VideoCameraOutlined style={{ color: p.media?.video ? undefined : '#cbd5e1' }} />
                   </div>
                 ))}
               </div>
@@ -310,20 +311,20 @@ export default function MeetingRoom() {
       </div>
 
       <footer className="meet-controls">
-        <ControlButton on={m.media.audio} onIcon={<AudioOutlined />} offIcon={<AudioMutedOutlined />} label={m.media.audio ? 'Mute' : 'Unmute'} onClick={m.toggleMic} />
-        <ControlButton on={m.media.video} onIcon={<VideoCameraOutlined />} offIcon={<VideoCameraOutlined />} label={m.media.video ? 'Turn camera off' : 'Turn camera on'} onClick={m.toggleCamera} />
-        <ControlButton on={m.media.screen} onIcon={<DesktopOutlined />} offIcon={<DesktopOutlined />} label={m.media.screen ? 'Stop sharing' : 'Share screen'} toggle onClick={toggleScreen} />
-        <ControlButton on={board} onIcon={<EditOutlined />} offIcon={<EditOutlined />} label="Whiteboard" toggle badge={boardBadge} onClick={() => setBoard((b) => !b)} />
-        <ControlButton on={panel === 'chat'} onIcon={<MessageOutlined />} offIcon={<MessageOutlined />} label="Chat" toggle badge={unreadChat} onClick={() => setPanel(panel === 'chat' ? null : 'chat')} />
-        <ControlButton on={panel === 'people'} onIcon={<TeamOutlined />} offIcon={<TeamOutlined />} label="People" toggle onClick={() => setPanel(panel === 'people' ? null : 'people')} />
+        <ControlButton on={m.media.audio} onIcon={<AudioOutlined />} offIcon={<AudioMutedOutlined />} label={m.media.audio ? t('Mute') : t('Unmute')} onClick={m.toggleMic} />
+        <ControlButton on={m.media.video} onIcon={<VideoCameraOutlined />} offIcon={<VideoCameraOutlined />} label={m.media.video ? t('Turn camera off') : t('Turn camera on')} onClick={m.toggleCamera} />
+        <ControlButton on={m.media.screen} onIcon={<DesktopOutlined />} offIcon={<DesktopOutlined />} label={m.media.screen ? t('Stop sharing') : t('Share screen')} toggle onClick={toggleScreen} />
+        <ControlButton on={board} onIcon={<EditOutlined />} offIcon={<EditOutlined />} label={t('Whiteboard')} toggle badge={boardBadge} onClick={() => setBoard((b) => !b)} />
+        <ControlButton on={panel === 'chat'} onIcon={<MessageOutlined />} offIcon={<MessageOutlined />} label={t('Chat')} toggle badge={unreadChat} onClick={() => setPanel(panel === 'chat' ? null : 'chat')} />
+        <ControlButton on={panel === 'people'} onIcon={<TeamOutlined />} offIcon={<TeamOutlined />} label={t('People')} toggle onClick={() => setPanel(panel === 'people' ? null : 'people')} />
         <span className="meet-ctl-gap" />
         <Button danger type="primary" shape="round" icon={<LogoutOutlined />} onClick={leave}>
-          Leave
+          {t('Leave')}
         </Button>
         {isHost && (
-          <Tooltip title="End the meeting for everyone">
+          <Tooltip title={t('End the meeting for everyone')}>
             <Button danger shape="round" icon={<PoweroffOutlined />} onClick={endForAll}>
-              End
+              {t('End')}
             </Button>
           </Tooltip>
         )}

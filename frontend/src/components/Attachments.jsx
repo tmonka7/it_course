@@ -3,6 +3,7 @@ import { App, Button, List, Popconfirm, Space, Tooltip, Typography, Upload } fro
 import { DeleteOutlined, DownloadOutlined, PaperClipOutlined, UploadOutlined } from '@ant-design/icons';
 import dayjs from 'dayjs';
 import api, { errMsg } from '../api';
+import { t } from '../i18n';
 
 export const formatSize = (bytes = 0) => {
   if (bytes < 1024) return `${bytes} B`;
@@ -40,13 +41,13 @@ export function AttachmentList({ commandId, attachments, onChange, canDelete = t
       const { data } = await api.delete(`/commands/${commandId}/attachments/${att._id}`);
       setItems(data);
       onChange?.(data);
-      message.success('Attachment removed');
+      message.success(t('Attachment removed'));
     } catch (err) {
       message.error(errMsg(err));
     }
   };
 
-  if (!items.length) return <Typography.Text type="secondary">{emptyText}</Typography.Text>;
+  if (!items.length) return <Typography.Text type="secondary">{t(emptyText)}</Typography.Text>;
   return (
     <List
       size="small"
@@ -55,7 +56,7 @@ export function AttachmentList({ commandId, attachments, onChange, canDelete = t
       renderItem={(att) => (
         <List.Item
           actions={[
-            <Tooltip key="dl" title="Download">
+            <Tooltip key="dl" title={t('Download')}>
               <Button
                 type="text"
                 size="small"
@@ -64,7 +65,7 @@ export function AttachmentList({ commandId, attachments, onChange, canDelete = t
               />
             </Tooltip>,
             canDelete && (
-              <Popconfirm key="rm" title={`Remove ${att.name}?`} onConfirm={() => remove(att)}>
+              <Popconfirm key="rm" title={t('Remove {name}?', { name: att.name })} okText={t('Remove')} cancelText={t('Cancel')} onConfirm={() => remove(att)}>
                 <Button type="text" size="small" danger icon={<DeleteOutlined />} />
               </Popconfirm>
             ),
@@ -101,7 +102,7 @@ export function AttachmentUploadButton({ commandId, onUploaded }) {
         setBusy(true);
         uploadAttachments(commandId, fileList)
           .then((list) => {
-            message.success(`Uploaded ${fileList.length} file(s)`);
+            message.success(t('Uploaded {count} file(s)', { count: fileList.length }));
             onUploaded?.(list);
           })
           .catch((err) => message.error(errMsg(err)))
@@ -110,7 +111,7 @@ export function AttachmentUploadButton({ commandId, onUploaded }) {
       }}
     >
       <Button icon={<UploadOutlined />} loading={busy}>
-        Attach files
+        {t('Attach files')}
       </Button>
     </Upload>
   );

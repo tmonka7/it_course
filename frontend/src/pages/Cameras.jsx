@@ -7,6 +7,7 @@ import CrudPage from '../components/CrudPage';
 import CameraDiscovery from '../components/CameraDiscovery';
 import { useAuth } from '../context/AuthContext';
 import { toOptions } from '../constants';
+import { t } from '../i18n';
 
 const TYPES = ['Indoor', 'Outdoor', 'PTZ'];
 const RESOLUTIONS = ['720p', '1080p', '2K', '4K'];
@@ -21,12 +22,12 @@ function StreamUrl({ url }) {
       <Typography.Text code style={{ maxWidth: 220 }} ellipsis={{ tooltip: url }}>
         {url}
       </Typography.Text>
-      <Tooltip title="Copy stream URL">
+      <Tooltip title={t('Copy stream URL')}>
         <Button
           type="text"
           size="small"
           icon={<CopyOutlined />}
-          onClick={() => navigator.clipboard?.writeText(url).then(() => message.success('Copied'), () => message.error('Copy failed'))}
+          onClick={() => navigator.clipboard?.writeText(url).then(() => message.success(t('Copied')), () => message.error(t('Copy failed')))}
         />
       </Tooltip>
     </span>
@@ -43,7 +44,7 @@ const columns = [
         {v}
         {r.discoveredVia && r.discoveredVia !== 'Manual' && (
           <Tag bordered={false} color="blue" style={{ marginLeft: 6 }}>
-            {r.discoveredVia}
+            {t(r.discoveredVia)}
           </Tag>
         )}
       </span>
@@ -54,76 +55,76 @@ const columns = [
   { title: 'Resolution', dataIndex: 'resolution', responsive: ['lg'] },
   { title: 'IP Address', dataIndex: 'ipAddress', responsive: ['lg'] },
   { title: 'Stream', dataIndex: 'streamUrl', responsive: ['xl'], render: (v) => <StreamUrl url={v} /> },
-  { title: 'Status', dataIndex: 'status', render: (v) => <Badge status={STATUS_BADGE[v] || 'default'} text={v} /> },
+  { title: 'Status', dataIndex: 'status', render: (v) => <Badge status={STATUS_BADGE[v] || 'default'} text={t(v)} /> },
 ];
 
 const renderForm = (record) => (
   <Row gutter={16}>
     <Col xs={24} md={8}>
-      <Form.Item name="cameraId" label="Camera ID" tooltip="Leave empty to assign the next free ID">
-        <Input placeholder="Auto, e.g. CAM-009" />
+      <Form.Item name="cameraId" label={t('Camera ID')} tooltip={t('Leave empty to assign the next free ID')}>
+        <Input placeholder={t('Auto, e.g. CAM-009')} />
       </Form.Item>
     </Col>
     <Col xs={24} md={16}>
-      <Form.Item name="name" label="Name" rules={[{ required: true }]}>
+      <Form.Item name="name" label={t('Name')} rules={[{ required: true }]}>
         <Input />
       </Form.Item>
     </Col>
     <Col xs={24} md={12}>
-      <Form.Item name="location" label="Location" rules={[{ required: true }]}>
-        <Input placeholder="e.g. Building A, Lobby" />
+      <Form.Item name="location" label={t('Location')} rules={[{ required: true }]}>
+        <Input placeholder={t('e.g. Building A, Lobby')} />
       </Form.Item>
     </Col>
     <Col xs={12} md={6}>
-      <Form.Item name="type" label="Type">
+      <Form.Item name="type" label={t('Type')}>
         <Select options={toOptions(TYPES)} />
       </Form.Item>
     </Col>
     <Col xs={12} md={6}>
-      <Form.Item name="resolution" label="Resolution">
+      <Form.Item name="resolution" label={t('Resolution')}>
         <Select options={toOptions(RESOLUTIONS)} />
       </Form.Item>
     </Col>
     <Col xs={24} md={8}>
       <Form.Item
         name="ipAddress"
-        label="IP Address"
-        rules={[{ pattern: /^(\d{1,3}\.){3}\d{1,3}$/, message: 'Enter a valid IPv4 address' }]}
+        label={t('IP Address')}
+        rules={[{ pattern: /^(\d{1,3}\.){3}\d{1,3}$/, message: t('Enter a valid IPv4 address') }]}
       >
         <Input placeholder="192.168.10.101" />
       </Form.Item>
     </Col>
     <Col xs={24} md={16}>
-      <Form.Item name="streamUrl" label="RTSP Stream URL">
+      <Form.Item name="streamUrl" label={t('RTSP Stream URL')}>
         <Input placeholder="rtsp://192.168.10.101:554/stream1" />
       </Form.Item>
     </Col>
     <Col xs={12} md={8}>
-      <Form.Item name="rtspUser" label="RTSP Username">
+      <Form.Item name="rtspUser" label={t('RTSP Username')}>
         <Input autoComplete="off" />
       </Form.Item>
     </Col>
     <Col xs={12} md={8}>
-      <Form.Item name="rtspPassword" label="RTSP Password">
-        <Input.Password autoComplete="new-password" placeholder={record?.hasPassword ? 'Leave blank to keep current' : ''} />
+      <Form.Item name="rtspPassword" label={t('RTSP Password')}>
+        <Input.Password autoComplete="new-password" placeholder={record?.hasPassword ? t('Leave blank to keep current') : ''} />
       </Form.Item>
     </Col>
     <Col xs={24} md={8}>
       <Form.Item
         name="liveUrl"
-        label="Live URL (optional)"
-        tooltip="A browser-playable stream (HLS .m3u8, MJPEG or MP4). Leave empty to play the RTSP stream through the media gateway."
+        label={t('Live URL (optional)')}
+        tooltip={t('A browser-playable stream (HLS .m3u8, MJPEG or MP4). Leave empty to play the RTSP stream through the media gateway.')}
       >
         <Input placeholder="https://.../index.m3u8" />
       </Form.Item>
     </Col>
     <Col xs={12} md={8}>
-      <Form.Item name="manufacturer" label="Manufacturer">
+      <Form.Item name="manufacturer" label={t('Manufacturer')}>
         <Input />
       </Form.Item>
     </Col>
     <Col xs={12} md={8}>
-      <Form.Item name="model" label="Model">
+      <Form.Item name="model" label={t('Model')}>
         <Input />
       </Form.Item>
     </Col>
@@ -131,17 +132,17 @@ const renderForm = (record) => (
       <Divider style={{ margin: '4px 0 16px' }} />
     </Col>
     <Col xs={12} md={8}>
-      <Form.Item name="status" label="Status">
+      <Form.Item name="status" label={t('Status')}>
         <Select options={toOptions(STATUSES)} />
       </Form.Item>
     </Col>
     <Col xs={12} md={8}>
-      <Form.Item name="installedDate" label="Installed Date">
+      <Form.Item name="installedDate" label={t('Installed Date')}>
         <DatePicker style={{ width: '100%' }} />
       </Form.Item>
     </Col>
     <Col xs={24}>
-      <Form.Item name="notes" label="Notes">
+      <Form.Item name="notes" label={t('Notes')}>
         <Input.TextArea rows={3} />
       </Form.Item>
     </Col>
@@ -150,7 +151,7 @@ const renderForm = (record) => (
 
 export default function Cameras() {
   const navigate = useNavigate();
-  const { isAdmin } = useAuth();
+  const { isAdmin, can } = useAuth();
   const [discoverOpen, setDiscoverOpen] = useState(false);
   const [tableKey, setTableKey] = useState(0); // remounts the table after a bulk add
 
@@ -171,21 +172,25 @@ export default function Cameras() {
         renderForm={renderForm}
         toolbarExtra={() => (
           <>
-            <Button icon={<AppstoreOutlined />} onClick={() => navigate('/camera-view')}>
-              Camera View
-            </Button>
+            {can('cameraView') && (
+              <Button icon={<AppstoreOutlined />} onClick={() => navigate('/camera-view')}>
+                {t('Camera View')}
+              </Button>
+            )}
             {isAdmin && (
               <Button icon={<RadarChartOutlined />} onClick={() => setDiscoverOpen(true)}>
-                Discover Cameras
+                {t('Discover Cameras')}
               </Button>
             )}
           </>
         )}
-        rowActions={(record) => (
-          <Tooltip title="View live">
-            <Button type="text" icon={<EyeOutlined />} style={{ color: '#1664ff' }} onClick={() => navigate(`/camera-view?camera=${record._id}`)} />
-          </Tooltip>
-        )}
+        rowActions={(record) =>
+          can('cameraView') && (
+            <Tooltip title={t('View live')}>
+              <Button type="text" icon={<EyeOutlined />} style={{ color: '#1664ff' }} onClick={() => navigate(`/camera-view?camera=${record._id}`)} />
+            </Tooltip>
+          )
+        }
         toForm={(r) => ({ ...r, rtspPassword: '', installedDate: r.installedDate ? dayjs(r.installedDate) : null })}
         fromForm={(v) => ({ ...v, installedDate: v.installedDate ? v.installedDate.toISOString() : null })}
         initialValues={{ type: 'Indoor', resolution: '1080p', status: 'Online' }}

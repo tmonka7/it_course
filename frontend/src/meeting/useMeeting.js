@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { io } from 'socket.io-client';
 import { TOKEN_KEY } from '../api';
+import { t } from '../i18n';
 
 /**
  * Mesh WebRTC meeting over socket.io signalling.
@@ -124,7 +125,7 @@ export default function useMeeting(code) {
       enqueue(from, async () => {
         let entry = peersRef.current.get(from);
         if (data.sdp?.type === 'offer') {
-          if (!entry) entry = createPeer(from, { name: 'Participant' });
+          if (!entry) entry = createPeer(from, { name: t('Participant') });
           await entry.pc.setRemoteDescription(data.sdp);
           for (const t of entry.pc.getTransceivers()) {
             t.direction = 'sendrecv';
@@ -163,7 +164,7 @@ export default function useMeeting(code) {
       }
     };
     if (!navigator.mediaDevices?.getUserMedia) {
-      setError('Camera and microphone need a secure (HTTPS) connection.');
+      setError(t('Camera and microphone need a secure (HTTPS) connection.'));
       return;
     }
     const stream =
@@ -186,13 +187,13 @@ export default function useMeeting(code) {
     socketRef.current = socket;
 
     socket.on('connect_error', () => {
-      setError('Could not connect to the meeting server.');
+      setError(t('Could not connect to the meeting server.'));
       setPhase('error');
       socket.disconnect();
     });
     socket.on('disconnect', (reason) => {
       if (reason === 'io client disconnect') return; // we left on purpose
-      setError('Connection to the meeting was lost. Rejoin to continue.');
+      setError(t('Connection to the meeting was lost. Rejoin to continue.'));
       setPhase('error');
       socket.disconnect();
     });
@@ -231,7 +232,7 @@ export default function useMeeting(code) {
 
     socket.emit('room:join', { code, media: mediaRef.current }, (res) => {
       if (res?.error) {
-        setError(res.error);
+        setError(t(res.error)); // fixed server messages are in the dictionary
         setPhase('error');
         socket.disconnect();
         return;

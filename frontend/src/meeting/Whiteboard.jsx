@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Button, Popconfirm, Space, Tooltip } from 'antd';
 import { ClearOutlined, DownloadOutlined, HighlightOutlined } from '@ant-design/icons';
+import { t } from '../i18n';
 
 const COLORS = ['#1d2b53', '#ef4444', '#f59e0b', '#16a34a', '#2563eb', '#9333ea'];
 const SIZES = [2, 5, 10];
@@ -118,7 +119,7 @@ export default function Whiteboard({ socketRef, store }) {
             <button
               key={c}
               type="button"
-              aria-label={`Colour ${c}`}
+              aria-label={t('Colour {color}', { color: c })}
               className={`wb-color ${!erase && color === c ? 'active' : ''}`}
               style={{ background: c }}
               onClick={() => {
@@ -130,21 +131,21 @@ export default function Whiteboard({ socketRef, store }) {
         </Space>
         <Space size={4}>
           {SIZES.map((s) => (
-            <button key={s} type="button" aria-label={`Size ${s}`} className={`wb-size ${size === s ? 'active' : ''}`} onClick={() => setSize(s)}>
+            <button key={s} type="button" aria-label={t('Size {size}', { size: s })} className={`wb-size ${size === s ? 'active' : ''}`} onClick={() => setSize(s)}>
               <i style={{ width: s + 2, height: s + 2 }} />
             </button>
           ))}
         </Space>
         <Space size={4}>
-          <Tooltip title="Eraser">
+          <Tooltip title={t('Eraser')}>
             <Button size="small" type={erase ? 'primary' : 'default'} icon={<HighlightOutlined />} onClick={() => setErase((v) => !v)} />
           </Tooltip>
-          <Popconfirm title="Clear the whiteboard for everyone?" onConfirm={() => socketRef.current?.emit('wb:clear')}>
-            <Tooltip title="Clear">
+          <Popconfirm title={t('Clear the whiteboard for everyone?')} onConfirm={() => socketRef.current?.emit('wb:clear')}>
+            <Tooltip title={t('Clear')}>
               <Button size="small" icon={<ClearOutlined />} />
             </Tooltip>
           </Popconfirm>
-          <Tooltip title="Download PNG">
+          <Tooltip title={t('Download PNG')}>
             <Button size="small" icon={<DownloadOutlined />} onClick={download} />
           </Tooltip>
         </Space>

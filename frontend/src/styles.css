@@ -1922,3 +1922,31 @@ body {
     transform: none;
   }
 }
+
+.sg-cell.read-only {
+  cursor: default;
+}
+
+.kpi-card.static {
+  cursor: default;
+}
+
+.kpi-card.static:hover {
+  transform: none;
+  box-shadow: none;
+}
+
+/* Permission editor: group heading rows */
+.perm-group-row > td {
+  background: var(--surface-sunken) !important;
+}
+
+.login-card {
+  position: relative;
+}
+
+.login-lang {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+}

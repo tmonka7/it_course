@@ -2,9 +2,11 @@ import { App, Button, Col, DatePicker, Form, Input, Row, Select, Tooltip } from 
 import { CheckCircleOutlined, CloseCircleOutlined } from '@ant-design/icons';
 import dayjs from 'dayjs';
 import CrudPage from '../components/CrudPage';
+import { useAuth } from '../context/AuthContext';
 import StatusTag from '../components/StatusTag';
 import { PROGRAMS, toOptions } from '../constants';
 import api, { errMsg } from '../api';
+import { t } from '../i18n';
 
 const STATUSES = ['Pending', 'Accepted', 'Rejected'];
 
@@ -21,43 +23,43 @@ const renderForm = (record) => (
   <Row gutter={16}>
     {record && (
       <Col xs={24} md={12}>
-        <Form.Item name="applicationId" label="Application ID">
+        <Form.Item name="applicationId" label={t('Application ID')}>
           <Input disabled />
         </Form.Item>
       </Col>
     )}
     <Col xs={24} md={12}>
-      <Form.Item name="name" label="Applicant Name" rules={[{ required: true }]}>
+      <Form.Item name="name" label={t('Applicant Name')} rules={[{ required: true }]}>
         <Input />
       </Form.Item>
     </Col>
     <Col xs={24} md={12}>
-      <Form.Item name="email" label="Email" rules={[{ type: 'email' }]}>
+      <Form.Item name="email" label={t('Email')} rules={[{ type: 'email' }]}>
         <Input />
       </Form.Item>
     </Col>
     <Col xs={24} md={12}>
-      <Form.Item name="phone" label="Phone">
+      <Form.Item name="phone" label={t('Phone')}>
         <Input />
       </Form.Item>
     </Col>
     <Col xs={24} md={12}>
-      <Form.Item name="program" label="Program" rules={[{ required: true }]}>
+      <Form.Item name="program" label={t('Program')} rules={[{ required: true }]}>
         <Select options={toOptions(PROGRAMS)} />
       </Form.Item>
     </Col>
     <Col xs={24} md={12}>
-      <Form.Item name="appliedDate" label="Applied Date">
+      <Form.Item name="appliedDate" label={t('Applied Date')}>
         <DatePicker style={{ width: '100%' }} />
       </Form.Item>
     </Col>
     <Col xs={24} md={12}>
-      <Form.Item name="status" label="Status">
+      <Form.Item name="status" label={t('Status')}>
         <Select options={toOptions(STATUSES)} />
       </Form.Item>
     </Col>
     <Col xs={24}>
-      <Form.Item name="notes" label="Notes">
+      <Form.Item name="notes" label={t('Notes')}>
         <Input.TextArea rows={3} />
       </Form.Item>
     </Col>
@@ -66,12 +68,13 @@ const renderForm = (record) => (
 
 function Decision({ record, reload }) {
   const { message } = App.useApp();
-  if (record.status !== 'Pending') return null;
+  const { can } = useAuth();
+  if (record.status !== 'Pending' || !can('admissions', 'edit')) return null;
 
   const decide = async (status) => {
     try {
       await api.put(`/admissions/${record._id}`, { status });
-      message.success(`Application ${status.toLowerCase()}`);
+      message.success(status === 'Accepted' ? t('Application accepted') : t('Application rejected'));
       reload();
     } catch (err) {
       message.error(errMsg(err));
@@ -80,10 +83,10 @@ function Decision({ record, reload }) {
 
   return (
     <>
-      <Tooltip title="Accept">
+      <Tooltip title={t('Accept')}>
         <Button type="text" icon={<CheckCircleOutlined style={{ color: '#52c41a' }} />} onClick={() => decide('Accepted')} />
       </Tooltip>
-      <Tooltip title="Reject">
+      <Tooltip title={t('Reject')}>
         <Button type="text" icon={<CloseCircleOutlined style={{ color: '#ff4d4f' }} />} onClick={() => decide('Rejected')} />
       </Tooltip>
     </>

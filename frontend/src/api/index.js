@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { t } from '../i18n';
 
 export const TOKEN_KEY = 'sist_token';
 
@@ -22,6 +23,7 @@ api.interceptors.response.use(
   }
 );
 
-export const errMsg = (err) => err?.response?.data?.message || err?.message || 'Something went wrong';
+// Server messages are English; fixed ones are translated through the dictionary (others show as sent).
+export const errMsg = (err) => t(err?.response?.data?.message || err?.message || 'Something went wrong');
 
 export default api;

@@ -6,6 +6,7 @@ import StatusTag from '../components/StatusTag';
 import RemoteSelect from '../components/RemoteSelect';
 import { SEMESTERS, academicYears, toOptions } from '../constants';
 import api, { errMsg } from '../api';
+import { t } from '../i18n';
 
 const YEARS = academicYears();
 
@@ -49,7 +50,7 @@ function ExportButton({ query }) {
       a.download = `grades-${new Date().toISOString().slice(0, 10)}.csv`;
       a.click();
       URL.revokeObjectURL(url);
-      if (data.total > data.items.length) message.warning(`Exported the first ${data.items.length} of ${data.total} records`);
+      if (data.total > data.items.length) message.warning(t('Exported the first {count} of {total} records', { count: data.items.length, total: data.total }));
     } catch (err) {
       message.error(errMsg(err));
     } finally {
@@ -59,7 +60,7 @@ function ExportButton({ query }) {
 
   return (
     <Button icon={<DownloadOutlined />} loading={loading} onClick={exportCsv}>
-      Export
+      {t('Export')}
     </Button>
   );
 }
@@ -77,32 +78,32 @@ export default function Grades() {
   const renderForm = (record) => (
     <Row gutter={16}>
       <Col xs={24}>
-        <Form.Item name="student" label="Student" rules={[{ required: true }]}>
+        <Form.Item name="student" label={t('Student')} rules={[{ required: true }]}>
           <RemoteSelect
             resource="students"
             labelOf={(s) => `${s.studentId} - ${s.name}`}
-            placeholder="Search by name or student ID"
+            placeholder={t('Search by name or student ID')}
             initialOptions={record?.student ? [{ value: record.student._id, label: `${record.student.studentId} - ${record.student.name}` }] : []}
           />
         </Form.Item>
       </Col>
       <Col xs={24}>
-        <Form.Item name="course" label="Course" rules={[{ required: true }]}>
-          <Select showSearch optionFilterProp="label" options={courseOptions} placeholder="Select course" />
+        <Form.Item name="course" label={t('Course')} rules={[{ required: true }]}>
+          <Select showSearch optionFilterProp="label" options={courseOptions} placeholder={t('Select course')} />
         </Form.Item>
       </Col>
       <Col xs={24} md={8}>
-        <Form.Item name="academicYear" label="Academic Year" rules={[{ required: true }]}>
+        <Form.Item name="academicYear" label={t('Academic Year')} rules={[{ required: true }]}>
           <Select options={toOptions(YEARS)} />
         </Form.Item>
       </Col>
       <Col xs={12} md={8}>
-        <Form.Item name="semester" label="Semester" rules={[{ required: true }]}>
+        <Form.Item name="semester" label={t('Semester')} rules={[{ required: true }]}>
           <Select options={toOptions(SEMESTERS)} />
         </Form.Item>
       </Col>
       <Col xs={12} md={8}>
-        <Form.Item name="score" label="Score" rules={[{ required: true }]} extra="Letter grade is calculated automatically">
+        <Form.Item name="score" label={t('Score')} rules={[{ required: true }]} extra={t('Letter grade is calculated automatically')}>
           <InputNumber min={0} max={100} style={{ width: '100%' }} />
         </Form.Item>
       </Col>

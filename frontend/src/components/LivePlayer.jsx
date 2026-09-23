@@ -1,6 +1,7 @@
 import { memo, useEffect, useRef, useState } from 'react';
 import { LoadingOutlined, VideoCameraOutlined, DisconnectOutlined, ToolOutlined } from '@ant-design/icons';
 import { TOKEN_KEY } from '../api';
+import { t } from '../i18n';
 
 const RETRY_MS = 10000;
 
@@ -38,11 +39,11 @@ function LivePlayer({ camera, gatewayEnabled, fit = 'cover' }) {
   // Retry a failed stream after a pause (cameras reboot, gateways restart).
   useEffect(() => {
     if (state !== 'error') return undefined;
-    const t = setTimeout(() => {
+    const timer = setTimeout(() => {
       setState('loading');
       setAttempt((a) => a + 1);
     }, RETRY_MS);
-    return () => clearTimeout(t);
+    return () => clearTimeout(timer);
   }, [state]);
 
   useEffect(() => {
@@ -100,10 +101,10 @@ function LivePlayer({ camera, gatewayEnabled, fit = 'cover' }) {
     };
   }, [src, kind, offline, attempt]);
 
-  if (!camera) return <Placeholder icon={<VideoCameraOutlined />} text="No camera" />;
-  if (camera.status === 'Maintenance') return <Placeholder icon={<ToolOutlined />} text="Under maintenance" />;
-  if (camera.status === 'Offline') return <Placeholder icon={<DisconnectOutlined />} text="Offline" />;
-  if (!src) return <Placeholder icon={<VideoCameraOutlined />} text={camera.streamUrl ? 'Media gateway not configured' : 'No stream configured'} />;
+  if (!camera) return <Placeholder icon={<VideoCameraOutlined />} text={t('No camera')} />;
+  if (camera.status === 'Maintenance') return <Placeholder icon={<ToolOutlined />} text={t('Under maintenance')} />;
+  if (camera.status === 'Offline') return <Placeholder icon={<DisconnectOutlined />} text={t('Offline')} />;
+  if (!src) return <Placeholder icon={<VideoCameraOutlined />} text={camera.streamUrl ? t('Media gateway not configured') : t('No stream configured')} />;
 
   return (
     <div className="player">
@@ -119,8 +120,8 @@ function LivePlayer({ camera, gatewayEnabled, fit = 'cover' }) {
       ) : (
         <video ref={videoRef} muted autoPlay playsInline style={{ objectFit: fit }} />
       )}
-      {state === 'loading' && <Placeholder icon={<LoadingOutlined />} text="Connecting..." />}
-      {state === 'error' && <Placeholder icon={<DisconnectOutlined />} text="No signal - retrying" />}
+      {state === 'loading' && <Placeholder icon={<LoadingOutlined />} text={t('Connecting...')} />}
+      {state === 'error' && <Placeholder icon={<DisconnectOutlined />} text={t('No signal - retrying')} />}
     </div>
   );
 }

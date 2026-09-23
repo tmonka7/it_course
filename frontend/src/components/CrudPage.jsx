@@ -4,6 +4,9 @@ import { App, Button, Card, DatePicker, Flex, Form, Input, Modal, Popconfirm, Se
 import { DeleteOutlined, EditOutlined, PlusOutlined, SearchOutlined } from '@ant-design/icons';
 import dayjs from 'dayjs';
 import api, { errMsg } from '../api';
+import { useAuth } from '../context/AuthContext';
+import { RESOURCE_PAGE } from '../permissions';
+import { t } from '../i18n';
 
 const compact = (obj) => Object.fromEntries(Object.entries(obj).filter(([, v]) => v !== undefined && v !== null && v !== ''));
 
@@ -24,6 +27,9 @@ const compact = (obj) => Object.fromEntries(Object.entries(obj).filter(([, v]) =
  *   onSaved(saved, values, isEdit) - async hook after a successful create/update (e.g. upload attachments)
  *   onMutate()                 - called after any create, update or delete
  *   refreshKey                 - change it to reload the table from outside
+ *   page                       - permission page key (defaults from `resource`); hides Add/Edit/Delete the user may not use
+ *
+ * Titles, button texts, placeholders and string column titles are passed through t(), so pages can give English text.
  */
 export default function CrudPage({
   title,
@@ -46,8 +52,14 @@ export default function CrudPage({
   onSaved,
   onMutate,
   refreshKey,
+  page,
 }) {
   const { message } = App.useApp();
+  const { can } = useAuth();
+  const permissionPage = page || RESOURCE_PAGE[resource];
+  const canCreate = canWrite && can(permissionPage, 'create');
+  const canEdit = canWrite && can(permissionPage, 'edit');
+  const canDelete = canWrite && can(permissionPage, 'delete');
   const [searchParams, setSearchParams] = useSearchParams();
   const urlQuery = searchParams.get('q') || '';
 
@@ -83,7 +95,7 @@ export default function CrudPage({
   // Dashboard quick actions link here with ?new=1 to open the add dialog.
   useEffect(() => {
     if (searchParams.get('new') !== '1') return;
-    if (canWrite) setModal({ open: true, record: null });
+    if (canCreate) setModal({ open: true, record: null });
     setSearchParams(
       (p) => {
         p.delete('new');
@@ -142,7 +154,7 @@ export default function CrudPage({
       const isEdit = !!modal.record;
       const { data: saved } = isEdit ? await api.put(`/${resource}/${modal.record._id}`, payload) : await api.post(`/${resource}`, payload);
       if (onSaved) await onSaved(saved, values, isEdit);
-      message.success(isEdit ? 'Saved' : 'Created');
+      message.success(t(isEdit ? 'Saved' : 'Created'));
       closeModal();
       load();
       onMutate?.();
@@ -156,7 +168,7 @@ export default function CrudPage({
   const remove = async (record) => {
     try {
       await api.delete(`/${resource}/${record._id}`);
-      message.success('Deleted');
+      message.success(t('Deleted'));
       // Step back a page if we just removed the last row on it.
       if (data.items.length === 1 && pagination.current > 1) {
         setPagination((p) => ({ ...p, current: p.current - 1 }));
@@ -169,44 +181,49 @@ export default function CrudPage({
     }
   };
 
+  const hasActions = !!rowActions || canEdit || canDelete;
   const allColumns = [
-    ...columns,
-    {
-      title: 'Actions',
-      key: 'actions',
-      fixed: 'right',
-      width: rowActions ? 150 : 100,
-      render: (_, record) => (
-        <Space size={0} className="row-actions">
-          {rowActions?.(record, load)}
-          {canWrite && (
-            <>
-              <Tooltip title="Edit">
-                <Button type="text" icon={<EditOutlined />} style={{ color: '#1664ff' }} onClick={() => openModal(record)} />
-              </Tooltip>
-              <Popconfirm title="Delete this record?" okText="Delete" okButtonProps={{ danger: true }} onConfirm={() => remove(record)}>
-                <Tooltip title="Delete">
-                  <Button type="text" danger icon={<DeleteOutlined />} />
-                </Tooltip>
-              </Popconfirm>
-            </>
-          )}
-        </Space>
-      ),
-    },
+    ...columns.map((c) => (typeof c.title === 'string' ? { ...c, title: t(c.title) } : c)),
+    ...(hasActions
+      ? [
+          {
+            title: t('Actions'),
+            key: 'actions',
+            fixed: 'right',
+            width: rowActions ? 150 : 100,
+            render: (_, record) => (
+              <Space size={0} className="row-actions">
+                {rowActions?.(record, load)}
+                {canEdit && (
+                  <Tooltip title={t('Edit')}>
+                    <Button type="text" icon={<EditOutlined />} style={{ color: '#1664ff' }} onClick={() => openModal(record)} />
+                  </Tooltip>
+                )}
+                {canDelete && (
+                  <Popconfirm title={t('Delete this record?')} okText={t('Delete')} cancelText={t('Cancel')} okButtonProps={{ danger: true }} onConfirm={() => remove(record)}>
+                    <Tooltip title={t('Delete')}>
+                      <Button type="text" danger icon={<DeleteOutlined />} />
+                    </Tooltip>
+                  </Popconfirm>
+                )}
+              </Space>
+            ),
+          },
+        ]
+      : []),
   ];
 
   return (
     <Card className="page-card" bordered={false}>
       <Flex justify="space-between" align="center" wrap="wrap" gap={12} style={{ marginBottom: 16 }}>
         <h1 className="page-title" style={{ margin: 0 }}>
-          {title}
+          {t(title)}
         </h1>
         <Space wrap>
           {toolbarExtra?.({ query })}
-          {canWrite && (
+          {canCreate && (
             <Button type="primary" icon={<PlusOutlined />} onClick={() => openModal()}>
-              {addText}
+              {t(addText)}
             </Button>
           )}
         </Space>
@@ -216,7 +233,7 @@ export default function CrudPage({
         <Input
           allowClear
           prefix={<SearchOutlined style={{ color: '#98a2b3' }} />}
-          placeholder={searchPlaceholder}
+          placeholder={t(searchPlaceholder)}
           value={searchText}
           onChange={(e) => {
             setSearchText(e.target.value);
@@ -236,13 +253,13 @@ export default function CrudPage({
             <DatePicker
               value={date}
               onChange={setDate}
-              placeholder="All dates"
+              placeholder={t('All dates')}
               allowClear
               style={{ width: 150 }}
-              aria-label={dateFilter.label || 'Date'}
+              aria-label={t(dateFilter.label || 'Date')}
             />
             <Button onClick={() => setDate(dayjs())} disabled={!!date && date.isSame(dayjs(), 'day')}>
-              Today
+              {t('Today')}
             </Button>
           </Space.Compact>
         )}
@@ -250,8 +267,8 @@ export default function CrudPage({
           <Select
             key={f.name}
             allowClear
-            placeholder={f.placeholder}
-            options={f.options}
+            placeholder={t(f.placeholder)}
+            options={f.options.map((o) => (typeof o.label === 'string' ? { ...o, label: t(o.label) } : o))}
             value={filterValues[f.name]}
             onChange={(v) => setFilter(f.name, v)}
             style={{ minWidth: f.width || 160 }}
@@ -272,18 +289,19 @@ export default function CrudPage({
           total: data.total,
           showSizeChanger: true,
           pageSizeOptions: [8, 20, 50, 100],
-          showTotal: (total, [from, to]) => `Showing ${from}-${to} of ${total.toLocaleString()}`,
+          showTotal: (total, [from, to]) => t('Showing {from}-{to} of {total}', { from, to, total: total.toLocaleString() }),
           onChange: (current, pageSize) => setPagination({ current, pageSize }),
         }}
       />
 
       <Modal
-        title={modalTitle(modal.record)}
+        title={t(modalTitle(modal.record))}
         open={modal.open}
         onOk={save}
         onCancel={closeModal}
         confirmLoading={saving}
-        okText="Save"
+        okText={t('Save')}
+        cancelText={t('Cancel')}
         width={modalWidth}
         destroyOnClose
         maskClosable={false}

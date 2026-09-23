@@ -8,6 +8,7 @@ import StatusTag from '../components/StatusTag';
 import { useAuth } from '../context/AuthContext';
 import api, { errMsg } from '../api';
 import { DEPARTMENTS, toOptions } from '../constants';
+import { t, T } from '../i18n';
 
 const STATUSES = ['Draft', 'Submitted', 'Reviewed'];
 const STATUS_BADGE = { Draft: 'default', Submitted: 'processing', Reviewed: 'success' };
@@ -43,7 +44,7 @@ function FillFromActivity() {
     try {
       const { data } = await api.get('/dashboard/activities', { params: { date: date.format('YYYY-MM-DD') } });
       if (!data.length) {
-        message.info('No activity recorded on that day');
+        message.info(t('No activity recorded on that day'));
         return;
       }
       const lines = data
@@ -61,7 +62,7 @@ function FillFromActivity() {
 
   return (
     <Button size="small" icon={<HistoryOutlined />} loading={loading} onClick={fill}>
-      Fill from activity log
+      {t('Fill from activity log')}
     </Button>
   );
 }
@@ -69,17 +70,17 @@ function FillFromActivity() {
 const renderForm = () => (
   <Row gutter={16}>
     <Col xs={24} md={8}>
-      <Form.Item name="date" label="Date" rules={[{ required: true }]}>
+      <Form.Item name="date" label={t('Date')} rules={[{ required: true }]}>
         <DatePicker style={{ width: '100%' }} />
       </Form.Item>
     </Col>
     <Col xs={24} md={8}>
-      <Form.Item name="department" label="Department">
+      <Form.Item name="department" label={t('Department')}>
         <Select options={toOptions(REPORT_DEPARTMENTS)} allowClear />
       </Form.Item>
     </Col>
     <Col xs={24} md={8}>
-      <Form.Item name="status" label="Status">
+      <Form.Item name="status" label={t('Status')}>
         <Select options={toOptions(STATUSES)} />
       </Form.Item>
     </Col>
@@ -88,7 +89,7 @@ const renderForm = () => (
         name="workDone"
         label={
           <span style={{ display: 'inline-flex', gap: 12, alignItems: 'center' }}>
-            Work Done <FillFromActivity />
+            {t('Work Done')} <FillFromActivity />
           </span>
         }
         rules={[{ required: true }]}
@@ -97,12 +98,12 @@ const renderForm = () => (
       </Form.Item>
     </Col>
     <Col xs={24} md={12}>
-      <Form.Item name="issues" label="Issues / Problems">
+      <Form.Item name="issues" label={t('Issues / Problems')}>
         <Input.TextArea rows={3} />
       </Form.Item>
     </Col>
     <Col xs={24} md={12}>
-      <Form.Item name="planTomorrow" label="Plan for Tomorrow">
+      <Form.Item name="planTomorrow" label={t('Plan for Tomorrow')}>
         <Input.TextArea rows={3} />
       </Form.Item>
     </Col>
@@ -115,9 +116,9 @@ function renderDay(reports) {
   return (
     <>
       {shown.map((r) => (
-        <Badge key={r._id} status={STATUS_BADGE[r.status]} text={r.reporter || 'Report'} className="cal-item" />
+        <Badge key={r._id} status={STATUS_BADGE[r.status]} text={r.reporter || t('Report')} className="cal-item" />
       ))}
-      {reports.length > shown.length && <div className="cal-more">+{reports.length - shown.length} more</div>}
+      {reports.length > shown.length && <div className="cal-more">{t('+{count} more', { count: reports.length - shown.length })}</div>}
     </>
   );
 }
@@ -125,7 +126,7 @@ function renderDay(reports) {
 const legend = (
   <Space size={12} className="cal-legend">
     {STATUSES.map((s) => (
-      <Badge key={s} status={STATUS_BADGE[s]} text={s} />
+      <Badge key={s} status={STATUS_BADGE[s]} text={<T>{s}</T>} />
     ))}
   </Space>
 );
@@ -139,7 +140,7 @@ export default function DailyReports() {
   const markReviewed = async (record, reload) => {
     try {
       await api.put(`/daily-reports/${record._id}`, { status: 'Reviewed' });
-      message.success('Report marked as reviewed');
+      message.success(t('Report marked as reviewed'));
       reload();
       setVersion((v) => v + 1);
     } catch (err) {
@@ -151,7 +152,7 @@ export default function DailyReports() {
     <Space direction="vertical" size={16} style={{ width: '100%' }}>
       <CalendarBoard title="Daily Reports" resource="daily-reports" value={day} onSelect={setDay} renderDay={renderDay} refreshKey={version} legend={legend} />
       <CrudPage
-        title={day ? `Reports for ${day.format('YYYY-MM-DD (dddd)')}` : 'All Reports'}
+        title={day ? t('Reports for {date}', { date: day.format('YYYY-MM-DD (dddd)') }) : 'All Reports'}
         resource="daily-reports"
         addText="New Report"
         modalTitle={(r) => (r ? 'Edit Daily Report' : 'New Daily Report')}
@@ -171,7 +172,7 @@ export default function DailyReports() {
         rowActions={(record, reload) =>
           isAdmin &&
           record.status === 'Submitted' && (
-            <Tooltip title="Mark as reviewed">
+            <Tooltip title={t('Mark as reviewed')}>
               <Button type="text" icon={<CheckOutlined />} style={{ color: '#16a34a' }} onClick={() => markReviewed(record, reload)} />
             </Tooltip>
           )

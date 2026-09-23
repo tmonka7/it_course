@@ -19,21 +19,23 @@ import { Area, CartesianGrid, Cell, ComposedChart, Line, Pie, PieChart, Responsi
 import dayjs from 'dayjs';
 import api, { errMsg } from '../api';
 import { useSettings } from '../context/SettingsContext';
+import { useAuth } from '../context/AuthContext';
 import bannerImage from '../assets/welcome-banner.png';
+import { t, T } from '../i18n';
 
 const STAT_CARDS = [
-  { key: 'students', label: 'Total Students', icon: <TeamOutlined />, tone: 'blue', to: '/students', period: 'vs. last semester' },
-  { key: 'faculty', label: 'Total Faculty', icon: <UsergroupAddOutlined />, tone: 'purple', to: '/faculty', period: 'vs. last semester' },
-  { key: 'courses', label: 'Total Courses', icon: <BookOutlined />, tone: 'green', to: '/courses', period: 'vs. last semester' },
-  { key: 'pendingApplications', label: 'Pending Applications', icon: <FileTextOutlined />, tone: 'orange', to: '/admissions', period: 'new vs. last week' },
+  { key: 'students', label: 'Total Students', icon: <TeamOutlined />, tone: 'blue', to: '/students', page: 'students', period: 'vs. last semester' },
+  { key: 'faculty', label: 'Total Faculty', icon: <UsergroupAddOutlined />, tone: 'purple', to: '/faculty', page: 'faculty', period: 'vs. last semester' },
+  { key: 'courses', label: 'Total Courses', icon: <BookOutlined />, tone: 'green', to: '/courses', page: 'courses', period: 'vs. last semester' },
+  { key: 'pendingApplications', label: 'Pending Applications', icon: <FileTextOutlined />, tone: 'orange', to: '/admissions', page: 'admissions', period: 'new vs. last week' },
 ];
 
 const QUICK_ACTIONS = [
-  { label: 'Add Student', icon: <UserAddOutlined />, to: '/students?new=1', tone: 'blue' },
-  { label: 'Add Faculty', icon: <UsergroupAddOutlined />, to: '/faculty?new=1', tone: 'blue' },
-  { label: 'Add Course', icon: <BookOutlined />, to: '/courses?new=1', tone: 'green' },
-  { label: 'Create Schedule', icon: <CalendarOutlined />, to: '/schedule', tone: 'blue' },
-  { label: 'View Reports', icon: <BarChartOutlined />, to: '/grades', tone: 'purple' },
+  { label: 'Add Student', icon: <UserAddOutlined />, to: '/students?new=1', tone: 'blue', page: 'students', action: 'create' },
+  { label: 'Add Faculty', icon: <UsergroupAddOutlined />, to: '/faculty?new=1', tone: 'blue', page: 'faculty', action: 'create' },
+  { label: 'Add Course', icon: <BookOutlined />, to: '/courses?new=1', tone: 'green', page: 'courses', action: 'create' },
+  { label: 'Create Schedule', icon: <CalendarOutlined />, to: '/schedule', tone: 'blue', page: 'schedule', action: 'create' },
+  { label: 'View Reports', icon: <BarChartOutlined />, to: '/grades', tone: 'purple', page: 'grades', action: 'view' },
   { label: 'System Settings', icon: <SettingOutlined />, to: '/settings', tone: 'blue' },
 ];
 
@@ -42,37 +44,37 @@ const SLICE_COLORS = ['#2f7bf5', '#2fc4a8', '#9b6cf0', '#f7b23b'];
 const EVENT_DOTS = ['#2f7bf5', '#22c55e', '#f7b23b', '#ef4444'];
 
 const activityColumns = [
-  { title: 'Date & Time', dataIndex: 'createdAt', render: (v) => dayjs(v).format('YYYY-MM-DD HH:mm'), width: 150 },
-  { title: 'User', dataIndex: 'user', width: 90 },
-  { title: 'Action', dataIndex: 'action', className: 'cell-link' },
-  { title: 'Details', dataIndex: 'details', className: 'cell-link' },
+  { title: <T>Date & Time</T>, dataIndex: 'createdAt', render: (v) => dayjs(v).format('YYYY-MM-DD HH:mm'), width: 150 },
+  { title: <T>User</T>, dataIndex: 'user', width: 90 },
+  { title: <T>Action</T>, dataIndex: 'action', className: 'cell-link' },
+  { title: <T>Details</T>, dataIndex: 'details', className: 'cell-link' },
 ];
 
 function StatCard({ card, stat, onClick }) {
   const up = stat.change >= 0;
   return (
     <div
-      className={`kpi-card kpi-${card.tone}`}
+      className={`kpi-card kpi-${card.tone} ${onClick ? '' : 'static'}`}
       onClick={onClick}
       onKeyDown={(e) => {
-        if (e.key === 'Enter' || e.key === ' ') {
+        if (onClick && (e.key === 'Enter' || e.key === ' ')) {
           e.preventDefault();
           onClick();
         }
       }}
-      role="button"
-      tabIndex={0}
-      aria-label={`${card.label}: ${stat.total.toLocaleString()}, ${stat.change.toFixed(1)}% ${card.period}`}
+      role={onClick ? 'button' : undefined}
+      tabIndex={onClick ? 0 : undefined}
+      aria-label={`${t(card.label)}: ${stat.total.toLocaleString()}, ${stat.change.toFixed(1)}% ${t(card.period)}`}
     >
       <div className="kpi-icon">{card.icon}</div>
       <div>
-        <div className="kpi-label">{card.label}</div>
+        <div className="kpi-label">{t(card.label)}</div>
         <div className="kpi-value">{stat.total.toLocaleString()}</div>
         <div className={`kpi-change ${card.tone === 'orange' || !up ? 'kpi-change-warn' : ''}`}>
           {up ? <ArrowUpOutlined /> : <ArrowDownOutlined />} {up ? '+' : ''}
           {stat.change.toFixed(1)}%
         </div>
-        <div className="kpi-period">{card.period}</div>
+        <div className="kpi-period">{t(card.period)}</div>
       </div>
     </div>
   );
@@ -104,7 +106,7 @@ function EnrollmentCard({ initial }) {
       className="dash-card"
       title={
         <span>
-          Student <span className="text-primary">Enrollment</span> Trend
+          {t('Student')} <span className="text-primary">{t('Enrollment')}</span> {t('Trend')}
         </span>
       }
       extra={
@@ -113,8 +115,8 @@ function EnrollmentCard({ initial }) {
           value={months}
           onChange={setMonths}
           options={[
-            { value: 6, label: 'Last 6 Months' },
-            { value: 12, label: 'Last 12 Months' },
+            { value: 6, label: t('Last 6 Months') },
+            { value: 12, label: t('Last 12 Months') },
           ]}
           style={{ width: 130 }}
         />
@@ -131,19 +133,19 @@ function EnrollmentCard({ initial }) {
                 </linearGradient>
               </defs>
               <CartesianGrid stroke="#eef1f6" />
-              <XAxis dataKey="month" tickLine={false} axisLine={false} fontSize={11} tick={{ fill: '#667085' }} />
+              <XAxis dataKey="month" tickFormatter={(m) => t(m)} tickLine={false} axisLine={false} fontSize={11} tick={{ fill: '#667085' }} />
               <YAxis tickLine={false} axisLine={false} fontSize={11} tick={{ fill: '#667085' }} allowDecimals={false} />
-              <Tooltip />
-              <Area type="linear" dataKey="total" name="Total Students" stroke="#2f7bf5" strokeWidth={2} fill="url(#enrollFill)" dot={{ r: 3.5, fill: '#2f7bf5' }} />
-              <Line type="linear" dataKey="new" name="New Students" stroke="#b4cdf7" strokeWidth={2} dot={{ r: 3, fill: '#b4cdf7' }} />
+              <Tooltip labelFormatter={(m) => t(m)} />
+              <Area type="linear" dataKey="total" name={t('Total Students')} stroke="#2f7bf5" strokeWidth={2} fill="url(#enrollFill)" dot={{ r: 3.5, fill: '#2f7bf5' }} />
+              <Line type="linear" dataKey="new" name={t('New Students')} stroke="#b4cdf7" strokeWidth={2} dot={{ r: 3, fill: '#b4cdf7' }} />
             </ComposedChart>
           </ResponsiveContainer>
           <div className="chart-legend">
             <span>
-              <i style={{ background: '#2f7bf5' }} /> Total Students
+              <i style={{ background: '#2f7bf5' }} /> {t('Total Students')}
             </span>
             <span>
-              <i style={{ background: '#b4cdf7' }} /> New Students
+              <i style={{ background: '#b4cdf7' }} /> {t('New Students')}
             </span>
           </div>
         </>
@@ -164,7 +166,7 @@ function ActivitiesModal({ open, onClose }) {
       .catch(() => setItems([]));
   }, [open]);
   return (
-    <Modal title="All Activities" open={open} onCancel={onClose} footer={null} width={820}>
+    <Modal title={t('All Activities')} open={open} onCancel={onClose} footer={null} width={820}>
       <Table rowKey="_id" size="small" columns={activityColumns} dataSource={items || []} loading={!items} pagination={{ pageSize: 10 }} scroll={{ x: 'max-content' }} />
     </Modal>
   );
@@ -174,6 +176,7 @@ export default function Dashboard() {
   const { message } = App.useApp();
   const navigate = useNavigate();
   const { settings } = useSettings();
+  const { can } = useAuth();
   const [data, setData] = useState(null);
   const [activitiesOpen, setActivitiesOpen] = useState(false);
 
@@ -194,16 +197,16 @@ export default function Dashboard() {
       <section className="welcome">
         <div className="welcome-art" style={{ backgroundImage: `url(${bannerImage})` }} aria-hidden="true" />
         <div className="welcome-text">
-          <div className="welcome-kicker">Welcome to the</div>
+          <div className="welcome-kicker">{t('Welcome to the')}</div>
           <h1>{settings.schoolName}</h1>
-          <div className="welcome-sub">Administrative Management System</div>
-          <p>Manage students, faculty, courses, and campus resources efficiently for a smarter future.</p>
+          <div className="welcome-sub">{t('Administrative Management System')}</div>
+          <p>{t('Manage students, faculty, courses, and campus resources efficiently for a smarter future.')}</p>
         </div>
       </section>
 
       <div className="kpi-grid">
         {STAT_CARDS.map((c) => (
-          <StatCard key={c.key} card={c} stat={data.stats[c.key]} onClick={() => navigate(c.to)} />
+          <StatCard key={c.key} card={c} stat={data.stats[c.key]} onClick={can(c.page) ? () => navigate(c.to) : undefined} />
         ))}
       </div>
 
@@ -212,7 +215,7 @@ export default function Dashboard() {
           <EnrollmentCard initial={data.enrollmentTrend} />
         </div>
 
-        <Card bordered={false} className="dash-card area-dist" title="Student Distribution">
+        <Card bordered={false} className="dash-card area-dist" title={t('Student Distribution')}>
           <div className="dist-body">
             <div className="donut">
               <ResponsiveContainer width="100%" height="100%">
@@ -222,12 +225,12 @@ export default function Dashboard() {
                       <Cell key={d.name} fill={SLICE_COLORS[i % SLICE_COLORS.length]} />
                     ))}
                   </Pie>
-                  <Tooltip />
+                  <Tooltip formatter={(value, name) => [value, t(name)]} />
                 </PieChart>
               </ResponsiveContainer>
               <div className="donut-center">
                 <div className="donut-value">{totalStudents.toLocaleString()}</div>
-                <div className="donut-label">Total</div>
+                <div className="donut-label">{t('Total')}</div>
               </div>
             </div>
             <div className="dist-legend">
@@ -235,7 +238,7 @@ export default function Dashboard() {
                 <div key={d.name} className="legend-row">
                   <span>
                     <span className="legend-dot" style={{ background: SLICE_COLORS[i % SLICE_COLORS.length] }} />
-                    {d.name}
+                    {t(d.name)}
                   </span>
                   <strong>{totalStudents ? Math.round((d.value / totalStudents) * 100) : 0}%</strong>
                 </div>
@@ -247,11 +250,13 @@ export default function Dashboard() {
         <Card
           bordered={false}
           className="dash-card area-events"
-          title="Upcoming Events"
+          title={t('Upcoming Events')}
           extra={
-            <Button type="link" size="small" onClick={() => navigate('/announcements')}>
-              View All
-            </Button>
+            can('announcements') && (
+              <Button type="link" size="small" onClick={() => navigate('/announcements')}>
+                {t('View All')}
+              </Button>
+            )
           }
         >
           {data.upcomingEvents.length ? (
@@ -283,29 +288,29 @@ export default function Dashboard() {
               })}
             </ul>
           ) : (
-            <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="No upcoming events" />
+            <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description={t('No upcoming events')} />
           )}
         </Card>
 
         <Card
           bordered={false}
           className="dash-card area-activity"
-          title="Recent Activities"
+          title={t('Recent Activities')}
           extra={
             <Button type="link" size="small" onClick={() => setActivitiesOpen(true)}>
-              View All
+              {t('View All')}
             </Button>
           }
         >
           <Table rowKey="_id" size="small" columns={activityColumns} dataSource={data.recentActivities} pagination={false} scroll={{ x: 'max-content' }} />
         </Card>
 
-        <Card bordered={false} className="dash-card area-actions" title="Quick Actions">
+        <Card bordered={false} className="dash-card area-actions" title={t('Quick Actions')}>
           <div className="quick-grid">
-            {QUICK_ACTIONS.map((a) => (
+            {QUICK_ACTIONS.filter((a) => !a.page || can(a.page, a.action)).map((a) => (
               <button type="button" key={a.label} className={`quick-btn quick-${a.tone}`} onClick={() => navigate(a.to)}>
                 <span className="quick-icon">{a.icon}</span>
-                {a.label}
+                {t(a.label)}
               </button>
             ))}
           </div>

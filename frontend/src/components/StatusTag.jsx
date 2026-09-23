@@ -1,4 +1,5 @@
 import { Tag } from 'antd';
+import { t } from '../i18n';
 
 const COLORS = {
   Active: 'green',
@@ -45,7 +46,8 @@ export default function StatusTag({ value }) {
   if (!value) return null;
   return (
     <Tag color={COLORS[value] || 'default'} bordered={false}>
-      {value}
+      {/* Stored values stay English; only the label is translated. */}
+      {t(value === 'admin' ? 'Administrator' : value === 'staff' ? 'Staff' : value)}
     </Tag>
   );
 }

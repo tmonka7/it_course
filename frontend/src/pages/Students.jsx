@@ -5,6 +5,7 @@ import CrudPage from '../components/CrudPage';
 import StatusTag from '../components/StatusTag';
 import ImageUpload from '../components/ImageUpload';
 import { DEPARTMENTS, toOptions } from '../constants';
+import { t } from '../i18n';
 
 const STATUSES = ['Active', 'Inactive', 'Graduated', 'Suspended'];
 const LEVELS = [1, 2, 3, 4].map((v) => ({ label: `Grade ${v}`, value: v }));
@@ -23,7 +24,7 @@ const columns = [
   },
   { title: 'Gender', dataIndex: 'gender' },
   { title: 'Major', dataIndex: 'major' },
-  { title: 'Grade', dataIndex: 'level', align: 'center' },
+  { title: 'Grade Level', dataIndex: 'level', align: 'center' },
   { title: 'Email', dataIndex: 'email', responsive: ['xl'] },
   { title: 'Status', dataIndex: 'status', render: (v) => <StatusTag value={v} /> },
 ];
@@ -38,52 +39,52 @@ const renderForm = () => (
     <Col xs={24} sm={17}>
       <Row gutter={16}>
         <Col xs={24} md={12}>
-          <Form.Item name="name" label="Name" rules={[{ required: true }]}>
-            <Input placeholder="Enter student name" />
+          <Form.Item name="name" label={t('Name')} rules={[{ required: true }]}>
+            <Input placeholder={t('Enter student name')} />
           </Form.Item>
         </Col>
         <Col xs={24} md={12}>
-          <Form.Item name="gender" label="Gender" rules={[{ required: true }]}>
-            <Radio.Group options={['Male', 'Female']} />
+          <Form.Item name="gender" label={t('Gender')} rules={[{ required: true }]}>
+            <Radio.Group options={toOptions(['Male', 'Female'])} />
           </Form.Item>
         </Col>
         <Col xs={24} md={12}>
-          <Form.Item name="studentId" label="ID" rules={[{ required: true }]}>
-            <Input placeholder="e.g. CS20250001" />
+          <Form.Item name="studentId" label={t('ID')} rules={[{ required: true }]}>
+            <Input placeholder={t('e.g. {example}', { example: 'CS20250001' })} />
           </Form.Item>
         </Col>
         <Col xs={24} md={12}>
-          <Form.Item name="major" label="Major" rules={[{ required: true }]}>
-            <Select placeholder="Select major" options={toOptions(DEPARTMENTS)} />
+          <Form.Item name="major" label={t('Major')} rules={[{ required: true }]}>
+            <Select placeholder={t('Select major')} options={toOptions(DEPARTMENTS)} />
           </Form.Item>
         </Col>
         <Col xs={24} md={12}>
-          <Form.Item name="level" label="Grade" rules={[{ required: true }]}>
-            <Select placeholder="Select grade" options={LEVELS} />
+          <Form.Item name="level" label={t('Grade Level')} rules={[{ required: true }]}>
+            <Select placeholder={t('Select grade')} options={LEVELS.map((o) => ({ ...o, label: t(o.label) }))} />
           </Form.Item>
         </Col>
         <Col xs={24} md={12}>
-          <Form.Item name="email" label="Email" rules={[{ type: 'email' }]}>
-            <Input placeholder="Enter email address" />
+          <Form.Item name="email" label={t('Email')} rules={[{ type: 'email' }]}>
+            <Input placeholder={t('Enter email address')} />
           </Form.Item>
         </Col>
         <Col xs={24} md={12}>
-          <Form.Item name="phone" label="Phone">
-            <Input placeholder="Phone number" />
+          <Form.Item name="phone" label={t('Phone')}>
+            <Input placeholder={t('Phone number')} />
           </Form.Item>
         </Col>
         <Col xs={24} md={12}>
-          <Form.Item name="status" label="Status">
+          <Form.Item name="status" label={t('Status')}>
             <Select options={toOptions(STATUSES)} />
           </Form.Item>
         </Col>
         <Col xs={24} md={12}>
-          <Form.Item name="birthDate" label="Date of birth">
+          <Form.Item name="birthDate" label={t('Date of birth')}>
             <DatePicker style={{ width: '100%' }} />
           </Form.Item>
         </Col>
         <Col xs={24} md={12}>
-          <Form.Item name="enrollDate" label="Enrollment date">
+          <Form.Item name="enrollDate" label={t('Enrollment date')}>
             <DatePicker style={{ width: '100%' }} />
           </Form.Item>
         </Col>

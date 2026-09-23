@@ -11,10 +11,17 @@ import api, { errMsg } from '../api';
 import { toOptions } from '../constants';
 import { COMMAND_STATUSES, CommandLogDrawer, DailyCommandLogModal } from '../components/CommandLog';
 import { AttachmentList, uploadAttachments } from '../components/Attachments';
+import { t, useLanguage } from '../i18n';
 
 const PRIORITIES = ['Low', 'Normal', 'High', 'Urgent'];
 const STATUSES = COMMAND_STATUSES;
 const isOpen = (status) => status === 'Issued' || status === 'In Progress';
+
+// Column header icon; a component so its aria-label follows the active language.
+function AttachmentsHeader() {
+  useLanguage();
+  return <PaperClipOutlined aria-label={t('Attachments')} />;
+}
 
 const columns = [
   { title: 'Command', dataIndex: 'title' },
@@ -27,12 +34,12 @@ const columns = [
     render: (v, r) => {
       if (!v) return '-';
       const overdue = isOpen(r.status) && dayjs(v).isBefore(dayjs(), 'day');
-      return <Typography.Text type={overdue ? 'danger' : undefined}>{dayjs(v).format('YYYY-MM-DD')}{overdue ? ' (overdue)' : ''}</Typography.Text>;
+      return <Typography.Text type={overdue ? 'danger' : undefined}>{dayjs(v).format('YYYY-MM-DD')}{overdue ? ` ${t('(overdue)')}` : ''}</Typography.Text>;
     },
   },
   { title: 'Status', dataIndex: 'status', render: (v) => <StatusTag value={v} /> },
   {
-    title: <PaperClipOutlined aria-label="Attachments" />,
+    title: <AttachmentsHeader />,
     dataIndex: 'attachments',
     align: 'center',
     width: 56,
@@ -44,7 +51,8 @@ const userLabel = (u) => `${u.name} (${u.username})`;
 
 export default function Commands() {
   const { message } = App.useApp();
-  const { user, isAdmin } = useAuth();
+  const { user, can } = useAuth();
+  const canEdit = can('commands', 'edit');
   const [searchParams, setSearchParams] = useSearchParams();
   const [logFor, setLogFor] = useState(null); // command id shown in the log drawer
   const [dailyOpen, setDailyOpen] = useState(false);
@@ -83,9 +91,9 @@ export default function Commands() {
       render: (_, r) => {
         if (!isOpen(r.status)) return <Typography.Text type="secondary">-</Typography.Text>;
         return loggedToday.has(String(r._id)) ? (
-          <Tag bordered={false} color="green">Logged</Tag>
+          <Tag bordered={false} color="green">{t('Logged')}</Tag>
         ) : (
-          <Tag bordered={false} color="orange">Missing</Tag>
+          <Tag bordered={false} color="orange">{t('Missing')}</Tag>
         );
       },
     },
@@ -94,7 +102,7 @@ export default function Commands() {
   const setStatus = async (record, status, reload) => {
     try {
       await api.put(`/commands/${record._id}`, { status });
-      message.success(`Command marked as ${status.toLowerCase()}`);
+      message.success(t('Command marked as {status}', { status: t(status).toLowerCase() }));
       reload();
     } catch (err) {
       message.error(errMsg(err));
@@ -104,49 +112,43 @@ export default function Commands() {
   const renderForm = (record) => (
     <Row gutter={16}>
       <Col xs={24}>
-        <Form.Item name="title" label="Command" rules={[{ required: true }]}>
-          <Input placeholder="e.g. Prepare midterm exam rooms" />
+        <Form.Item name="title" label={t('Command')} rules={[{ required: true }]}>
+          <Input placeholder={t('e.g. Prepare midterm exam rooms')} />
         </Form.Item>
       </Col>
       <Col xs={24} md={12}>
-        <Form.Item name="assignee" label="Assign To" rules={[{ required: true }]}>
-          {isAdmin ? (
-            <RemoteSelect
-              resource="users"
-              labelOf={userLabel}
-              params={{ status: 'Active' }}
-              placeholder="Search users"
-              initialOptions={record?.assignee ? [{ value: record.assignee._id, label: userLabel(record.assignee) }] : []}
-            />
-          ) : (
-            // Only admins can list users; staff can issue commands to themselves.
-            <Select options={[{ value: user._id, label: userLabel(user) }]} />
-          )}
+        <Form.Item name="assignee" label={t('Assign To')} rules={[{ required: true }]}>
+          <RemoteSelect
+            resource="users"
+            labelOf={userLabel}
+            placeholder={t('Search users')}
+            initialOptions={record?.assignee ? [{ value: record.assignee._id, label: userLabel(record.assignee) }] : []}
+          />
         </Form.Item>
       </Col>
       <Col xs={12} md={6}>
-        <Form.Item name="priority" label="Priority">
+        <Form.Item name="priority" label={t('Priority')}>
           <Select options={toOptions(PRIORITIES)} />
         </Form.Item>
       </Col>
       <Col xs={12} md={6}>
-        <Form.Item name="dueDate" label="Due Date">
+        <Form.Item name="dueDate" label={t('Due Date')}>
           <DatePicker style={{ width: '100%' }} />
         </Form.Item>
       </Col>
       <Col xs={24} md={12}>
-        <Form.Item name="status" label="Status">
+        <Form.Item name="status" label={t('Status')}>
           <Select options={toOptions(STATUSES)} />
         </Form.Item>
       </Col>
       <Col xs={24}>
-        <Form.Item name="content" label="Details / Instructions">
+        <Form.Item name="content" label={t('Details / Instructions')}>
           <Input.TextArea rows={5} />
         </Form.Item>
       </Col>
       <Col xs={24}>
         <Divider orientation="left" plain style={{ margin: '0 0 12px' }}>
-          Attachments
+          {t('Attachments')}
         </Divider>
         {record && (
           <div style={{ marginBottom: 12 }}>
@@ -154,9 +156,9 @@ export default function Commands() {
           </div>
         )}
         {/* New files are kept in the form and uploaded after the work order is saved. */}
-        <Form.Item name="newFiles" valuePropName="fileList" getValueFromEvent={(e) => e?.fileList} extra="Up to 10 files per save, 20 MB each.">
+        <Form.Item name="newFiles" valuePropName="fileList" getValueFromEvent={(e) => e?.fileList} extra={t('Up to 10 files per save, 20 MB each.')}>
           <Upload multiple beforeUpload={() => false}>
-            <Button icon={<UploadOutlined />}>Add files</Button>
+            <Button icon={<UploadOutlined />}>{t('Add files')}</Button>
           </Upload>
         </Form.Item>
       </Col>
@@ -181,13 +183,13 @@ export default function Commands() {
             await uploadAttachments(saved._id, files);
           } catch (err) {
             // The work order itself is saved; only the upload failed.
-            message.warning(`Saved, but the attachments could not be uploaded: ${errMsg(err)}`);
+            message.warning(t('Saved, but the attachments could not be uploaded: {error}', { error: errMsg(err) }));
           }
         }}
         onMutate={() => setVersion((v) => v + 1)}
         toolbarExtra={() => (
           <Button icon={<CalendarOutlined />} onClick={() => setDailyOpen(true)}>
-            Daily Log
+            {t('Daily Log')}
           </Button>
         )}
         filters={[
@@ -198,20 +200,20 @@ export default function Commands() {
         renderForm={renderForm}
         toForm={(r) => ({ ...r, assignee: r.assignee?._id, dueDate: r.dueDate ? dayjs(r.dueDate) : null })}
         fromForm={({ newFiles, ...v }) => ({ ...v, dueDate: v.dueDate ? v.dueDate.endOf('day').toISOString() : null })}
-        initialValues={{ priority: 'Normal', status: 'Issued', assignee: isAdmin ? undefined : user._id }}
+        initialValues={{ priority: 'Normal', status: 'Issued' }}
         modalWidth={720}
         rowActions={(record, reload) => (
           <>
-            <Tooltip title="Log / history">
+            <Tooltip title={t('Log / history')}>
               <Button type="text" icon={<ProfileOutlined />} style={{ color: '#1664ff' }} onClick={() => setLogFor(record._id)} />
             </Tooltip>
-            {record.status === 'Issued' && (
-              <Tooltip title="Start">
+            {canEdit && record.status === 'Issued' && (
+              <Tooltip title={t('Start')}>
                 <Button type="text" icon={<PlayCircleOutlined />} style={{ color: '#d97706' }} onClick={() => setStatus(record, 'In Progress', reload)} />
               </Tooltip>
             )}
-            {isOpen(record.status) && (
-              <Tooltip title="Mark completed">
+            {canEdit && isOpen(record.status) && (
+              <Tooltip title={t('Mark completed')}>
                 <Button type="text" icon={<CheckCircleOutlined />} style={{ color: '#16a34a' }} onClick={() => setStatus(record, 'Completed', reload)} />
               </Tooltip>
             )}
@@ -220,6 +222,7 @@ export default function Commands() {
       />
       <CommandLogDrawer
         commandId={logFor}
+        canEdit={canEdit}
         onClose={() => setLogFor(null)}
         onChanged={() => setVersion((v) => v + 1)}
       />

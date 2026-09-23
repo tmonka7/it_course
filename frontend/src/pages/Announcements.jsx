@@ -3,6 +3,7 @@ import dayjs from 'dayjs';
 import CrudPage from '../components/CrudPage';
 import StatusTag from '../components/StatusTag';
 import { toOptions } from '../constants';
+import { t } from '../i18n';
 
 const TYPES = ['General', 'Event', 'Notice'];
 const STATUSES = ['Published', 'Draft'];
@@ -18,22 +19,22 @@ const columns = [
 const renderForm = () => (
   <Row gutter={16}>
     <Col xs={24}>
-      <Form.Item name="title" label="Title" rules={[{ required: true }]}>
+      <Form.Item name="title" label={t('Title')} rules={[{ required: true }]}>
         <Input />
       </Form.Item>
     </Col>
     <Col xs={24} md={8}>
-      <Form.Item name="type" label="Type">
+      <Form.Item name="type" label={t('Type')}>
         <Select options={toOptions(TYPES)} />
       </Form.Item>
     </Col>
     <Col xs={24} md={8}>
-      <Form.Item name="publishDate" label="Publish Date">
+      <Form.Item name="publishDate" label={t('Publish Date')}>
         <DatePicker style={{ width: '100%' }} />
       </Form.Item>
     </Col>
     <Col xs={24} md={8}>
-      <Form.Item name="status" label="Status">
+      <Form.Item name="status" label={t('Status')}>
         <Select options={toOptions(STATUSES)} />
       </Form.Item>
     </Col>
@@ -42,18 +43,18 @@ const renderForm = () => (
         getFieldValue('type') === 'Event' && (
           <>
             <Col xs={24} md={8}>
-              <Form.Item name="eventDate" label="Event Date" rules={[{ required: true }]}>
+              <Form.Item name="eventDate" label={t('Event Date')} rules={[{ required: true }]}>
                 <DatePicker style={{ width: '100%' }} />
               </Form.Item>
             </Col>
             <Col xs={24} md={8}>
-              <Form.Item name="eventTime" label="Event Time">
-                <Input placeholder="e.g. 09:00 - 12:00" />
+              <Form.Item name="eventTime" label={t('Event Time')}>
+                <Input placeholder={t('e.g. {example}', { example: '09:00 - 12:00' })} />
               </Form.Item>
             </Col>
             <Col xs={24} md={8}>
-              <Form.Item name="location" label="Location">
-                <Input placeholder="e.g. Main Auditorium" />
+              <Form.Item name="location" label={t('Location')}>
+                <Input placeholder={t('e.g. Main Auditorium')} />
               </Form.Item>
             </Col>
           </>
@@ -61,7 +62,7 @@ const renderForm = () => (
       }
     </Form.Item>
     <Col xs={24}>
-      <Form.Item name="content" label="Content">
+      <Form.Item name="content" label={t('Content')}>
         <Input.TextArea rows={6} />
       </Form.Item>
     </Col>

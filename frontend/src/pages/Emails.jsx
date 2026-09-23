@@ -3,6 +3,7 @@ import dayjs from 'dayjs';
 import CrudPage from '../components/CrudPage';
 import StatusTag from '../components/StatusTag';
 import { toOptions } from '../constants';
+import { t } from '../i18n';
 
 const AUDIENCES = ['All Students', 'All Faculty', 'All Users', 'Custom'];
 const STATUSES = ['Draft', 'Sent'];
@@ -13,7 +14,7 @@ const columns = [
   {
     title: 'To',
     dataIndex: 'audience',
-    render: (v, r) => (v === 'Custom' ? r.recipients.join(', ') || '-' : v),
+    render: (v, r) => (v === 'Custom' ? r.recipients.join(', ') || '-' : t(v)),
     ellipsis: true,
     width: 240,
   },
@@ -30,11 +31,11 @@ const renderForm = (record) => (
         type="info"
         showIcon
         style={{ marginBottom: 16 }}
-        message="Emails are recorded in the system only. Nothing is delivered to a mail server."
+        message={t('Emails are recorded in the system only. Nothing is delivered to a mail server.')}
       />
     </Col>
     <Col xs={24}>
-      <Form.Item name="audience" label="To" rules={[{ required: true }]}>
+      <Form.Item name="audience" label={t('To')} rules={[{ required: true }]}>
         <Select options={toOptions(AUDIENCES)} disabled={record?.status === 'Sent'} />
       </Form.Item>
     </Col>
@@ -44,40 +45,40 @@ const renderForm = (record) => (
           <Col xs={24}>
             <Form.Item
               name="recipients"
-              label="Email Addresses"
+              label={t('Email Addresses')}
               rules={[
-                { required: true, message: 'Add at least one address' },
+                { required: true, message: t('Add at least one address') },
                 {
                   validator: (_, list = []) => {
                     const bad = list.filter((e) => !EMAIL_RE.test(e));
-                    return bad.length ? Promise.reject(new Error(`Invalid address: ${bad.join(', ')}`)) : Promise.resolve();
+                    return bad.length ? Promise.reject(new Error(t('Invalid address: {list}', { list: bad.join(', ') }))) : Promise.resolve();
                   },
                 },
               ]}
             >
-              <Select mode="tags" tokenSeparators={[',', ';', ' ']} placeholder="Type an address and press Enter" open={false} />
+              <Select mode="tags" tokenSeparators={[',', ';', ' ']} placeholder={t('Type an address and press Enter')} open={false} />
             </Form.Item>
           </Col>
         )
       }
     </Form.Item>
     <Col xs={24}>
-      <Form.Item name="subject" label="Subject" rules={[{ required: true }]}>
+      <Form.Item name="subject" label={t('Subject')} rules={[{ required: true }]}>
         <Input />
       </Form.Item>
     </Col>
     <Col xs={24}>
-      <Form.Item name="body" label="Message">
+      <Form.Item name="body" label={t('Message')}>
         <Input.TextArea rows={8} />
       </Form.Item>
     </Col>
     <Col xs={24}>
-      <Form.Item name="status" label="Action">
+      <Form.Item name="status" label={t('Action')}>
         <Radio.Group
           disabled={record?.status === 'Sent'}
           options={[
-            { value: 'Draft', label: 'Save as draft' },
-            { value: 'Sent', label: 'Send' },
+            { value: 'Draft', label: t('Save as draft') },
+            { value: 'Sent', label: t('Send') },
           ]}
         />
       </Form.Item>

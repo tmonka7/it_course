@@ -2,6 +2,7 @@ import { Navigate, Route, Routes } from 'react-router-dom';
 import { Spin } from 'antd';
 import { useAuth } from './context/AuthContext';
 import MainLayout from './layouts/MainLayout';
+import PageGuard from './components/PageGuard';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import Students from './pages/Students';
@@ -22,6 +23,31 @@ import WorkSchedule from './pages/WorkSchedule';
 import Meetings from './pages/Meetings';
 import MeetingRoom from './pages/MeetingRoom';
 
+// First page (in sidebar order) the user may open; everyone can open Notifications.
+const LANDING = [
+  ['/dashboard', 'dashboard'],
+  ['/students', 'students'],
+  ['/faculty', 'faculty'],
+  ['/courses', 'courses'],
+  ['/schedule', 'schedule'],
+  ['/admissions', 'admissions'],
+  ['/grades', 'grades'],
+  ['/announcements', 'announcements'],
+  ['/daily-reports', 'dailyReports'],
+  ['/commands', 'commands'],
+  ['/work-schedule', 'workSchedule'],
+  ['/cameras', 'cameras'],
+  ['/camera-view', 'cameraView'],
+  ['/meetings', 'meetings'],
+  ['/emails', 'emails'],
+];
+
+function HomeRedirect() {
+  const { can } = useAuth();
+  const first = LANDING.find(([, page]) => can(page, 'view'));
+  return <Navigate to={first ? first[0] : '/notifications'} replace />;
+}
+
 function RequireAuth({ children }) {
   const { user, loading } = useAuth();
   if (loading) return <Spin fullscreen />;
@@ -37,7 +63,9 @@ export default function App() {
         path="/meetings/room/:code"
         element={
           <RequireAuth>
-            <MeetingRoom />
+            <PageGuard page="meetings">
+              <MeetingRoom />
+            </PageGuard>
           </RequireAuth>
         }
       />
@@ -48,26 +76,26 @@ export default function App() {
           </RequireAuth>
         }
       >
-        <Route index element={<Navigate to="/dashboard" replace />} />
-        <Route path="dashboard" element={<Dashboard />} />
-        <Route path="students" element={<Students />} />
-        <Route path="faculty" element={<Faculty />} />
-        <Route path="courses" element={<Courses />} />
-        <Route path="schedule" element={<Schedule />} />
-        <Route path="admissions" element={<Admissions />} />
-        <Route path="grades" element={<Grades />} />
-        <Route path="announcements" element={<Announcements />} />
-        <Route path="daily-reports" element={<DailyReports />} />
-        <Route path="commands" element={<Commands />} />
-        <Route path="work-schedule" element={<WorkSchedule />} />
-        <Route path="cameras" element={<Cameras />} />
-        <Route path="camera-view" element={<CameraView />} />
-        <Route path="meetings" element={<Meetings />} />
-        <Route path="emails" element={<Emails />} />
+        <Route index element={<HomeRedirect />} />
+        <Route path="dashboard" element={<PageGuard page="dashboard"><Dashboard /></PageGuard>} />
+        <Route path="students" element={<PageGuard page="students"><Students /></PageGuard>} />
+        <Route path="faculty" element={<PageGuard page="faculty"><Faculty /></PageGuard>} />
+        <Route path="courses" element={<PageGuard page="courses"><Courses /></PageGuard>} />
+        <Route path="schedule" element={<PageGuard page="schedule"><Schedule /></PageGuard>} />
+        <Route path="admissions" element={<PageGuard page="admissions"><Admissions /></PageGuard>} />
+        <Route path="grades" element={<PageGuard page="grades"><Grades /></PageGuard>} />
+        <Route path="announcements" element={<PageGuard page="announcements"><Announcements /></PageGuard>} />
+        <Route path="daily-reports" element={<PageGuard page="dailyReports"><DailyReports /></PageGuard>} />
+        <Route path="commands" element={<PageGuard page="commands"><Commands /></PageGuard>} />
+        <Route path="work-schedule" element={<PageGuard page="workSchedule"><WorkSchedule /></PageGuard>} />
+        <Route path="cameras" element={<PageGuard page="cameras"><Cameras /></PageGuard>} />
+        <Route path="camera-view" element={<PageGuard page="cameraView"><CameraView /></PageGuard>} />
+        <Route path="meetings" element={<PageGuard page="meetings"><Meetings /></PageGuard>} />
+        <Route path="emails" element={<PageGuard page="emails"><Emails /></PageGuard>} />
         <Route path="notifications" element={<Notifications />} />
         <Route path="settings" element={<Settings />} />
       </Route>
-      <Route path="*" element={<Navigate to="/dashboard" replace />} />
+      <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );
 }

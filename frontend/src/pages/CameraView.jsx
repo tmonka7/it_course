@@ -12,6 +12,7 @@ import {
 import dayjs from 'dayjs';
 import LivePlayer from '../components/LivePlayer';
 import api, { errMsg } from '../api';
+import { t } from '../i18n';
 
 // Channel layouts as on an NVR. "8" is one large channel plus seven small ones.
 const LAYOUTS = [1, 4, 8, 9, 16];
@@ -46,7 +47,7 @@ function Tile({ channel, camera, cameras, gatewayEnabled, fit, onAssign, onToggl
   const [picking, setPicking] = useState(false);
   const statusClass = camera ? `dot-${camera.status.toLowerCase()}` : 'dot-none';
   return (
-    <div className="cam-tile" onDoubleClick={onToggleMax} title="Double-click to enlarge">
+    <div className="cam-tile" onDoubleClick={onToggleMax} title={t('Double-click to enlarge')}>
       <LivePlayer camera={camera} gatewayEnabled={gatewayEnabled} fit={fit} />
       <div className="tile-top">
         <span className="tile-ch">CH{String(channel + 1).padStart(2, '0')}</span>
@@ -74,14 +75,14 @@ function Tile({ channel, camera, cameras, gatewayEnabled, fit, onAssign, onToggl
               setPicking(false);
             }}
             onBlur={() => setPicking(false)}
-            options={[{ value: '', label: '(empty channel)' }, ...cameras.map((c) => ({ value: c._id, label: `${c.cameraId} ${c.name}` }))]}
+            options={[{ value: '', label: t('(empty channel)') }, ...cameras.map((c) => ({ value: c._id, label: `${c.cameraId} ${c.name}` }))]}
           />
         ) : (
-          <Tooltip title="Change camera">
+          <Tooltip title={t('Change camera')}>
             <Button size="small" icon={<SwapOutlined />} onClick={() => setPicking(true)} />
           </Tooltip>
         )}
-        <Tooltip title={maximized ? 'Back to grid' : 'Enlarge'}>
+        <Tooltip title={maximized ? t('Back to grid') : t('Enlarge')}>
           <Button size="small" icon={maximized ? <CompressOutlined /> : <ExpandOutlined />} onClick={onToggleMax} />
         </Tooltip>
       </div>
@@ -170,7 +171,7 @@ export default function CameraView() {
     <div className="camera-view">
       <div className="cam-toolbar">
         <h1 className="page-title" style={{ margin: 0 }}>
-          Camera View
+          {t('Camera View')}
         </h1>
         <Space wrap>
           <Segmented
@@ -180,7 +181,7 @@ export default function CameraView() {
               setPage(0);
               setMaximized(null);
             }}
-            options={LAYOUTS.map((n) => ({ value: n, label: n === 1 ? '1 ch' : `${n} ch` }))}
+            options={LAYOUTS.map((n) => ({ value: n, label: t('{count} ch', { count: n }) }))}
           />
           <Space size={4}>
             <Button icon={<LeftOutlined />} disabled={pages < 2} onClick={() => setPage((p) => (p - 1 + pages) % pages)} />
@@ -190,22 +191,22 @@ export default function CameraView() {
             <Button icon={<RightOutlined />} disabled={pages < 2} onClick={() => setPage((p) => (p + 1) % pages)} />
           </Space>
           <Space size={6}>
-            <Switch size="small" checked={tour} onChange={setTour} disabled={pages < 2} /> Tour
+            <Switch size="small" checked={tour} onChange={setTour} disabled={pages < 2} /> {t('Tour')}
           </Space>
           <Space size={6}>
-            <Switch size="small" checked={onlineOnly} onChange={setOnlineOnly} /> Online only
+            <Switch size="small" checked={onlineOnly} onChange={setOnlineOnly} /> {t('Online only')}
           </Space>
-          <Segmented size="small" value={fit} onChange={setFit} options={[{ value: 'cover', label: 'Fill' }, { value: 'contain', label: 'Fit' }]} />
+          <Segmented size="small" value={fit} onChange={setFit} options={[{ value: 'cover', label: t('Fill') }, { value: 'contain', label: t('Fit') }]} />
           {Object.keys(assign).length > 0 && (
             <Button size="small" onClick={() => setAssign({})}>
-              Reset channels
+              {t('Reset channels')}
             </Button>
           )}
-          <Tooltip title="Reload camera list">
+          <Tooltip title={t('Reload camera list')}>
             <Button icon={<ReloadOutlined />} onClick={load} />
           </Tooltip>
           <Button type="primary" icon={<ExpandOutlined />} onClick={toggleFullscreen}>
-            Full screen
+            {t('Full screen')}
           </Button>
         </Space>
       </div>
@@ -216,13 +217,13 @@ export default function CameraView() {
           showIcon
           closable
           style={{ marginBottom: 12 }}
-          message="RTSP cameras need the media gateway to play in the browser."
-          description="Start MediaMTX (docker compose up -d mediamtx) and set MEDIAMTX_API_URL and MEDIAMTX_HLS_URL in backend/.env, or give each camera a browser-playable Live URL (HLS, MJPEG or MP4)."
+          message={t('RTSP cameras need the media gateway to play in the browser.')}
+          description={t('Start MediaMTX (docker compose up -d mediamtx) and set MEDIAMTX_API_URL and MEDIAMTX_HLS_URL in backend/.env, or give each camera a browser-playable Live URL (HLS, MJPEG or MP4).')}
         />
       )}
 
       {cameras.length === 0 ? (
-        <Empty description="No cameras yet. Add them in Camera Management." />
+        <Empty description={t('No cameras yet. Add them in Camera Management.')} />
       ) : (
         <div ref={wallRef} className={`cam-wall ${fullscreen ? 'is-fullscreen' : ''}`}>
           {maxCamera ? (

@@ -4,6 +4,7 @@ const connectDB = require('./config/db');
 const { DEPARTMENTS, PROGRAMS, POSITIONS } = require('./utils/constants');
 
 const User = require('./models/User');
+const { PRESETS } = require('./utils/permissions');
 const Student = require('./models/Student');
 const Faculty = require('./models/Faculty');
 const Course = require('./models/Course');
@@ -57,6 +58,16 @@ const COURSES = [
   ['CY302', 'Cryptography', 'Cyber Security'],
 ];
 
+// Demo staff account: can do day-to-day work but not delete records, and only views cameras.
+function staffPermissions() {
+  const p = PRESETS.full();
+  Object.values(p).forEach((actions) => {
+    actions.delete = false;
+  });
+  p.cameras = { view: true, create: false, edit: false, delete: false };
+  return p;
+}
+
 async function run() {
   await connectDB();
   await Promise.all(mongoose.modelNames().map((n) => mongoose.model(n).deleteMany({})));
@@ -64,7 +75,7 @@ async function run() {
 
   const [adminUser, staffUser] = await User.create([
     { username: 'admin', password: 'admin123', name: 'Administrator', email: 'admin@school.edu', role: 'admin' },
-    { username: 'staff', password: 'staff123', name: 'Office Staff', email: 'staff@school.edu', role: 'staff' },
+    { username: 'staff', password: 'staff123', name: 'Office Staff', email: 'staff@school.edu', role: 'staff', permissions: staffPermissions() },
   ]);
 
   await Setting.create({});
@@ -214,8 +225,7 @@ async function run() {
       date: daysAgo(0),
       reporter: 'Office Staff',
       department: 'Administration',
-      workDone: 'Processed 6 admission applications.
-Updated the class schedule for SE302.',
+      workDone: 'Processed 6 admission applications.\nUpdated the class schedule for SE302.',
       issues: 'Projector in Room 204 is not working.',
       planTomorrow: 'Prepare midterm examination room assignments.',
       status: 'Draft',
@@ -224,8 +234,7 @@ Updated the class schedule for SE302.',
       date: daysAgo(1),
       reporter: 'Office Staff',
       department: 'Administration',
-      workDone: 'Registered 12 new students.
-Sent orientation reminders.',
+      workDone: 'Registered 12 new students.\nSent orientation reminders.',
       planTomorrow: 'Process remaining admission applications.',
       status: 'Submitted',
     },
@@ -329,9 +338,7 @@ Sent orientation reminders.',
   );
 
   await Email.insertMany([
-    { audience: 'All Students', recipientCount: students.length, subject: 'Midterm Examination Schedule', body: 'Dear students,
-
-The midterm examination schedule is now available in the portal.', status: 'Sent', sentBy: 'Administrator', sentAt: daysAgo(1) },
+    { audience: 'All Students', recipientCount: students.length, subject: 'Midterm Examination Schedule', body: 'Dear students,\n\nThe midterm examination schedule is now available in the portal.', status: 'Sent', sentBy: 'Administrator', sentAt: daysAgo(1) },
     { audience: 'All Faculty', recipientCount: faculty.length, subject: 'Faculty Meeting Reminder', body: 'The monthly faculty meeting will be held in the Conference Room.', status: 'Sent', sentBy: 'Administrator', sentAt: daysAgo(2) },
     { audience: 'Custom', recipients: ['it-support@school.edu'], recipientCount: 1, subject: 'Camera maintenance request', body: 'CAM-005 and CAM-006 are offline. Please check.', status: 'Draft' },
   ]);
@@ -339,7 +346,7 @@ The midterm examination schedule is now available in the portal.', status: 'Sent
   await Notification.insertMany([
     { title: 'Welcome to the new notification center', message: 'System notifications now appear here.', type: 'Info', createdBy: 'admin' },
     { title: 'New command: Check camera coverage in Building B', message: 'Urgent priority.', type: 'Warning', recipient: staffUser._id, link: '/commands', createdBy: 'admin' },
-    { title: 'Daily report submitted', message: 'Office Staff submitted yesterday's report.', type: 'Info', role: 'admin', link: '/daily-reports', createdBy: 'staff' },
+    { title: 'Daily report submitted', message: "Office Staff submitted yesterday's report.", type: 'Info', role: 'admin', link: '/daily-reports', createdBy: 'staff' },
     { title: '2 cameras offline', message: 'CAM-005 and CAM-006 are not responding.', type: 'Alert', role: 'admin', link: '/cameras', createdBy: 'system' },
   ]);
 

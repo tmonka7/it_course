@@ -6,6 +6,8 @@ import { useAuth } from '../context/AuthContext';
 import { useSettings } from '../context/SettingsContext';
 import { ShieldIcon } from '../components/Logo';
 import { errMsg } from '../api';
+import LanguageSwitcher from '../components/LanguageSwitcher';
+import { t } from '../i18n';
 
 export default function Login() {
   const { user, login } = useAuth();
@@ -14,14 +16,14 @@ export default function Login() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
-  if (user) return <Navigate to="/dashboard" replace />;
+  if (user) return <Navigate to="/" replace />;
 
   const onFinish = async (values) => {
     setError('');
     setLoading(true);
     try {
       await login(values);
-      navigate('/dashboard', { replace: true });
+      navigate('/', { replace: true });
     } catch (err) {
       setError(errMsg(err));
     } finally {
@@ -34,19 +36,19 @@ export default function Login() {
       <div className="login-hero">
         <div className="login-brand">
           {settings.logo ? (
-            <img src={settings.logo} alt="School logo" style={{ width: 72, height: 72, objectFit: 'contain' }} />
+            <img src={settings.logo} alt={t('School logo')} style={{ width: 72, height: 72, objectFit: 'contain' }} />
           ) : (
             <ShieldIcon size={72} />
           )}
           <div>
             <h1>{settings.schoolName}</h1>
-            <h2>Administrative Management System</h2>
+            <h2>{t('Administrative Management System')}</h2>
           </div>
         </div>
         <p className="login-tagline">
-          Manage Students · Faculty · Courses · Resources
+          {t('Manage Students · Faculty · Courses · Resources')}
           <br />
-          Build a Smarter Campus
+          {t('Build a Smarter Campus')}
         </p>
         <div className="login-campus" aria-hidden="true">
           <div className="bldg b1" />
@@ -57,30 +59,33 @@ export default function Login() {
 
       <div className="login-panel">
         <div className="login-card">
+          <div className="login-lang">
+            <LanguageSwitcher size="small" />
+          </div>
           <Typography.Title level={3} style={{ marginBottom: 4 }}>
-            Welcome Back
+            {t('Welcome Back')}
           </Typography.Title>
-          <Typography.Text type="secondary">Please login to your account</Typography.Text>
+          <Typography.Text type="secondary">{t('Please login to your account')}</Typography.Text>
 
           {error && <Alert type="error" showIcon message={error} style={{ marginTop: 16 }} />}
 
           <Form layout="vertical" size="large" onFinish={onFinish} initialValues={{ remember: true }} style={{ marginTop: 24 }}>
-            <Form.Item name="username" rules={[{ required: true, message: 'Please enter your username' }]}>
-              <Input prefix={<UserOutlined />} placeholder="Username" autoComplete="username" />
+            <Form.Item name="username" rules={[{ required: true, message: t('Please enter your username') }]}>
+              <Input prefix={<UserOutlined />} placeholder={t('Username')} autoComplete="username" />
             </Form.Item>
-            <Form.Item name="password" rules={[{ required: true, message: 'Please enter your password' }]}>
-              <Input.Password prefix={<LockOutlined />} placeholder="Password" autoComplete="current-password" />
+            <Form.Item name="password" rules={[{ required: true, message: t('Please enter your password') }]}>
+              <Input.Password prefix={<LockOutlined />} placeholder={t('Password')} autoComplete="current-password" />
             </Form.Item>
             <Flex justify="space-between" align="center" style={{ marginBottom: 24 }}>
               <Form.Item name="remember" valuePropName="checked" noStyle>
-                <Checkbox>Remember me</Checkbox>
+                <Checkbox>{t('Remember me')}</Checkbox>
               </Form.Item>
-              <Tooltip title="Contact an administrator to reset your password">
-                <Typography.Link style={{ fontSize: 13 }}>Forgot password?</Typography.Link>
+              <Tooltip title={t('Contact an administrator to reset your password')}>
+                <Typography.Link style={{ fontSize: 13 }}>{t('Forgot password?')}</Typography.Link>
               </Tooltip>
             </Flex>
             <Button type="primary" htmlType="submit" block loading={loading}>
-              Login
+              {t('Login')}
             </Button>
           </Form>
         </div>

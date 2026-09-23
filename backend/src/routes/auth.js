@@ -49,4 +49,17 @@ router.put(
   })
 );
 
+/** PUT /auth/preferences { language } - remembers the user's interface language. */
+router.put(
+  '/preferences',
+  auth,
+  asyncHandler(async (req, res) => {
+    const { language } = req.body || {};
+    if (!['en', 'ja'].includes(language)) return res.status(400).json({ message: 'Unsupported language' });
+    req.user.language = language;
+    await req.user.save();
+    return res.json(req.user);
+  })
+);
+
 module.exports = router;

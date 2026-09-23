@@ -12,6 +12,8 @@ const cameraDiscoveryRoutes = require('./cameraDiscovery');
 const mediamtx = require('../services/mediamtx');
 const { onCommandSaved } = require('../services/commandEvents');
 const { auth, requireRole } = require('../middleware/auth');
+const { permit, permitAny, normalizePermissions } = require('../utils/permissions');
+const lookupRoutes = require('./lookup');
 
 const Student = require('../models/Student');
 const Faculty = require('../models/Faculty');
@@ -50,10 +52,16 @@ router.use('/settings', settings.router);
 
 router.use(auth);
 
-router.use('/dashboard', dashboardRoutes);
+// Minimal id + name lists for dropdowns, available to every signed-in user (see routes/lookup.js).
+router.use('/lookup', lookupRoutes);
+
+// "Fill from activity log" in daily reports reads the activity list too.
+router.use('/dashboard/activities', permitAny(['dashboard', 'dailyReports']));
+router.use('/dashboard', (req, res, next) => (req.path.startsWith('/activities') ? next() : permit('dashboard')(req, res, next)), dashboardRoutes);
 
 router.use(
   '/students',
+  permit('students'),
   crud(Student, {
     searchFields: ['studentId', 'name', 'major', 'email'],
     filterFields: ['major', 'status', 'gender', 'level'],
@@ -66,6 +74,7 @@ router.use(
 
 router.use(
   '/faculty',
+  permit('faculty'),
   crud(Faculty, {
     searchFields: ['facultyId', 'name', 'department', 'email'],
     filterFields: ['department', 'position', 'status'],
@@ -78,6 +87,7 @@ router.use(
 
 router.use(
   '/courses',
+  permit('courses'),
   crud(Course, {
     searchFields: ['code', 'name'],
     filterFields: ['department', 'status'],
@@ -94,6 +104,7 @@ router.use(
 
 router.use(
   '/schedules',
+  permit('schedule'),
   crud(Schedule, {
     searchFields: ['room'],
     filterFields: ['day', 'course', 'room'],
@@ -106,6 +117,7 @@ router.use(
 
 router.use(
   '/admissions',
+  permit('admissions'),
   crud(Admission, {
     searchFields: ['applicationId', 'name', 'email'],
     filterFields: ['program', 'status'],
@@ -117,6 +129,7 @@ router.use(
 
 router.use(
   '/grades',
+  permit('grades'),
   crud(Grade, {
     filterFields: ['academicYear', 'semester', 'course', 'student', 'status'],
     buildSearch: async (re) => {
@@ -135,6 +148,7 @@ router.use(
 
 router.use(
   '/announcements',
+  permit('announcements'),
   crud(Announcement, {
     searchFields: ['title', 'content'],
     filterFields: ['type', 'status'],
@@ -146,6 +160,7 @@ router.use(
 
 router.use(
   '/daily-reports',
+  permit('dailyReports'),
   crud(DailyReport, {
     searchFields: ['reporter', 'workDone', 'issues'],
     filterFields: ['status', 'department'],
@@ -170,6 +185,7 @@ router.use(
 
 router.use(
   '/work-schedules',
+  permit('workSchedule'),
   crud(WorkSchedule, {
     searchFields: ['title', 'location', 'plan', 'record'],
     filterFields: ['status', 'category', 'assignee'],
@@ -195,10 +211,15 @@ router.use(
   })
 );
 
+// Logs and attachments change an existing work order, so adding or removing them needs "edit".
+router.use('/command-logs', permit('commands'));
+router.use('/commands/:id/logs', permit('commands', { POST: 'edit' }));
+router.use('/commands/:id/attachments', permit('commands', { POST: 'edit', DELETE: 'edit' }));
 router.use(commandLogRoutes);
 router.use(attachments.router);
 router.use(
   '/commands',
+  permit('commands'),
   crud(Command, {
     searchFields: ['title', 'content', 'issuedBy'],
     filterFields: ['status', 'priority', 'assignee'],
@@ -225,10 +246,11 @@ router.use(
   })
 );
 
-router.use('/live', liveRoutes);
+router.use('/live', permitAny(['cameraView', 'cameras']), liveRoutes);
 router.use('/camera-discovery', requireRole('admin'), cameraDiscoveryRoutes);
 router.use(
   '/cameras',
+  permit('cameras'),
   crud(Camera, {
     searchFields: ['cameraId', 'name', 'location', 'ipAddress'],
     filterFields: ['status', 'type'],
@@ -258,6 +280,7 @@ const AUDIENCE_COUNT = {
 
 router.use(
   '/emails',
+  permit('emails'),
   crud(Email, {
     searchFields: ['subject', 'body', 'recipients'],
     filterFields: ['status', 'audience'],
@@ -277,9 +300,10 @@ router.use(
 );
 
 // Meetings: join-by-code lookup and live participant counts sit beside the CRUD routes.
-router.get('/meetings/live', (req, res) => res.json(liveCounts()));
+router.get('/meetings/live', permit('meetings'), (req, res) => res.json(liveCounts()));
 router.get(
   '/meetings/by-code/:code',
+  permit('meetings'),
   asyncHandler(async (req, res) => {
     const meeting = await Meeting.findOne({ code: String(req.params.code).toLowerCase().trim() });
     if (!meeting) return res.status(404).json({ message: 'No meeting with that code' });
@@ -288,6 +312,7 @@ router.get(
 );
 router.use(
   '/meetings',
+  permit('meetings'),
   crud(Meeting, {
     searchFields: ['title', 'code', 'hostName'],
     filterFields: ['status'],
@@ -333,6 +358,7 @@ router.use(
     sanitize: (body, req) => {
       const data = { ...body };
       if (!data.password) delete data.password; // keep existing password when left blank
+      if (data.permissions !== undefined) data.permissions = normalizePermissions(data.permissions);
       // Stop admins from locking themselves out.
       if (req.params.id && req.user._id.equals(req.params.id)) {
         if (data.role && data.role !== req.user.role) throw badRequest('You cannot change your own role');

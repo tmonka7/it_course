@@ -9,6 +9,7 @@ import RemoteSelect from '../components/RemoteSelect';
 import { useAuth } from '../context/AuthContext';
 import api, { errMsg } from '../api';
 import { toOptions } from '../constants';
+import { t, T } from '../i18n';
 
 const CATEGORIES = ['Duty', 'Meeting', 'Inspection', 'Maintenance', 'Teaching Support', 'Other'];
 const STATUSES = ['Planned', 'In Progress', 'Done', 'Cancelled'];
@@ -19,7 +20,7 @@ const fromHHmm = (s) => {
   const [h, m] = s.split(':').map(Number);
   return dayjs().hour(h).minute(m).second(0);
 };
-const timeRange = (r) => (r.startTime ? `${r.startTime}${r.endTime ? `–${r.endTime}` : ''}` : 'All day');
+const timeRange = (r) => (r.startTime ? `${r.startTime}${r.endTime ? `–${r.endTime}` : ''}` : t('All day'));
 
 const columns = [
   { title: 'Time', key: 'time', width: 110, render: (_, r) => timeRange(r) },
@@ -46,7 +47,7 @@ function renderDay(entries) {
       {shown.map((e) => (
         <Badge key={e._id} status={STATUS_BADGE[e.status]} text={`${e.startTime || ''} ${e.title}`.trim()} className="cal-item" />
       ))}
-      {sorted.length > shown.length && <div className="cal-more">+{sorted.length - shown.length} more</div>}
+      {sorted.length > shown.length && <div className="cal-more">{t('+{count} more', { count: sorted.length - shown.length })}</div>}
     </>
   );
 }
@@ -54,21 +55,22 @@ function renderDay(entries) {
 const legend = (
   <Space size={12} className="cal-legend">
     {STATUSES.map((s) => (
-      <Badge key={s} status={STATUS_BADGE[s]} text={s} />
+      <Badge key={s} status={STATUS_BADGE[s]} text={<T>{s}</T>} />
     ))}
   </Space>
 );
 
 export default function WorkSchedule() {
   const { message } = App.useApp();
-  const { user, isAdmin } = useAuth();
+  const { user, can } = useAuth();
+  const canEdit = can('workSchedule', 'edit');
   const [day, setDay] = useState(() => dayjs());
   const [version, setVersion] = useState(0);
 
   const markDone = async (record, reload) => {
     try {
       await api.put(`/work-schedules/${record._id}`, { status: 'Done' });
-      message.success('Marked as done');
+      message.success(t('Marked as done'));
       reload();
       setVersion((v) => v + 1);
     } catch (err) {
@@ -79,59 +81,57 @@ export default function WorkSchedule() {
   const renderForm = (record) => (
     <Row gutter={16}>
       <Col xs={24}>
-        <Form.Item name="title" label="Work" rules={[{ required: true }]}>
-          <Input placeholder="e.g. Front desk duty" />
+        <Form.Item name="title" label={t('Work')} rules={[{ required: true }]}>
+          <Input placeholder={t('e.g. Front desk duty')} />
         </Form.Item>
       </Col>
       <Col xs={24} md={8}>
-        <Form.Item name="date" label="Date" rules={[{ required: true }]}>
+        <Form.Item name="date" label={t('Date')} rules={[{ required: true }]}>
           <DatePicker style={{ width: '100%' }} />
         </Form.Item>
       </Col>
       <Col xs={24} md={8}>
-        <Form.Item name="time" label="Time" tooltip="Leave empty for all-day work">
+        <Form.Item name="time" label={t('Time')} tooltip={t('Leave empty for all-day work')}>
           <TimePicker.RangePicker format="HH:mm" minuteStep={5} style={{ width: '100%' }} />
         </Form.Item>
       </Col>
       <Col xs={24} md={8}>
-        <Form.Item name="assignee" label="Staff" rules={[{ required: true }]}>
-          {isAdmin ? (
-            <RemoteSelect
-              resource="users"
-              labelOf={userLabel}
-              params={{ status: 'Active' }}
-              placeholder="Search users"
-              initialOptions={record?.assignee ? [{ value: record.assignee._id, label: userLabel(record.assignee) }] : []}
-            />
-          ) : (
-            // Only admins can list users; staff schedule their own work.
-            <Select options={[{ value: user._id, label: userLabel(user) }]} />
-          )}
+        <Form.Item name="assignee" label={t('Staff')} rules={[{ required: true }]}>
+          <RemoteSelect
+            resource="users"
+            labelOf={userLabel}
+            placeholder={t('Search users')}
+            initialOptions={
+              record?.assignee
+                ? [{ value: record.assignee._id, label: userLabel(record.assignee) }]
+                : [{ value: user._id, label: userLabel(user) }]
+            }
+          />
         </Form.Item>
       </Col>
       <Col xs={12} md={8}>
-        <Form.Item name="category" label="Category">
+        <Form.Item name="category" label={t('Category')}>
           <Select options={toOptions(CATEGORIES)} />
         </Form.Item>
       </Col>
       <Col xs={12} md={8}>
-        <Form.Item name="status" label="Status">
+        <Form.Item name="status" label={t('Status')}>
           <Select options={toOptions(STATUSES)} />
         </Form.Item>
       </Col>
       <Col xs={24} md={8}>
-        <Form.Item name="location" label="Location">
+        <Form.Item name="location" label={t('Location')}>
           <Input />
         </Form.Item>
       </Col>
       <Col xs={24} md={12}>
-        <Form.Item name="plan" label="Plan">
-          <Input.TextArea rows={4} placeholder="What should be done" />
+        <Form.Item name="plan" label={t('Plan')}>
+          <Input.TextArea rows={4} placeholder={t('What should be done')} />
         </Form.Item>
       </Col>
       <Col xs={24} md={12}>
-        <Form.Item name="record" label="Work Record">
-          <Input.TextArea rows={4} placeholder="What was actually done, results, issues" />
+        <Form.Item name="record" label={t('Work Record')}>
+          <Input.TextArea rows={4} placeholder={t('What was actually done, results, issues')} />
         </Form.Item>
       </Col>
     </Row>
@@ -141,7 +141,7 @@ export default function WorkSchedule() {
     <Space direction="vertical" size={16} style={{ width: '100%' }}>
       <CalendarBoard title="Work Schedule" resource="work-schedules" value={day} onSelect={setDay} renderDay={renderDay} refreshKey={version} legend={legend} />
       <CrudPage
-        title={day ? `Schedule for ${day.format('YYYY-MM-DD (dddd)')}` : 'All Scheduled Work'}
+        title={day ? t('Schedule for {date}', { date: day.format('YYYY-MM-DD (dddd)') }) : 'All Scheduled Work'}
         resource="work-schedules"
         addText="Schedule Work"
         modalTitle={(r) => (r ? 'Edit Work Schedule / Record' : 'Schedule Work')}
@@ -167,12 +167,13 @@ export default function WorkSchedule() {
           startTime: time?.[0] ? time[0].format('HH:mm') : null,
           endTime: time?.[1] ? time[1].format('HH:mm') : null,
         })}
-        initialValues={{ date: day || dayjs(), category: 'Duty', status: 'Planned', assignee: isAdmin ? undefined : user._id }}
+        initialValues={{ date: day || dayjs(), category: 'Duty', status: 'Planned', assignee: user._id }}
         modalWidth={760}
         onMutate={() => setVersion((v) => v + 1)}
         rowActions={(record, reload) =>
+          canEdit &&
           (record.status === 'Planned' || record.status === 'In Progress') && (
-            <Tooltip title="Mark as done">
+            <Tooltip title={t('Mark as done')}>
               <Button type="text" icon={<CheckOutlined />} style={{ color: '#16a34a' }} onClick={() => markDone(record, reload)} />
             </Tooltip>
           )

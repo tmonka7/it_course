@@ -2,7 +2,10 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
 import { App as AntApp, ConfigProvider } from 'antd';
+import enUS from 'antd/locale/en_US';
+import jaJP from 'antd/locale/ja_JP';
 import App from './App';
+import { LanguageProvider, useLanguage } from './i18n';
 import { AuthProvider } from './context/AuthContext';
 import { SettingsProvider } from './context/SettingsContext';
 import './styles.css';
@@ -57,18 +60,29 @@ const theme = {
   },
 };
 
-ReactDOM.createRoot(document.getElementById('root')).render(
-  <React.StrictMode>
-    <ConfigProvider theme={theme}>
+// antd's built-in texts (pagination, pickers, empty states) follow the chosen language.
+function Root() {
+  const { lang } = useLanguage();
+  return (
+    <ConfigProvider theme={theme} locale={lang === 'ja' ? jaJP : enUS}>
       <AntApp>
         <BrowserRouter>
           <SettingsProvider>
             <AuthProvider>
-              <App />
+              {/* Remount the app on a language switch so every label re-renders in the new language. */}
+              <App key={lang} />
             </AuthProvider>
           </SettingsProvider>
         </BrowserRouter>
       </AntApp>
     </ConfigProvider>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(
+  <React.StrictMode>
+    <LanguageProvider>
+      <Root />
+    </LanguageProvider>
   </React.StrictMode>
 );

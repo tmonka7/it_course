@@ -1,3 +1,5 @@
+import { t } from './i18n';
+
 export const DEPARTMENTS = [
   'Computer Science',
   'Software Engineering',
@@ -41,7 +43,8 @@ export const academicYears = (count = 5) => {
   return Array.from({ length: count }, (_, i) => `${start - i}-${start - i + 1}`);
 };
 
-export const toOptions = (list) => list.map((v) => ({ label: v, value: v }));
+// Values stay English (they are what the API stores); labels follow the interface language.
+export const toOptions = (list) => list.map((v) => ({ label: t(v), value: v }));
 
 export const DEPARTMENT_COLORS = {
   'Computer Science': '#1677ff',

@@ -11,6 +11,7 @@ import { useAuth } from '../context/AuthContext';
 import { errMsg } from '../api';
 import { fetchMyNotifications, markAllRead, markRead, onNotificationsChanged } from '../notifications';
 import { toOptions } from '../constants';
+import { t } from '../i18n';
 
 const TYPES = ['Info', 'Success', 'Warning', 'Alert'];
 const AUDIENCE_LABEL = { admin: 'Admins', staff: 'Staff' };
@@ -41,15 +42,15 @@ function MyNotifications() {
   return (
     <>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-        <Typography.Text type="secondary">{data ? `${data.unread} unread` : ''}</Typography.Text>
+        <Typography.Text type="secondary">{data ? t('{count} unread', { count: data.unread }) : ''}</Typography.Text>
         <Button icon={<CheckOutlined />} disabled={!data?.unread} onClick={() => markAllRead().catch((err) => message.error(errMsg(err)))}>
-          Mark all as read
+          {t('Mark all as read')}
         </Button>
       </div>
       <List
         loading={!data}
         dataSource={data?.items || []}
-        locale={{ emptyText: <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="No notifications" /> }}
+        locale={{ emptyText: <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description={t('No notifications')} /> }}
         renderItem={(n) => <NotificationItem item={n} onOpen={open} />}
       />
     </>
@@ -61,7 +62,7 @@ const manageColumns = [
   { title: 'Type', dataIndex: 'type', render: (v) => <StatusTag value={v} /> },
   {
     title: 'Audience',
-    render: (_, r) => (r.recipient ? r.recipient.name : AUDIENCE_LABEL[r.role] || 'Everyone'),
+    render: (_, r) => (r.recipient ? r.recipient.name : t(AUDIENCE_LABEL[r.role] || 'Everyone')),
   },
   { title: 'Read By', dataIndex: 'readBy', align: 'center', render: (v) => v?.length || 0, responsive: ['md'] },
   { title: 'Sent', dataIndex: 'createdAt', render: (v) => dayjs(v).format('YYYY-MM-DD HH:mm') },
@@ -70,28 +71,28 @@ const manageColumns = [
 const renderManageForm = (record) => (
   <Row gutter={16}>
     <Col xs={24} md={16}>
-      <Form.Item name="title" label="Title" rules={[{ required: true }]}>
+      <Form.Item name="title" label={t('Title')} rules={[{ required: true }]}>
         <Input />
       </Form.Item>
     </Col>
     <Col xs={24} md={8}>
-      <Form.Item name="type" label="Type">
+      <Form.Item name="type" label={t('Type')}>
         <Select options={toOptions(TYPES)} />
       </Form.Item>
     </Col>
     <Col xs={24}>
-      <Form.Item name="message" label="Message">
+      <Form.Item name="message" label={t('Message')}>
         <Input.TextArea rows={3} />
       </Form.Item>
     </Col>
     <Col xs={24} md={12}>
-      <Form.Item name="audience" label="Send To">
+      <Form.Item name="audience" label={t('Send To')}>
         <Select
           options={[
-            { value: 'all', label: 'Everyone' },
-            { value: 'admin', label: 'All admins' },
-            { value: 'staff', label: 'All staff' },
-            { value: 'user', label: 'A specific user' },
+            { value: 'all', label: t('Everyone') },
+            { value: 'admin', label: t('All admins') },
+            { value: 'staff', label: t('All staff') },
+            { value: 'user', label: t('A specific user') },
           ]}
         />
       </Form.Item>
@@ -100,11 +101,11 @@ const renderManageForm = (record) => (
       <Form.Item noStyle shouldUpdate={(a, b) => a.audience !== b.audience}>
         {({ getFieldValue }) =>
           getFieldValue('audience') === 'user' && (
-            <Form.Item name="recipient" label="User" rules={[{ required: true }]}>
+            <Form.Item name="recipient" label={t('User')} rules={[{ required: true }]}>
               <RemoteSelect
                 resource="users"
                 labelOf={userLabel}
-                placeholder="Search users"
+                placeholder={t('Search users')}
                 initialOptions={record?.recipient ? [{ value: record.recipient._id, label: userLabel(record.recipient) }] : []}
               />
             </Form.Item>
@@ -113,7 +114,7 @@ const renderManageForm = (record) => (
       </Form.Item>
     </Col>
     <Col xs={24}>
-      <Form.Item name="link" label="Link (optional)" tooltip="Page opened when the notification is clicked, e.g. /commands">
+      <Form.Item name="link" label={t('Link (optional)')} tooltip={t('Page opened when the notification is clicked, e.g. /commands')}>
         <Input placeholder="/commands" />
       </Form.Item>
     </Col>
@@ -138,7 +139,7 @@ export default function Notifications() {
 
   const inbox = (
     <Card className="page-card" bordered={false}>
-      <h1 className="page-title">Notifications</h1>
+      <h1 className="page-title">{t('Notifications')}</h1>
       <MyNotifications />
     </Card>
   );
@@ -149,10 +150,10 @@ export default function Notifications() {
     <Tabs
       defaultActiveKey="mine"
       items={[
-        { key: 'mine', label: 'My Notifications', children: inbox },
+        { key: 'mine', label: t('My Notifications'), children: inbox },
         {
           key: 'manage',
-          label: 'Send & Manage',
+          label: t('Send & Manage'),
           children: (
             <CrudPage
               title="Sent Notifications"

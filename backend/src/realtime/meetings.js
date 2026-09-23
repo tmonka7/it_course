@@ -8,6 +8,7 @@ const config = require('../config');
 const User = require('../models/User');
 const Meeting = require('../models/Meeting');
 const MeetingMessage = require('../models/MeetingMessage');
+const { can } = require('../utils/permissions');
 
 const MAX_WHITEBOARD_SEGMENTS = 20000;
 const rooms = new Map(); // code -> { meetingId, hostId, peers: Map<socketId, peer>, whiteboard: [] }
@@ -23,6 +24,7 @@ async function authenticate(socket, next) {
     const { id } = jwt.verify(socket.handshake.auth?.token || '', config.jwtSecret);
     const user = await User.findById(id);
     if (!user || user.status !== 'Active') return next(new Error('unauthorized'));
+    if (!can(user, 'meetings', 'view')) return next(new Error('forbidden'));
     socket.data.user = { _id: String(user._id), name: user.name, username: user.username, role: user.role };
     return next();
   } catch {
