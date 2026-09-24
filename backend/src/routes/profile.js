@@ -2,28 +2,13 @@ const express = require('express');
 const User = require('../models/User');
 const Activity = require('../models/Activity');
 const asyncHandler = require('../utils/asyncHandler');
+const { MAX_FACES, IMAGE_DATA_URL, cleanDescriptor, validFaceImage, faceList } = require('../utils/faces');
 
-const MAX_FACES = 5; // keep in step with the error message below and the Profile page
-const DESCRIPTOR_LENGTH = 128;
 const MAX_AVATAR_CHARS = 300 * 1024; // data URL; the page resizes photos to 160 px before uploading
-const MAX_FACE_IMAGE_CHARS = 60 * 1024;
-const IMAGE_DATA_URL = /^data:image\/(png|jpeg|webp);base64,[A-Za-z0-9+/=]+$/;
 
 const badRequest = (message) => Object.assign(new Error(message), { status: 400 });
 
 const text = (v, max) => (typeof v === 'string' ? v.trim().slice(0, max) : undefined);
-
-// Unit-length copy of a 128-number embedding, or null when the input is not one.
-function cleanDescriptor(input) {
-  if (!Array.isArray(input) || input.length !== DESCRIPTOR_LENGTH) return null;
-  const values = input.map(Number);
-  if (!values.every(Number.isFinite)) return null;
-  const norm = Math.sqrt(values.reduce((s, v) => s + v * v, 0));
-  if (!norm) return null;
-  return values.map((v) => v / norm);
-}
-
-const faceList = (user) => (user.faces || []).map((f) => ({ _id: f._id, image: f.image, createdAt: f.createdAt }));
 
 /** /profile - the signed-in user's own details, password and face samples. */
 const router = express.Router();
@@ -80,9 +65,7 @@ router.post(
     const descriptor = cleanDescriptor(req.body?.descriptor);
     if (!descriptor) throw badRequest('Invalid face data');
     const { image } = req.body;
-    if (image !== undefined && (typeof image !== 'string' || !IMAGE_DATA_URL.test(image) || image.length > MAX_FACE_IMAGE_CHARS)) {
-      throw badRequest('Invalid face image');
-    }
+    if (!validFaceImage(image)) throw badRequest('Invalid face image');
     const user = await User.findById(req.user._id).select('+faces');
     if (user.faces.length >= MAX_FACES) throw badRequest('You can register up to 5 face samples. Delete one first.');
     user.faces.push({ descriptor, image });

@@ -1,9 +1,12 @@
-import { Avatar, Col, DatePicker, Form, Input, Radio, Row, Select, Space } from 'antd';
-import { UserOutlined } from '@ant-design/icons';
+import { useState } from 'react';
+import { Avatar, Button, Col, DatePicker, Form, Input, Modal, Radio, Row, Select, Space, Tag, Tooltip } from 'antd';
+import { ScanOutlined, UserOutlined } from '@ant-design/icons';
 import dayjs from 'dayjs';
 import CrudPage from '../components/CrudPage';
 import StatusTag from '../components/StatusTag';
 import ImageUpload from '../components/ImageUpload';
+import StudentFaces from '../components/StudentFaces';
+import { useAuth } from '../context/AuthContext';
 import { DEPARTMENTS, toOptions } from '../constants';
 import { t } from '../i18n';
 
@@ -26,6 +29,17 @@ const columns = [
   { title: 'Major', dataIndex: 'major' },
   { title: 'Grade Level', dataIndex: 'level', align: 'center' },
   { title: 'Email', dataIndex: 'email', responsive: ['xl'] },
+  {
+    title: 'Face',
+    dataIndex: 'faceCount',
+    align: 'center',
+    width: 90,
+    render: (count) => (
+      <Tag color={count ? 'green' : 'default'} bordered={false}>
+        {count ? t('{count} samples', { count }) : t('None')}
+      </Tag>
+    ),
+  },
   { title: 'Status', dataIndex: 'status', render: (v) => <StatusTag value={v} /> },
 ];
 
@@ -107,7 +121,13 @@ const fromForm = (v) => ({
 });
 
 export default function Students() {
+  const { can } = useAuth();
+  const [faces, setFaces] = useState(null); // the student whose face samples are open
+  const [refreshKey, setRefreshKey] = useState(0);
+  const canRegisterFaces = can('attendance', 'edit');
+
   return (
+    <>
     <CrudPage
       title="Student Management"
       resource="students"
@@ -125,6 +145,30 @@ export default function Students() {
       fromForm={fromForm}
       initialValues={{ gender: 'Male', level: 1, status: 'Active', enrollDate: dayjs() }}
       modalWidth={820}
+      refreshKey={refreshKey}
+      rowActions={
+        canRegisterFaces
+          ? (record) => [
+              <Tooltip key="faces" title={t('Face registration for automated attendance')}>
+                <Button type="text" size="small" icon={<ScanOutlined />} onClick={() => setFaces(record)} aria-label={t('Face registration')} />
+              </Tooltip>,
+            ]
+          : undefined
+      }
     />
+    <Modal
+      open={!!faces}
+      title={faces ? t('Face registration: {name}', { name: faces.name }) : ''}
+      onCancel={() => {
+        setFaces(null);
+        setRefreshKey((k) => k + 1); // pick up the new sample count in the table
+      }}
+      footer={null}
+      width={620}
+      destroyOnClose
+    >
+      {faces && <StudentFaces student={faces} />}
+    </Modal>
+    </>
   );
 }

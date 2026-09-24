@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { App, Badge, Button, Col, DatePicker, Divider, Form, Input, Row, Select, Tag, Tooltip, Typography } from 'antd';
+import { App, Badge, Button, Col, DatePicker, Divider, Form, Input, InputNumber, Row, Select, Tag, Tooltip, Typography } from 'antd';
 import { AppstoreOutlined, CopyOutlined, EyeOutlined, RadarChartOutlined } from '@ant-design/icons';
 import dayjs from 'dayjs';
 import CrudPage from '../components/CrudPage';
@@ -129,6 +129,71 @@ const renderForm = (record) => (
       </Form.Item>
     </Col>
     <Col xs={24}>
+      <Divider orientation="left" orientationMargin={0} style={{ margin: '4px 0 16px' }}>
+        <Typography.Text type="secondary" style={{ fontSize: 13 }}>
+          {t('PTZ control (ONVIF)')}
+        </Typography.Text>
+      </Divider>
+      <Typography.Paragraph type="secondary" style={{ fontSize: 12, marginTop: -8 }}>
+        {t('Needed only for Automated Attendance, which sweeps the room by moving the camera. Leave the address empty to use the standard ONVIF path on the IP address above, and the credentials empty to reuse the RTSP ones.')}
+      </Typography.Paragraph>
+    </Col>
+    <Col xs={24} md={8}>
+      <Form.Item name="onvifUrl" label={t('ONVIF Device URL')}>
+        <Input placeholder="http://192.168.10.101/onvif/device_service" />
+      </Form.Item>
+    </Col>
+    <Col xs={12} md={8}>
+      <Form.Item name="onvifUser" label={t('ONVIF Username')}>
+        <Input autoComplete="off" />
+      </Form.Item>
+    </Col>
+    <Col xs={12} md={8}>
+      <Form.Item name="onvifPassword" label={t('ONVIF Password')}>
+        <Input.Password autoComplete="new-password" placeholder={record?.hasOnvifPassword ? t('Leave blank to keep current') : ''} />
+      </Form.Item>
+    </Col>
+    <Col xs={12} md={6}>
+      <Form.Item name={['ptz', 'panSteps']} label={t('Pan positions')} tooltip={t('How many positions across the room the sweep visits')}>
+        <InputNumber min={1} max={12} style={{ width: '100%' }} />
+      </Form.Item>
+    </Col>
+    <Col xs={12} md={6}>
+      <Form.Item name={['ptz', 'tiltSteps']} label={t('Tilt rows')}>
+        <InputNumber min={1} max={6} style={{ width: '100%' }} />
+      </Form.Item>
+    </Col>
+    <Col xs={12} md={6}>
+      <Form.Item name={['ptz', 'zoom']} label={t('Zoom')} tooltip={t('0 is fully wide; a little zoom makes distant faces bigger but narrows each position')}>
+        <InputNumber min={0} max={1} step={0.1} style={{ width: '100%' }} />
+      </Form.Item>
+    </Col>
+    <Col xs={12} md={6}>
+      <Form.Item name={['ptz', 'settleMs']} label={t('Settle (ms)')} tooltip={t('Pause after each move so focus and exposure catch up')}>
+        <InputNumber min={0} max={10000} step={100} style={{ width: '100%' }} />
+      </Form.Item>
+    </Col>
+    <Col xs={12} md={6}>
+      <Form.Item name={['ptz', 'panMin']} label={t('Pan from')} tooltip={t('Normalised ONVIF position: -1 is fully left, 1 fully right')}>
+        <InputNumber min={-1} max={1} step={0.1} style={{ width: '100%' }} />
+      </Form.Item>
+    </Col>
+    <Col xs={12} md={6}>
+      <Form.Item name={['ptz', 'panMax']} label={t('Pan to')}>
+        <InputNumber min={-1} max={1} step={0.1} style={{ width: '100%' }} />
+      </Form.Item>
+    </Col>
+    <Col xs={12} md={6}>
+      <Form.Item name={['ptz', 'tiltMin']} label={t('Tilt from')} tooltip={t('Normalised ONVIF position: -1 is fully down, 1 fully up')}>
+        <InputNumber min={-1} max={1} step={0.1} style={{ width: '100%' }} />
+      </Form.Item>
+    </Col>
+    <Col xs={12} md={6}>
+      <Form.Item name={['ptz', 'tiltMax']} label={t('Tilt to')}>
+        <InputNumber min={-1} max={1} step={0.1} style={{ width: '100%' }} />
+      </Form.Item>
+    </Col>
+    <Col xs={24}>
       <Divider style={{ margin: '4px 0 16px' }} />
     </Col>
     <Col xs={12} md={8}>
@@ -191,10 +256,10 @@ export default function Cameras() {
             </Tooltip>
           )
         }
-        toForm={(r) => ({ ...r, rtspPassword: '', installedDate: r.installedDate ? dayjs(r.installedDate) : null })}
+        toForm={(r) => ({ ...r, rtspPassword: '', onvifPassword: '', installedDate: r.installedDate ? dayjs(r.installedDate) : null })}
         fromForm={(v) => ({ ...v, installedDate: v.installedDate ? v.installedDate.toISOString() : null })}
-        initialValues={{ type: 'Indoor', resolution: '1080p', status: 'Online' }}
-        modalWidth={760}
+        initialValues={{ type: 'Indoor', resolution: '1080p', status: 'Online', ptz: { panSteps: 4, tiltSteps: 2, panMin: -1, panMax: 1, tiltMin: -0.3, tiltMax: 0.2, zoom: 0, settleMs: 900 } }}
+        modalWidth={820}
       />
       <CameraDiscovery open={discoverOpen} onClose={() => setDiscoverOpen(false)} onAdded={() => setTableKey((k) => k + 1)} />
     </>

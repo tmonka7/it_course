@@ -49,6 +49,8 @@ const MENU = [
   { key: '/schedule', page: 'schedule', icon: <CalendarOutlined />, label: 'Class Schedule' },
   { key: '/admissions', page: 'admissions', icon: <FileAddOutlined />, label: 'Admissions' },
   { key: '/grades', page: 'grades', icon: <FileTextOutlined />, label: 'Grades & Records' },
+  { key: '/enrollments', page: 'enrollments', icon: <TeamOutlined />, label: 'Course Enrollments' },
+  { key: '/attendance', page: 'attendance', icon: <ScanOutlined />, label: 'Automated Attendance' },
   { key: '/announcements', page: 'announcements', icon: <NotificationOutlined />, label: 'Announcements' },
   {
     key: 'operations',

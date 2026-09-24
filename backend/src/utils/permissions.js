@@ -12,6 +12,8 @@ const PAGES = {
   schedule: CRUD,
   admissions: CRUD,
   grades: CRUD,
+  enrollments: CRUD,
+  attendance: CRUD,
   announcements: CRUD,
   dailyReports: CRUD,
   commands: CRUD,

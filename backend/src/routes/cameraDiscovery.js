@@ -26,7 +26,7 @@ router.post(
   })
 );
 
-const ALLOWED = ['name', 'location', 'type', 'ipAddress', 'streamUrl', 'rtspUser', 'rtspPassword', 'manufacturer', 'model', 'discoveredVia', 'resolution'];
+const ALLOWED = ['name', 'location', 'type', 'ipAddress', 'streamUrl', 'rtspUser', 'rtspPassword', 'manufacturer', 'model', 'discoveredVia', 'resolution', 'onvifUrl', 'onvifUser', 'onvifPassword'];
 
 /** POST /camera-discovery/add { cameras: [...] } - adds the selected devices, assigning camera IDs. */
 router.post(

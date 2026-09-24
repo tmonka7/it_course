@@ -547,6 +547,25 @@
     <text key="the local network"><zh>本地网络</zh><ja>ローカルネットワーク</ja></text>
     <text key="RTSP login for the selected cameras (optional):"><zh>所选摄像头的 RTSP 登录信息（可选）：</zh><ja>選択したカメラの RTSP ログイン（任意）:</ja></text>
     <text key="Start a scan to look for cameras"><zh>开始扫描以查找摄像头</zh><ja>スキャンを開始してカメラを探します</ja></text>
+    <!-- PTZ / ONVIF settings on the camera form, used by Automated Attendance -->
+    <text key="PTZ control (ONVIF)"><zh>云台控制（ONVIF）</zh><ja>PTZ制御（ONVIF）</ja></text>
+    <text key="Needed only for Automated Attendance, which sweeps the room by moving the camera. Leave the address empty to use the standard ONVIF path on the IP address above, and the credentials empty to reuse the RTSP ones."><zh>仅自动考勤需要：通过转动摄像头扫描整个教室。地址留空则使用上方 IP 的标准 ONVIF 路径，账号密码留空则沿用 RTSP 的凭据。</zh><ja>自動出席管理でのみ必要です（カメラを動かして教室全体を走査します）。アドレスを空欄にすると上のIPアドレスの標準ONVIFパスを使い、認証情報を空欄にするとRTSPのものを再利用します。</ja></text>
+    <text key="ONVIF Device URL"><zh>ONVIF 设备地址</zh><ja>ONVIFデバイスURL</ja></text>
+    <text key="ONVIF Username"><zh>ONVIF 用户名</zh><ja>ONVIFユーザー名</ja></text>
+    <text key="ONVIF Password"><zh>ONVIF 密码</zh><ja>ONVIFパスワード</ja></text>
+    <text key="Pan positions"><zh>水平位置数</zh><ja>パン位置数</ja></text>
+    <text key="How many positions across the room the sweep visits"><zh>扫描在教室横向经过的位置数量</zh><ja>教室を横方向に走査する位置の数</ja></text>
+    <text key="Tilt rows"><zh>垂直行数</zh><ja>チルト段数</ja></text>
+    <text key="Zoom"><zh>变焦</zh><ja>ズーム</ja></text>
+    <text key="0 is fully wide; a little zoom makes distant faces bigger but narrows each position"><zh>0 为最广角；适当变焦可放大远处人脸，但每个位置的视野会变窄</zh><ja>0は最も広角です。少しズームすると遠くの顔が大きく写りますが、1位置あたりの視野は狭くなります</ja></text>
+    <text key="Settle (ms)"><zh>稳定等待（毫秒）</zh><ja>安定待ち（ms）</ja></text>
+    <text key="Pause after each move so focus and exposure catch up"><zh>每次转动后等待对焦与曝光稳定</zh><ja>移動後にフォーカスと露出が落ち着くまで待ちます</ja></text>
+    <text key="Pan from"><zh>水平起点</zh><ja>パン開始</ja></text>
+    <text key="Pan to"><zh>水平终点</zh><ja>パン終了</ja></text>
+    <text key="Tilt from"><zh>垂直起点</zh><ja>チルト開始</ja></text>
+    <text key="Tilt to"><zh>垂直终点</zh><ja>チルト終了</ja></text>
+    <text key="Normalised ONVIF position: -1 is fully left, 1 fully right"><zh>ONVIF 归一化位置：-1 为最左，1 为最右</zh><ja>ONVIFの正規化位置：-1が左端、1が右端</ja></text>
+    <text key="Normalised ONVIF position: -1 is fully down, 1 fully up"><zh>ONVIF 归一化位置：-1 为最下，1 为最上</zh><ja>ONVIFの正規化位置：-1が下端、1が上端</ja></text>
   </section>
 
   <section name="communication">
@@ -764,6 +783,116 @@
     <text key="Invalid face data"><zh>人脸数据无效</zh><ja>顔データが無効です</ja></text>
     <text key="Invalid face image"><zh>人脸图片无效</zh><ja>顔画像が無効です</ja></text>
     <text key="You can register up to 5 face samples. Delete one first."><zh>最多可注册 5 个人脸样本，请先删除一个。</zh><ja>顔サンプルは最大5件まで登録できます。先に1件削除してください。</ja></text>
+  </section>
+
+  <section name="attendance">
+    <!-- Course Enrollments page and the Automated Attendance page (PTZ room sweep + face recognition) -->
+    <text key="Course Enrollments"><zh>选课管理</zh><ja>履修登録</ja></text>
+    <text key="Add Enrollment"><zh>添加选课</zh><ja>履修を追加</ja></text>
+    <text key="Edit Enrollment"><zh>编辑选课</zh><ja>履修を編集</ja></text>
+    <text key="Enrolled"><zh>已选课</zh><ja>登録済み</ja></text>
+    <text key="Withdrawn"><zh>已退课</zh><ja>取り消し</ja></text>
+    <text key="All Statuses"><zh>全部状态</zh><ja>すべての状態</ja></text>
+    <text key="Enrol"><zh>选课</zh><ja>登録</ja></text>
+    <text key="Enrol a group"><zh>批量选课</zh><ja>一括登録</ja></text>
+    <text key="Enrol a group of students"><zh>批量为学生选课</zh><ja>学生を一括登録</ja></text>
+    <text key="Any major"><zh>任意专业</zh><ja>専攻を問わない</ja></text>
+    <text key="Any grade"><zh>任意年级</zh><ja>学年を問わない</ja></text>
+    <text key="Grade {level}"><zh>{level} 年级</zh><ja>{level}年生</ja></text>
+    <text key="{count} student(s) match"><zh>符合 {count} 名学生</zh><ja>{count} 名が該当</ja></text>
+    <text key="No students match that group"><zh>没有符合该条件的学生</zh><ja>条件に一致する学生がいません</ja></text>
+    <text key="Enrolled {count} student(s); {skipped} already enrolled"><zh>已为 {count} 名学生选课；{skipped} 名已选</zh><ja>{count} 名を登録しました。{skipped} 名は既に登録済みです</ja></text>
+    <text key="Pick a major and/or grade to choose who to enrol. Students already enrolled on this course are left unchanged."><zh>选择专业和/或年级来确定选课学生。已选本课程的学生保持不变。</zh><ja>専攻や学年で対象を絞ります。すでにこの科目に登録済みの学生は変更されません。</ja></text>
+
+    <!-- Automated Attendance page -->
+    <text key="Automated Attendance"><zh>自动考勤</zh><ja>自動出席管理</ja></text>
+    <text key="Take attendance"><zh>进行考勤</zh><ja>出席をとる</ja></text>
+    <text key="Past sessions"><zh>历史记录</zh><ja>過去の記録</ja></text>
+    <text key="Scan setup"><zh>扫描设置</zh><ja>スキャン設定</ja></text>
+    <text key="Select a camera"><zh>选择摄像头</zh><ja>カメラを選択</ja></text>
+    <text key="A camera is required"><zh>请选择摄像头</zh><ja>カメラを選択してください</ja></text>
+    <text key="Class"><zh>课程班次</zh><ja>授業</ja></text>
+    <text key="Select a class"><zh>选择课程班次</zh><ja>授業を選択</ja></text>
+    <text key="Leave empty to scan without a timetabled class"><zh>留空则不关联课表班次</zh><ja>空欄にすると時間割と紐付けずにスキャンします</ja></text>
+    <text key="Expected students"><zh>应到学生</zh><ja>対象学生</ja></text>
+    <text key="Enrolled in the course"><zh>已选本课程的学生</zh><ja>この科目の登録者</ja></text>
+    <text key="All active students"><zh>所有在读学生</zh><ja>すべての在籍学生</ja></text>
+    <text key="Sweeps"><zh>扫描轮数</zh><ja>スキャン回数</ja></text>
+    <text key="Repeat the sweep to catch students who looked away the first time"><zh>重复扫描以捕捉首次未面向摄像头的学生</zh><ja>1回目に顔を向けていなかった学生を捉えるため繰り返します</ja></text>
+    <text key="Late after (min)"><zh>迟到判定（分钟）</zh><ja>遅刻判定（分）</ja></text>
+    <text key="Match threshold"><zh>匹配阈值</zh><ja>一致しきい値</ja></text>
+    <text key="Lower recognises more students but risks confusing similar faces"><zh>阈值越低识别越多，但可能混淆相似人脸</zh><ja>低くすると認識数が増えますが、似た顔を誤認する恐れがあります</ja></text>
+    <text key="Stream delay (ms)"><zh>画面延迟（毫秒）</zh><ja>映像遅延（ms）</ja></text>
+    <text key="How far the live stream lags the camera. The scan waits this long after each move before looking."><zh>实时画面相对摄像头的延迟。每次转动后扫描会先等待这段时间再识别。</zh><ja>ライブ映像がカメラより遅れる時間。移動後この時間だけ待ってから解析します。</ja></text>
+    <text key="Start attendance scan"><zh>开始考勤扫描</zh><ja>出席スキャンを開始</ja></text>
+    <text key="Stop scan"><zh>停止扫描</zh><ja>スキャンを停止</ja></text>
+    <text key="Stopping..."><zh>正在停止…</zh><ja>停止中…</ja></text>
+    <text key="New scan"><zh>新建扫描</zh><ja>新しいスキャン</ja></text>
+    <text key="Finishing the current position, then stopping..."><zh>完成当前位置后停止…</zh><ja>現在の位置を終えてから停止します…</ja></text>
+    <text key="Attendance scan finished"><zh>考勤扫描完成</zh><ja>出席スキャンが完了しました</ja></text>
+    <text key="Attendance updated"><zh>考勤已更新</zh><ja>出席を更新しました</ja></text>
+    <text key="Scanning"><zh>扫描中</zh><ja>スキャン中</ja></text>
+
+    <!-- PTZ capability and sweep progress -->
+    <text key="Checking PTZ control..."><zh>正在检查云台控制…</zh><ja>PTZ制御を確認中…</ja></text>
+    <text key="PTZ control is available on this camera"><zh>该摄像头支持云台控制</zh><ja>このカメラはPTZ制御に対応しています</ja></text>
+    <text key="This camera cannot be steered"><zh>该摄像头无法转动</zh><ja>このカメラは操作できません</ja></text>
+    <text key="The scan will still recognise faces, but only where the camera already points."><zh>扫描仍会识别人脸，但仅限摄像头当前朝向的范围。</zh><ja>スキャンは顔を認識しますが、カメラが現在向いている範囲のみです。</ja></text>
+    <text key="Loading AI models and the class roster..."><zh>正在加载 AI 模型与班级名单…</zh><ja>AIモデルと名簿を読み込み中…</ja></text>
+    <text key="Sweep {pass} of {passes} - position {index} of {total}"><zh>第 {pass}/{passes} 轮扫描 - 位置 {index}/{total}</zh><ja>スキャン {pass}/{passes} - 位置 {index}/{total}</ja></text>
+    <text key="Coverage"><zh>覆盖范围</zh><ja>カバー範囲</ja></text>
+    <text key="{done} / {total} positions"><zh>{done} / {total} 个位置</zh><ja>{done} / {total} 位置</ja></text>
+    <text key="Pan"><zh>水平</zh><ja>パン</ja></text>
+    <text key="Tilt"><zh>垂直</zh><ja>チルト</ja></text>
+    <text key="{faces} face(s), {n} recognised"><zh>{faces} 张人脸，识别 {n} 名</zh><ja>顔 {faces} 件、認識 {n} 件</ja></text>
+    <text key="Each square is one camera position; the number is how many students were recognised there."><zh>每个方块代表一个摄像头位置，数字为在该位置识别到的学生人数。</zh><ja>各マスはカメラの1つの位置を表し、数字はその位置で認識された学生数です。</ja></text>
+
+    <!-- Results -->
+    <text key="Roster"><zh>名单</zh><ja>名簿</ja></text>
+    <text key="Start a scan to build the roster"><zh>开始扫描以生成名单</zh><ja>スキャンを開始すると名簿が作成されます</ja></text>
+    <text key="Present"><zh>出席</zh><ja>出席</ja></text>
+    <text key="Absent"><zh>缺席</zh><ja>欠席</ja></text>
+    <text key="Late"><zh>迟到</zh><ja>遅刻</ja></text>
+    <text key="Excused"><zh>已请假</zh><ja>公認欠席</ja></text>
+    <text key="Unknown faces"><zh>未知人脸</zh><ja>未登録の顔</ja></text>
+    <text key="First seen"><zh>首次识别</zh><ja>初回認識</ja></text>
+    <text key="Correct"><zh>更正</zh><ja>修正</ja></text>
+    <text key="Corrected by {name}"><zh>由 {name} 更正</zh><ja>{name} が修正</ja></text>
+    <text key="Change {name} to {status}?"><zh>将 {name} 改为{status}？</zh><ja>{name} を{status}に変更しますか？</ja></text>
+    <text key="Started by"><zh>发起人</zh><ja>実行者</ja></text>
+    <text key="Registered faces"><zh>已注册人脸</zh><ja>登録済みの顔</ja></text>
+    <text key="{count} of {total} expected students"><zh>{total} 名应到学生中的 {count} 名</zh><ja>対象 {total} 名中 {count} 名</ja></text>
+    <text key="Day {day}"><zh>星期{day}</zh><ja>曜日{day}</ja></text>
+    <text key="Period {period}"><zh>第 {period} 节</zh><ja>{period}限</ja></text>
+
+    <!-- Student face registration -->
+    <text key="Face"><zh>人脸</zh><ja>顔</ja></text>
+    <text key="None"><zh>无</zh><ja>なし</ja></text>
+    <text key="Face registration"><zh>人脸注册</zh><ja>顔登録</ja></text>
+    <text key="Face registration: {name}"><zh>人脸注册：{name}</zh><ja>顔登録：{name}</ja></text>
+    <text key="Face registration for automated attendance"><zh>用于自动考勤的人脸注册</zh><ja>自動出席管理用の顔登録</ja></text>
+    <text key="Automated attendance recognises this student by these samples. The ID photo gives a usable signature; two or three live captures from slightly different angles make recognition at classroom distance much more reliable."><zh>自动考勤通过这些样本识别该学生。证件照可提供可用的特征；再采集两三张略微不同角度的实时照片，可大幅提升教室距离下的识别可靠性。</zh><ja>自動出席管理はこれらのサンプルで学生を認識します。証明写真でも利用できる特徴量が得られますが、角度を少し変えた実写を2〜3枚追加すると、教室の距離でも認識精度が大きく向上します。</ja></text>
+    <text key="Cannot be recognised yet"><zh>尚无法识别</zh><ja>まだ認識できません</ja></text>
+    <text key="Use the ID photo"><zh>使用证件照</zh><ja>証明写真を使う</ja></text>
+    <text key="This student has no photo on file"><zh>该学生没有照片</zh><ja>この学生の写真がありません</ja></text>
+    <text key="Face registered from the photo"><zh>已从照片注册人脸</zh><ja>写真から顔を登録しました</ja></text>
+    <text key="No face found in the photo"><zh>照片中未检测到人脸</zh><ja>写真から顔を検出できません</ja></text>
+    <text key="The photo shows more than one face"><zh>照片中包含多张人脸</zh><ja>写真に複数の顔が写っています</ja></text>
+    <text key="From photo"><zh>来自照片</zh><ja>写真から</ja></text>
+    <text key="Live capture"><zh>实时采集</zh><ja>実写</ja></text>
+    <text key="Enrol faces from ID photos"><zh>从证件照注册人脸</zh><ja>証明写真から顔を登録</ja></text>
+    <text key="Register a face for every active student who has an ID photo but no face yet"><zh>为所有有证件照但尚未注册人脸的在读学生注册人脸</zh><ja>証明写真があり顔が未登録の在籍学生すべてに顔を登録します</ja></text>
+    <text key="Reading photos {done}/{total}..."><zh>正在读取照片 {done}/{total}…</zh><ja>写真を読み込み中 {done}/{total}…</ja></text>
+    <text key="Every active student with a photo already has a registered face."><zh>所有有照片的在读学生都已注册人脸。</zh><ja>写真がある在籍学生はすべて顔が登録済みです。</ja></text>
+    <text key="Registered {count} student face(s) from ID photos"><zh>已从证件照注册 {count} 名学生的人脸</zh><ja>証明写真から {count} 名の顔を登録しました</ja></text>
+    <text key="Enrolment finished"><zh>注册完成</zh><ja>登録が完了しました</ja></text>
+    <text key="Registered: {count}"><zh>已注册：{count}</zh><ja>登録：{count}</ja></text>
+    <text key="No usable face in the photo: {count}"><zh>照片中无可用人脸：{count}</zh><ja>写真に使える顔がない：{count}</ja></text>
+    <text key="Skipped: {count}"><zh>已跳过：{count}</zh><ja>スキップ：{count}</ja></text>
+    <text key="Failed: {count}"><zh>失败：{count}</zh><ja>失敗：{count}</ja></text>
+    <text key="None of the expected students has a registered face, so nobody can be recognised. Register faces on the Student Management page first."><zh>应到学生均未注册人脸，无法识别任何人。请先在学生管理页面注册人脸。</zh><ja>対象学生の誰も顔を登録していないため、認識できません。まず学生管理ページで顔を登録してください。</ja></text>
+    <text key="{count} expected student(s) have no registered face"><zh>{count} 名应到学生未注册人脸</zh><ja>対象学生 {count} 名の顔が未登録です</ja></text>
+    <text key="They cannot be recognised and will be marked absent. Register their faces on the Student Management page."><zh>他们无法被识别，将被记为缺席。请在学生管理页面注册其人脸。</zh><ja>認識できないため欠席として記録されます。学生管理ページで顔を登録してください。</ja></text>
   </section>
 
   <section name="detection">

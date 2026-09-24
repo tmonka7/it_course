@@ -16,6 +16,9 @@ const { permit, permitAny, normalizePermissions } = require('../utils/permission
 const lookupRoutes = require('./lookup');
 const profileRoutes = require('./profile');
 const faceRoutes = require('./faces');
+const attendanceRoutes = require('./attendance');
+const studentFaceRoutes = require('./studentFaces');
+const ptzRoutes = require('./ptz');
 
 const Student = require('../models/Student');
 const Faculty = require('../models/Faculty');
@@ -23,6 +26,9 @@ const Course = require('../models/Course');
 const Schedule = require('../models/Schedule');
 const Admission = require('../models/Admission');
 const Grade = require('../models/Grade');
+const Enrollment = require('../models/Enrollment');
+const AttendanceSession = require('../models/AttendanceSession');
+const AttendanceRecord = require('../models/AttendanceRecord');
 const Announcement = require('../models/Announcement');
 const User = require('../models/User');
 const DailyReport = require('../models/DailyReport');
@@ -65,6 +71,13 @@ router.use('/faces', permit('detection', { DELETE: 'view' }), faceRoutes);
 router.use('/dashboard/activities', permitAny(['dashboard', 'dailyReports']));
 router.use('/dashboard', (req, res, next) => (req.path.startsWith('/activities') ? next() : permit('dashboard')(req, res, next)), dashboardRoutes);
 
+// Student face samples feed automated attendance, so registering one needs Attendance edit rights
+// rather than Student edit rights; viewing the sample list follows the Students page.
+router.use(
+  '/students',
+  (req, res, next) => (req.method === 'GET' ? permit('students')(req, res, next) : permit('attendance', { POST: 'edit', DELETE: 'edit' })(req, res, next)),
+  studentFaceRoutes
+);
 router.use(
   '/students',
   permit('students'),
@@ -74,7 +87,58 @@ router.use(
     sort: { studentId: 1 },
     label: 'student',
     describe: (d) => `${d.name} (${d.studentId})`,
-    beforeDelete: blockIfReferenced('student', [[Grade, 'student', 'grade record(s)']]),
+    beforeDelete: blockIfReferenced('student', [
+      [Grade, 'student', 'grade record(s)'],
+      [Enrollment, 'student', 'course enrollment(s)'],
+      [AttendanceRecord, 'student', 'attendance record(s)'],
+    ]),
+  })
+);
+
+router.use(
+  '/enrollments',
+  permit('enrollments'),
+  crud(Enrollment, {
+    filterFields: ['academicYear', 'semester', 'course', 'student', 'status'],
+    buildSearch: async (re) => {
+      const ids = await Student.find({ $or: [{ name: re }, { studentId: re }] }).distinct('_id');
+      return [{ student: { $in: ids } }];
+    },
+    populate: [
+      { path: 'student', select: 'studentId name major level' },
+      { path: 'course', select: 'code name' },
+    ],
+    sort: { academicYear: -1, createdAt: -1 },
+    label: 'enrollment',
+    describe: (d) => `${d.academicYear} ${d.semester}`,
+  })
+);
+
+// Automated attendance: the scan endpoints, then the session list.
+// Starting a session is "create"; reporting sightings, closing a session and correcting a result all
+// change a session that already exists, so they need "edit".
+const attendanceAccess = (req, res, next) => {
+  const starting = req.method === 'POST' && /^\/sessions\/?$/.test(req.path);
+  return permit('attendance', { POST: starting ? 'create' : 'edit', PUT: 'edit' })(req, res, next);
+};
+router.use('/attendance', attendanceAccess, attendanceRoutes);
+router.use(
+  '/attendance/sessions',
+  permit('attendance'),
+  crud(AttendanceSession, {
+    searchFields: ['room', 'startedByName'],
+    filterFields: ['status', 'course', 'camera', 'semester', 'academicYear'],
+    populate: [
+      { path: 'camera', select: 'cameraId name location' },
+      { path: 'course', select: 'code name' },
+    ],
+    sort: { date: -1 },
+    dateField: 'date',
+    label: 'attendance session',
+    describe: (d) => `${d.room || 'Session'} - ${d.presentCount}/${d.expectedCount} present`,
+    beforeDelete: async (doc) => {
+      await AttendanceRecord.deleteMany({ session: doc._id });
+    },
   })
 );
 
@@ -104,6 +168,7 @@ router.use(
     beforeDelete: blockIfReferenced('course', [
       [Schedule, 'course', 'class schedule slot(s)'],
       [Grade, 'course', 'grade record(s)'],
+      [Enrollment, 'course', 'course enrollment(s)'],
     ]),
   })
 );
@@ -253,6 +318,8 @@ router.use(
 );
 
 router.use('/live', permitAny(['cameraView', 'cameras', 'detection']), liveRoutes);
+// Steering a camera is not editing its record: an attendance scan needs it, camera admins get it too.
+router.use('/cameras', permitAny(['attendance', 'cameras', 'cameraView']), ptzRoutes);
 router.use('/camera-discovery', requireRole('admin'), cameraDiscoveryRoutes);
 // Camera View and AI Detection only read the camera list; changes need Camera Management permission.
 const cameraAccess = (req, res, next) =>
@@ -267,8 +334,9 @@ router.use(
     label: 'camera',
     describe: (d) => `${d.name} (${d.cameraId})`,
     // A blank password on edit keeps the stored one (the browser never receives it).
-    sanitize: ({ hasPassword, ...body }) => {
+    sanitize: ({ hasPassword, hasOnvifPassword, ...body }) => {
       if (!body.rtspPassword) delete body.rtspPassword;
+      if (!body.onvifPassword) delete body.onvifPassword;
       return body;
     },
     // Gateway sync runs in the background so a gateway outage never blocks saving.

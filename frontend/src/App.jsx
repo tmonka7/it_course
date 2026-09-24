@@ -24,6 +24,8 @@ import Meetings from './pages/Meetings';
 import MeetingRoom from './pages/MeetingRoom';
 import Profile from './pages/Profile';
 import Detection from './pages/Detection';
+import Enrollments from './pages/Enrollments';
+import Attendance from './pages/Attendance';
 
 // First page (in sidebar order) the user may open; everyone can open Notifications.
 const LANDING = [
@@ -34,6 +36,8 @@ const LANDING = [
   ['/schedule', 'schedule'],
   ['/admissions', 'admissions'],
   ['/grades', 'grades'],
+  ['/enrollments', 'enrollments'],
+  ['/attendance', 'attendance'],
   ['/announcements', 'announcements'],
   ['/daily-reports', 'dailyReports'],
   ['/commands', 'commands'],
@@ -87,6 +91,8 @@ export default function App() {
         <Route path="schedule" element={<PageGuard page="schedule"><Schedule /></PageGuard>} />
         <Route path="admissions" element={<PageGuard page="admissions"><Admissions /></PageGuard>} />
         <Route path="grades" element={<PageGuard page="grades"><Grades /></PageGuard>} />
+        <Route path="enrollments" element={<PageGuard page="enrollments"><Enrollments /></PageGuard>} />
+        <Route path="attendance" element={<PageGuard page="attendance"><Attendance /></PageGuard>} />
         <Route path="announcements" element={<PageGuard page="announcements"><Announcements /></PageGuard>} />
         <Route path="daily-reports" element={<PageGuard page="dailyReports"><DailyReports /></PageGuard>} />
         <Route path="commands" element={<PageGuard page="commands"><Commands /></PageGuard>} />

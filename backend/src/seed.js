@@ -11,6 +11,7 @@ const Course = require('./models/Course');
 const Schedule = require('./models/Schedule');
 const Admission = require('./models/Admission');
 const Grade = require('./models/Grade');
+const Enrollment = require('./models/Enrollment');
 const Announcement = require('./models/Announcement');
 const Setting = require('./models/Setting');
 const Activity = require('./models/Activity');
@@ -176,6 +177,32 @@ async function run() {
     }
   });
   await Grade.create(gradeDocs);
+
+  // Course enrollments: the roster automated attendance is taken against. Each timetabled course gets
+  // a class-sized group of active students for the current term, so a scan has someone to expect.
+  const autumn = now.getMonth() >= 7;
+  const currentYear = `${autumn ? now.getFullYear() : now.getFullYear() - 1}-${autumn ? now.getFullYear() + 1 : now.getFullYear()}`;
+  const currentSemester = autumn ? 'Fall' : now.getMonth() >= 4 ? 'Summer' : 'Spring';
+  const activeStudents = students.filter((s) => s.status === 'Active');
+  const enrollmentDocs = [];
+  const enrolled = new Set();
+  [...new Set(slots.map(([code]) => code))].forEach((code, index) => {
+    // A contiguous slice per course keeps class sizes realistic and the groups mostly distinct.
+    const start = (index * 28) % Math.max(1, activeStudents.length - 30);
+    activeStudents.slice(start, start + between(24, 30)).forEach((student) => {
+      const key = `${student._id}-${byCode[code]._id}`;
+      if (enrolled.has(key)) return;
+      enrolled.add(key);
+      enrollmentDocs.push({
+        student: student._id,
+        course: byCode[code]._id,
+        academicYear: currentYear,
+        semester: currentSemester,
+        status: 'Enrolled',
+      });
+    });
+  });
+  await Enrollment.insertMany(enrollmentDocs);
 
   const announcements = [
     ['Fall Semester Registration Open', 'General', 'Registration for the fall semester is now open in the student portal.'],
