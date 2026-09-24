@@ -413,7 +413,7 @@ body {
   right: 0;
   height: 100%;
   aspect-ratio: 385 / 100;
-  max-width: 70%;
+  max-width: 100%;
   background-repeat: no-repeat;
   background-size: auto 112%;
   background-position: right -14px center;
@@ -2146,4 +2146,202 @@ body {
   50% {
     box-shadow: 0 0 0 5px rgba(22, 100, 255, 0);
   }
+}
+
+/* ---------- Database Management ---------- */
+/* Raw document JSON in the collection browser. */
+.db-json {
+  max-height: 340px;
+  margin: 0;
+  padding: 10px 12px;
+  overflow: auto;
+  background: #f6f7f9;
+  border: 1px solid #eceef2;
+  border-radius: 8px;
+  color: #35415a;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 12px;
+  line-height: 1.5;
+  white-space: pre;
+}
+
+/* ---------- PTZ control panel ---------- */
+.ptz-panel {
+  width: 100%;
+}
+
+.ptz-pad-row {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  margin-bottom: 10px;
+}
+
+/* Eight directions around a central Stop. */
+.ptz-pad {
+  display: grid;
+  grid-template-columns: repeat(3, 40px);
+  grid-template-rows: repeat(3, 40px);
+  gap: 4px;
+  border-radius: 10px;
+  outline: none;
+}
+
+.ptz-pad:focus-visible {
+  box-shadow: 0 0 0 3px rgba(22, 100, 255, 0.25);
+}
+
+.ptz-side {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.ptz-key {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: 1px solid #d9d9d9;
+  border-radius: 8px;
+  background: #fff;
+  color: #35415a;
+  font-size: 14px;
+  cursor: pointer;
+  /* A held arrow must not start a text selection or a long-press menu. */
+  user-select: none;
+  touch-action: none;
+  transition: background 0.15s, border-color 0.15s, transform 0.05s;
+}
+
+.ptz-key:hover {
+  border-color: #1664ff;
+  color: #1664ff;
+}
+
+.ptz-key:active,
+.ptz-key.is-active {
+  background: #1664ff;
+  border-color: #1664ff;
+  color: #fff;
+  transform: scale(0.96);
+}
+
+.ptz-key.ptz-stop {
+  color: #f04438;
+  border-color: #ffccc7;
+}
+
+.ptz-key.ptz-stop:hover {
+  background: #fff1f0;
+  border-color: #f04438;
+  color: #f04438;
+}
+
+.ptz-diag {
+  font-size: 16px;
+  line-height: 1;
+}
+
+.ptz-speed {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+  color: #6b7280;
+  font-size: 12px;
+}
+
+.ptz-speed .ant-slider {
+  flex: 1;
+  margin: 0;
+}
+
+.ptz-preset {
+  display: inline-flex;
+  align-items: center;
+}
+
+/* On the camera wall the panel floats over the video, so it needs its own backdrop. */
+.ptz-overlay {
+  position: absolute;
+  right: 12px;
+  bottom: 12px;
+  z-index: 3;
+  width: 268px;
+  padding: 10px 12px;
+  background: rgba(255, 255, 255, 0.94);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  border-radius: 12px;
+  box-shadow: 0 6px 24px rgba(16, 24, 40, 0.18);
+  backdrop-filter: blur(6px);
+}
+
+@media (max-width: 575px) {
+  .ptz-overlay {
+    position: static;
+    width: 100%;
+    margin-top: 8px;
+    box-shadow: none;
+  }
+}
+
+/* Snapshot preview inside the PTZ panel: the only picture available with no media gateway. */
+.ptz-preview {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  margin-bottom: 6px;
+  overflow: hidden;
+  background: #111827;
+  border-radius: 8px;
+}
+
+.ptz-preview img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.ptz-preview-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  padding: 0 12px;
+  color: #9aa4b2;
+  font-size: 12px;
+  text-align: center;
+}
+
+.ptz-preview-stale {
+  position: absolute;
+  top: 6px;
+  left: 6px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.6);
+  color: #fff;
+  font-size: 11px;
+}
+
+.ptz-preview-bar {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+/* In the wall overlay the caption is dropped, but the picture stays: the tile behind it shows nothing
+   without a media gateway, so this is the only view of where the camera is pointing. */
+.ptz-panel.is-compact .ptz-preview-bar > .ant-typography {
+  display: none;
+}
+
+.ptz-panel.is-compact .ptz-preview-bar {
+  justify-content: flex-end;
+  margin-bottom: 6px;
 }

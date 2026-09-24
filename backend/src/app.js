@@ -10,6 +10,10 @@ const errorHandler = require('./middleware/error');
 const app = express();
 
 app.use(cors({ origin: config.corsOrigin }));
+// A database restore uploads a whole backup file, which is far larger than any other request. Parsing
+// it with its own limit first means the global limit below can stay tight (body-parser skips a request
+// whose body is already parsed).
+app.use('/api/database/restore', express.json({ limit: config.maxRestoreMb + 'mb' }));
 app.use(express.json({ limit: '2mb' })); // photos/logos are sent as data URLs
 app.use(morgan('dev'));
 

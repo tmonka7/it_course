@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Alert, App, Button, Card, Col, Form, Input, Menu, Row, Select, Skeleton, Switch, Tooltip, Typography } from 'antd';
-import { CloudDownloadOutlined, KeyOutlined, SettingOutlined, UserOutlined } from '@ant-design/icons';
+import { CloudDownloadOutlined, DatabaseOutlined, KeyOutlined, SettingOutlined, UserOutlined } from '@ant-design/icons';
 import CrudPage from '../components/CrudPage';
 import StatusTag from '../components/StatusTag';
 import ImageUpload from '../components/ImageUpload';
@@ -9,6 +9,7 @@ import { useAuth } from '../context/AuthContext';
 import { useSettings } from '../context/SettingsContext';
 import { academicYears, toOptions } from '../constants';
 import api, { errMsg } from '../api';
+import DatabaseManagement from '../components/DatabaseManagement';
 import PermissionEditor, { permissionSummary } from '../components/PermissionEditor';
 import { t } from '../i18n';
 
@@ -215,6 +216,7 @@ export default function Settings() {
       ? [
           { key: 'users', icon: <UserOutlined />, label: t('User Management') },
           { key: 'backup', icon: <CloudDownloadOutlined />, label: t('Backup') },
+          { key: 'database', icon: <DatabaseOutlined />, label: t('Database Management') },
         ]
       : []),
   ];
@@ -231,6 +233,10 @@ export default function Settings() {
         <Col xs={24} md={18} xl={19}>
           {section === 'users' ? (
             <UserManagement />
+          ) : section === 'database' ? (
+            <Card bordered={false} className="page-card">
+              <DatabaseManagement />
+            </Card>
           ) : (
             <Card bordered={false} className="page-card">
               {section === 'general' && <GeneralSettings readOnly={!isAdmin} />}

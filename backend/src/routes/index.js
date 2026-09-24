@@ -19,6 +19,7 @@ const faceRoutes = require('./faces');
 const attendanceRoutes = require('./attendance');
 const studentFaceRoutes = require('./studentFaces');
 const ptzRoutes = require('./ptz');
+const databaseRoutes = require('./database');
 
 const Student = require('../models/Student');
 const Faculty = require('../models/Faculty');
@@ -416,6 +417,9 @@ router.use(
     },
   })
 );
+
+// Database Management: inspection, export, restore and maintenance. Administrators only.
+router.use('/database', requireRole('admin'), databaseRoutes);
 
 router.use('/notifications', notificationRoutes);
 router.use(

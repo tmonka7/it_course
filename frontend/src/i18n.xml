@@ -566,6 +566,39 @@
     <text key="Tilt to"><zh>垂直终点</zh><ja>チルト終了</ja></text>
     <text key="Normalised ONVIF position: -1 is fully left, 1 fully right"><zh>ONVIF 归一化位置：-1 为最左，1 为最右</zh><ja>ONVIFの正規化位置：-1が左端、1が右端</ja></text>
     <text key="Normalised ONVIF position: -1 is fully down, 1 fully up"><zh>ONVIF 归一化位置：-1 为最下，1 为最上</zh><ja>ONVIFの正規化位置：-1が下端、1が上端</ja></text>
+    <!-- PTZ control pad, shown wherever a single camera is selected -->
+    <text key="PTZ Control"><zh>云台控制</zh><ja>PTZ操作</ja></text>
+    <text key="PTZ control"><zh>云台控制</zh><ja>PTZ操作</ja></text>
+    <text key="Hide PTZ control"><zh>隐藏云台控制</zh><ja>PTZ操作を隠す</ja></text>
+    <text key="Pan and tilt"><zh>水平与垂直转动</zh><ja>パン・チルト</ja></text>
+    <text key="Up"><zh>上</zh><ja>上</ja></text>
+    <text key="Down"><zh>下</zh><ja>下</ja></text>
+    <text key="Left"><zh>左</zh><ja>左</ja></text>
+    <text key="Right"><zh>右</zh><ja>右</ja></text>
+    <text key="Up left"><zh>左上</zh><ja>左上</ja></text>
+    <text key="Up right"><zh>右上</zh><ja>右上</ja></text>
+    <text key="Down left"><zh>左下</zh><ja>左下</ja></text>
+    <text key="Down right"><zh>右下</zh><ja>右下</ja></text>
+    <text key="Zoom in"><zh>放大</zh><ja>ズームイン</ja></text>
+    <text key="Zoom out"><zh>缩小</zh><ja>ズームアウト</ja></text>
+    <text key="Home position"><zh>回到初始位置</zh><ja>ホーム位置へ</ja></text>
+    <text key="Read the current position"><zh>读取当前位置</zh><ja>現在位置を取得</ja></text>
+    <text key="Click to nudge, press and hold to keep moving. With the pad focused, the arrow keys work too."><zh>点击可微调，按住可持续转动。选中方向键区域后也可用键盘方向键操作。</zh><ja>クリックで少しだけ動き、押し続けると連続して動きます。パッドにフォーカスがあれば矢印キーでも操作できます。</ja></text>
+    <text key="Presets"><zh>预置位</zh><ja>プリセット</ja></text>
+    <text key="No presets stored on this camera"><zh>该摄像头未存储预置位</zh><ja>このカメラにプリセットはありません</ja></text>
+    <text key="Name this position"><zh>为当前位置命名</zh><ja>この位置に名前を付ける</ja></text>
+    <text key="Save preset"><zh>保存预置位</zh><ja>プリセットを保存</ja></text>
+    <text key="Preset saved"><zh>预置位已保存</zh><ja>プリセットを保存しました</ja></text>
+    <text key="Delete this preset?"><zh>删除该预置位？</zh><ja>このプリセットを削除しますか？</ja></text>
+    <!-- Gateway-free snapshot preview in the PTZ panel (no MediaMTX, no Docker, works offline) -->
+    <text key="Camera snapshot"><zh>摄像头快照</zh><ja>カメラのスナップショット</ja></text>
+    <text key="Waiting for a picture..."><zh>正在获取画面…</zh><ja>画像を取得中…</ja></text>
+    <text key="Picture is not updating"><zh>画面未更新</zh><ja>画像が更新されていません</ja></text>
+    <text key="Preview paused"><zh>预览已暂停</zh><ja>プレビュー停止中</ja></text>
+    <text key="Pause preview"><zh>暂停预览</zh><ja>プレビューを停止</ja></text>
+    <text key="Resume preview"><zh>继续预览</zh><ja>プレビューを再開</ja></text>
+    <text key="Still images straight from the camera, about one a second - no media gateway needed."><zh>直接来自摄像头的静态画面，约每秒一张，无需媒体网关。</zh><ja>カメラから直接取得した静止画で、約1秒ごとに更新されます。メディアゲートウェイは不要です。</ja></text>
+    <text key="This camera provides no snapshot, so there is no picture here."><zh>该摄像头不提供快照，因此此处没有画面。</zh><ja>このカメラはスナップショットに対応していないため、画像は表示されません。</ja></text>
   </section>
 
   <section name="communication">
@@ -737,6 +770,93 @@
     <text key="Administrators always have full access to every page."><zh>管理员始终拥有所有页面的完全访问权限。</zh><ja>管理者は常にすべてのページにフルアクセスできます。</ja></text>
     <text key="Granting Create, Edit or Delete also grants View. System Settings and User Management are always limited to administrators."><zh>授予新建、编辑或删除权限时，也会同时授予查看权限。系统设置和用户管理始终仅限管理员使用。</zh><ja>作成・編集・削除を許可すると閲覧も許可されます。システム設定とユーザー管理は常に管理者のみが利用できます。</ja></text>
     <text key="Academic"><zh>教务</zh><ja>学務</ja></text>
+  </section>
+
+  <section name="database">
+    <!-- Database Management (System Settings): inspection, export, restore and maintenance -->
+    <text key="Database Management"><zh>数据库管理</zh><ja>データベース管理</ja></text>
+    <text key="Database"><zh>数据库</zh><ja>データベース</ja></text>
+    <text key="MongoDB version"><zh>MongoDB 版本</zh><ja>MongoDBバージョン</ja></text>
+    <text key="Not reported"><zh>未提供</zh><ja>未取得</ja></text>
+    <text key="The API is not connected to the database ({state})"><zh>接口服务未连接数据库（{state}）</zh><ja>APIがデータベースに接続していません（{state}）</ja></text>
+    <text key="disconnected"><zh>已断开</zh><ja>切断</ja></text>
+    <text key="connecting"><zh>连接中</zh><ja>接続中</ja></text>
+    <text key="disconnecting"><zh>断开中</zh><ja>切断中</ja></text>
+    <text key="unknown"><zh>未知</zh><ja>不明</ja></text>
+
+    <!-- Collection table -->
+    <text key="Collection"><zh>集合</zh><ja>コレクション</ja></text>
+    <text key="Collections"><zh>集合数</zh><ja>コレクション数</ja></text>
+    <text key="Documents"><zh>文档数</zh><ja>ドキュメント数</ja></text>
+    <text key="Document"><zh>文档</zh><ja>ドキュメント</ja></text>
+    <text key="Data"><zh>数据</zh><ja>データ</ja></text>
+    <text key="Data size"><zh>数据大小</zh><ja>データサイズ</ja></text>
+    <text key="Indexes"><zh>索引</zh><ja>インデックス</ja></text>
+    <text key="Index size"><zh>索引大小</zh><ja>インデックスサイズ</ja></text>
+    <text key="No collections"><zh>暂无集合</zh><ja>コレクションがありません</ja></text>
+    <text key="This deployment does not report storage statistics"><zh>该部署未提供存储统计信息</zh><ja>この環境はストレージ統計を返しません</ja></text>
+    <text key="Browse documents"><zh>浏览文档</zh><ja>ドキュメントを閲覧</ja></text>
+    <text key="Export as JSON"><zh>导出为 JSON</zh><ja>JSONとして書き出す</ja></text>
+    <text key="Clear this collection"><zh>清空该集合</zh><ja>このコレクションを空にする</ja></text>
+
+    <!-- Document viewer -->
+    <text key="Documents in {model}"><zh>{model} 中的文档</zh><ja>{model} のドキュメント</ja></text>
+    <text key="Search text fields, or paste an id"><zh>搜索文本字段，或粘贴 id</zh><ja>テキスト項目を検索、またはIDを貼り付け</ja></text>
+    <text key="{count} documents"><zh>共 {count} 个文档</zh><ja>ドキュメント {count} 件</ja></text>
+    <text key="_id"><zh>_id</zh><ja>_id</ja></text>
+    <text key="Hidden fields: {fields}"><zh>已隐藏字段：{fields}</zh><ja>非表示の項目：{fields}</ja></text>
+    <text key="Passwords and face signatures never leave the server, so they show as [redacted] here and in exports."><zh>密码与人脸特征不会离开服务器，因此在此处和导出文件中均显示为 [redacted]。</zh><ja>パスワードと顔の特徴量はサーバーの外に出ないため、ここでも書き出しでも [redacted] と表示されます。</ja></text>
+
+    <!-- Backup and restore -->
+    <text key="Backup and restore"><zh>备份与恢复</zh><ja>バックアップと復元</ja></text>
+    <text key="Download full backup"><zh>下载完整备份</zh><ja>完全バックアップをダウンロード</ja></text>
+    <text key="Backup downloaded"><zh>备份已下载</zh><ja>バックアップをダウンロードしました</ja></text>
+    <text key="Restore from a backup file"><zh>从备份文件恢复</zh><ja>バックアップファイルから復元</ja></text>
+    <text key="Restore from backup"><zh>从备份恢复</zh><ja>バックアップから復元</ja></text>
+    <text key="A backup holds every collection as JSON, without passwords or face signatures - so restoring one will not bring those back. For a byte-exact copy of the database, use mongodump and mongorestore instead."><zh>备份以 JSON 保存所有集合，但不含密码与人脸特征，因此恢复后这些内容不会回来。若需与数据库完全一致的副本，请使用 mongodump 与 mongorestore。</zh><ja>バックアップは全コレクションをJSONで保持しますが、パスワードと顔の特徴量は含まないため、復元しても戻りません。データベースと完全に同一のコピーが必要な場合は mongodump と mongorestore を使ってください。</ja></text>
+    <text key="File"><zh>文件</zh><ja>ファイル</ja></text>
+    <text key="Collections in file"><zh>文件中的集合数</zh><ja>ファイル内のコレクション数</ja></text>
+    <text key="Documents in file"><zh>文件中的文档数</zh><ja>ファイル内のドキュメント数</ja></text>
+    <text key="That file is not valid JSON"><zh>该文件不是有效的 JSON</zh><ja>そのファイルは正しいJSONではありません</ja></text>
+    <text key="That file contains no collections to restore"><zh>该文件不含可恢复的集合</zh><ja>そのファイルに復元できるコレクションがありません</ja></text>
+    <text key="Merge"><zh>合并</zh><ja>マージ</ja></text>
+    <text key="add or update the documents in the file, leave everything else alone"><zh>新增或更新文件中的文档，其余内容保持不变</zh><ja>ファイル内のドキュメントを追加・更新し、他はそのまま残します</ja></text>
+    <text key="Replace"><zh>替换</zh><ja>置き換え</ja></text>
+    <text key="empty each collection named in the file first, then load it"><zh>先清空文件中列出的每个集合，再载入</zh><ja>ファイルに含まれる各コレクションを空にしてから読み込みます</ja></text>
+    <text key="Merge into the database"><zh>合并到数据库</zh><ja>データベースにマージ</ja></text>
+    <text key="Replace and load"><zh>替换并载入</zh><ja>置き換えて読み込む</ja></text>
+    <text key="Existing documents in those collections will be deleted."><zh>这些集合中的现有文档将被删除。</zh><ja>対象コレクションの既存ドキュメントは削除されます。</ja></text>
+    <text key="Replace these collections?"><zh>替换这些集合？</zh><ja>これらのコレクションを置き換えますか？</ja></text>
+    <text key="Every document in the collections named in the file will be deleted before the file is loaded."><zh>载入前将删除文件中列出集合内的所有文档。</zh><ja>読み込みの前に、ファイルに含まれるコレクションの全ドキュメントを削除します。</ja></text>
+    <text key="Restored {count} documents"><zh>已恢复 {count} 个文档</zh><ja>{count} 件のドキュメントを復元しました</ja></text>
+    <text key="Some collections could not be restored"><zh>部分集合无法恢复</zh><ja>一部のコレクションを復元できませんでした</ja></text>
+
+    <!-- Indexes -->
+    <text key="Rebuild indexes"><zh>重建索引</zh><ja>インデックスを再構築</ja></text>
+    <text key="Rebuild"><zh>重建</zh><ja>再構築</ja></text>
+    <text key="Rebuild every index to match the current schemas?"><zh>按当前模型定义重建所有索引？</zh><ja>現在のスキーマに合わせて全インデックスを再構築しますか？</ja></text>
+    <text key="Safe to run; indexes that no longer exist in a schema are dropped."><zh>可安全执行；模型中已不存在的索引将被删除。</zh><ja>安全に実行できます。スキーマに存在しなくなったインデックスは削除されます。</ja></text>
+    <text key="Indexes rebuilt"><zh>索引已重建</zh><ja>インデックスを再構築しました</ja></text>
+    <text key="{count} collections checked"><zh>已检查 {count} 个集合</zh><ja>{count} 件のコレクションを確認しました</ja></text>
+    <text key="Every index already matched the schema."><zh>所有索引已与模型定义一致。</zh><ja>すべてのインデックスはすでにスキーマと一致していました。</ja></text>
+    <text key="dropped"><zh>已删除</zh><ja>削除</ja></text>
+
+    <!-- Danger zone -->
+    <text key="Danger zone"><zh>危险操作</zh><ja>危険な操作</ja></text>
+    <text key="These actions delete data permanently and cannot be undone. Download a backup first."><zh>以下操作将永久删除数据且无法撤销。请先下载备份。</zh><ja>以下の操作はデータを完全に削除し、取り消せません。先にバックアップを取得してください。</ja></text>
+    <text key="Confirm"><zh>确认</zh><ja>確認</ja></text>
+    <text key="Type {phrase} to confirm:"><zh>输入 {phrase} 以确认：</zh><ja>確認のため {phrase} と入力してください：</ja></text>
+    <text key="Clear {model}?"><zh>清空 {model}？</zh><ja>{model} を空にしますか？</ja></text>
+    <text key="Every document in {model} will be deleted. Records in other collections that point at them will be left dangling."><zh>{model} 中的所有文档都会被删除。其他集合中指向它们的记录将变成无效引用。</zh><ja>{model} の全ドキュメントが削除されます。これらを参照している他のコレクションのレコードは参照先を失います。</ja></text>
+    <text key="Delete all documents"><zh>删除所有文档</zh><ja>全ドキュメントを削除</ja></text>
+    <text key="Deleted {count} documents from {model}"><zh>已从 {model} 删除 {count} 个文档</zh><ja>{model} から {count} 件のドキュメントを削除しました</ja></text>
+    <text key="Replace all data with demo data"><zh>用演示数据替换所有数据</zh><ja>すべてのデータをデモデータで置き換える</ja></text>
+    <text key="Replace all data with demo data?"><zh>用演示数据替换所有数据？</zh><ja>すべてのデータをデモデータで置き換えますか？</ja></text>
+    <text key="Every collection is emptied and refilled with the demo data set, including user accounts. You will be signed out and will need to sign in again as admin / admin123."><zh>所有集合都将被清空并重新填入演示数据，包括用户账号。你将被登出，需要重新以 admin / admin123 登录。</zh><ja>ユーザーアカウントを含め、すべてのコレクションが空になりデモデータで再作成されます。サインアウトされるため、admin / admin123 で再度サインインしてください。</ja></text>
+    <text key="Replace everything"><zh>全部替换</zh><ja>すべて置き換える</ja></text>
+    <text key="Demo data restored"><zh>演示数据已恢复</zh><ja>デモデータを復元しました</ja></text>
+    <text key="All accounts were recreated, so you have been signed out. Sign in again as admin / admin123."><zh>所有账号已重新创建，你已被登出。请重新以 admin / admin123 登录。</zh><ja>すべてのアカウントが再作成されたためサインアウトされました。admin / admin123 で再度サインインしてください。</ja></text>
+    <text key="Sign in"><zh>登录</zh><ja>サインイン</ja></text>
   </section>
 
   <section name="profile">

@@ -1,8 +1,9 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { Alert, App, Avatar, Button, Card, Col, Empty, List, Popconfirm, Row, Select, Slider, Space, Statistic, Switch, Tag, Tooltip, Typography } from 'antd';
-import { CaretRightOutlined, DeleteOutlined, LoadingOutlined, PauseOutlined, ReloadOutlined, ScanOutlined, UserOutlined, VideoCameraOutlined } from '@ant-design/icons';
+import { CaretRightOutlined, ControlOutlined, DeleteOutlined, LoadingOutlined, PauseOutlined, ReloadOutlined, ScanOutlined, UserOutlined, VideoCameraOutlined } from '@ant-design/icons';
 import LivePlayer from '../components/LivePlayer';
+import PtzControl from '../components/PtzControl';
 import { cameraError } from '../components/FaceRegistration';
 import { useAuth } from '../context/AuthContext';
 import api, { errMsg } from '../api';
@@ -292,6 +293,22 @@ export default function Detection() {
         </Col>
         <Col xs={24} xl={7}>
           <Space direction="vertical" size={16} style={{ width: '100%' }}>
+            {camera && (
+              <Card
+                bordered={false}
+                className="page-card"
+                size="small"
+                title={
+                  <Space>
+                    <ControlOutlined />
+                    {t('PTZ Control')}
+                  </Space>
+                }
+              >
+                <PtzControl camera={camera} />
+              </Card>
+            )}
+
             <Card bordered={false} className="page-card" size="small">
               <Row gutter={8}>
                 <Col span={12}>

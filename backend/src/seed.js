@@ -69,8 +69,12 @@ function staffPermissions() {
   return p;
 }
 
-async function run() {
-  await connectDB();
+/**
+ * Replaces every collection with the demo data set.
+ * Takes no part in connection handling, so it can run either from the CLI (below) or in-process from
+ * the Database Management page (routes/database.js) without disturbing the server's connection.
+ */
+async function seedDatabase() {
   await Promise.all(mongoose.modelNames().map((n) => mongoose.model(n).deleteMany({})));
   await Promise.all(mongoose.modelNames().map((n) => mongoose.model(n).syncIndexes()));
 
@@ -388,11 +392,19 @@ async function run() {
     `[seed] done: ${students.length} students, ${faculty.length} faculty, ${courses.length} courses, ${gradeDocs.length} grades`
   );
   console.log('[seed] login with admin / admin123 or staff / staff123');
-  await mongoose.disconnect();
+  return { students: students.length, faculty: faculty.length, courses: courses.length, grades: gradeDocs.length };
 }
 
-run().catch(async (err) => {
-  console.error('[seed] failed:', err);
-  await mongoose.disconnect();
-  process.exit(1);
-});
+module.exports = { seedDatabase };
+
+// Run from the command line: npm run seed
+if (require.main === module) {
+  connectDB()
+    .then(seedDatabase)
+    .then(() => mongoose.disconnect())
+    .catch(async (err) => {
+      console.error('[seed] failed:', err);
+      await mongoose.disconnect();
+      process.exit(1);
+    });
+}

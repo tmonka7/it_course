@@ -3,9 +3,10 @@ import {
   Alert, App, Avatar, Badge, Button, Card, Col, Descriptions, Empty, Form, InputNumber, Progress,
   Row, Segmented, Select, Space, Statistic, Table, Tag, Tooltip, Typography,
 } from 'antd';
-import { LoadingOutlined, PictureOutlined, PlayCircleOutlined, StopOutlined, UserOutlined } from '@ant-design/icons';
+import { ControlOutlined, LoadingOutlined, PictureOutlined, PlayCircleOutlined, StopOutlined, UserOutlined } from '@ant-design/icons';
 import dayjs from 'dayjs';
 import LivePlayer from '../components/LivePlayer';
+import PtzControl from '../components/PtzControl';
 import { descriptorFromPhoto } from '../components/StudentFaces';
 import { useAuth } from '../context/AuthContext';
 import api, { errMsg } from '../api';
@@ -716,6 +717,22 @@ export default function Attendance() {
                   </Descriptions>
                 )}
               </Card>
+
+              {camera && !running && (
+                <Card
+                  bordered={false}
+                  className="page-card"
+                  size="small"
+                  title={
+                    <Space>
+                      <ControlOutlined />
+                      {t('PTZ Control')}
+                    </Space>
+                  }
+                >
+                  <PtzControl camera={camera} />
+                </Card>
+              )}
 
               {plan.length > 0 && (
                 <Card bordered={false} className="page-card" size="small" title={t('Coverage')} extra={<Tag bordered={false}>{t('{done} / {total} positions', { done: scannedCount, total: plan.length })}</Tag>}>

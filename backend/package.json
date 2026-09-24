@@ -21,6 +21,7 @@
     "mongoose": "^8.8.0",
     "morgan": "^1.10.0",
     "multer": "^2.0.2",
+    "sist-platform": "file:..",
     "socket.io": "^4.8.1"
   }
 }

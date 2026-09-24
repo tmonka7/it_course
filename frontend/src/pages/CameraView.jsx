@@ -3,6 +3,7 @@ import { useSearchParams } from 'react-router-dom';
 import { Alert, App, Button, Empty, Segmented, Select, Space, Spin, Switch, Tooltip } from 'antd';
 import {
   CompressOutlined,
+  ControlOutlined,
   ExpandOutlined,
   LeftOutlined,
   ReloadOutlined,
@@ -11,6 +12,7 @@ import {
 } from '@ant-design/icons';
 import dayjs from 'dayjs';
 import LivePlayer from '../components/LivePlayer';
+import PtzControl from '../components/PtzControl';
 import api, { errMsg } from '../api';
 import { t } from '../i18n';
 
@@ -43,7 +45,7 @@ function TileClock() {
   return <span className="tile-clock">{now.format('YYYY-MM-DD HH:mm:ss')}</span>;
 }
 
-function Tile({ channel, camera, cameras, gatewayEnabled, fit, onAssign, onToggleMax, maximized }) {
+function Tile({ channel, camera, cameras, gatewayEnabled, fit, onAssign, onToggleMax, maximized, ptz, onTogglePtz }) {
   const [picking, setPicking] = useState(false);
   const statusClass = camera ? `dot-${camera.status.toLowerCase()}` : 'dot-none';
   return (
@@ -82,10 +84,21 @@ function Tile({ channel, camera, cameras, gatewayEnabled, fit, onAssign, onToggl
             <Button size="small" icon={<SwapOutlined />} onClick={() => setPicking(true)} />
           </Tooltip>
         )}
+        {maximized && camera && (
+          <Tooltip title={ptz ? t('Hide PTZ control') : t('PTZ control')}>
+            <Button size="small" type={ptz ? 'primary' : 'default'} icon={<ControlOutlined />} onClick={onTogglePtz} />
+          </Tooltip>
+        )}
         <Tooltip title={maximized ? t('Back to grid') : t('Enlarge')}>
           <Button size="small" icon={maximized ? <CompressOutlined /> : <ExpandOutlined />} onClick={onToggleMax} />
         </Tooltip>
       </div>
+      {/* Only the enlarged channel gets the pad: it is the one camera the operator has selected. */}
+      {maximized && camera && ptz && (
+        <div className="ptz-overlay" onDoubleClick={(e) => e.stopPropagation()}>
+          <PtzControl camera={camera} compact />
+        </div>
+      )}
     </div>
   );
 }
@@ -104,6 +117,7 @@ export default function CameraView() {
   const [tour, setTour] = useState(false);
   const [assign, setAssign] = useState(prefs.assign || {}); // channel index -> camera id ('' = empty)
   const [maximized, setMaximized] = useState(null); // camera id shown full size
+  const [ptzOpen, setPtzOpen] = useState(prefs.ptzOpen !== false); // pad shown on the enlarged channel
   const [fullscreen, setFullscreen] = useState(false);
 
   const load = useCallback(() => {
@@ -125,8 +139,8 @@ export default function CameraView() {
   }, [searchParams]);
 
   useEffect(() => {
-    savePrefs({ layout, onlineOnly, fit, assign });
-  }, [layout, onlineOnly, fit, assign]);
+    savePrefs({ layout, onlineOnly, fit, assign, ptzOpen });
+  }, [layout, onlineOnly, fit, assign, ptzOpen]);
 
   useEffect(() => {
     const onChange = () => setFullscreen(document.fullscreenElement === wallRef.current);
@@ -235,6 +249,8 @@ export default function CameraView() {
                 gatewayEnabled={gatewayEnabled}
                 fit={fit}
                 maximized
+                ptz={ptzOpen}
+                onTogglePtz={() => setPtzOpen((v) => !v)}
                 onAssign={(_, id) => setMaximized(id || null)}
                 onToggleMax={() => setMaximized(null)}
               />

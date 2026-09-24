@@ -21,6 +21,8 @@ const config = {
   // Where uploaded attachments are stored (created on first upload).
   uploadDir: path.resolve(__dirname, '../..', process.env.UPLOAD_DIR || 'uploads'),
   maxUploadMb: parseInt(process.env.MAX_UPLOAD_MB, 10) || 20,
+  // Largest backup file the Database Management page may restore (one JSON request body).
+  maxRestoreMb: parseInt(process.env.MAX_RESTORE_MB, 10) || 64,
   // Optional HTTPS for the API server itself (camera/microphone access in browsers needs HTTPS off localhost).
   ssl: { key: process.env.SSL_KEY_FILE, cert: process.env.SSL_CERT_FILE },
   // Optional MediaMTX gateway that turns camera RTSP streams into browser-playable HLS.
